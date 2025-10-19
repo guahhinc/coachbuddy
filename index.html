@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tracker</title>
+    <style>
+        /* CRITICAL FIX: Ensure padding and borders do not expand element size beyond 100% */
+        * {
+            box-sizing: border-box;
+        }
+        
+        html {
+            height: 100%;
+        }
+
+        /* Base and Mobile-First Styling */
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #121212; /* Dark background for modern look */
+            color: #E0E0E0;
+            
+            height: 100%; 
+            overflow-x: hidden; 
+            overflow-y: auto; 
+            
+            font-size: 13px; /* Base font size increased */
+            
+            /* --- CRITICAL FIX 1: ADD HUGE TOP PADDING FOR SCROLL BUFFER (THE "BIG GAP") --- */
+            padding-top: 50vh; 
+        }
+        
+        /* Center content and apply background to the main area */
+        .app-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%; 
+            height: auto;
+            /* FIX: Push content up to counteract body's top padding, keeping content aligned at the top */
+            margin-top: -50vh; 
+        }
+
+        /* Container to center content on larger screens */
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            padding: 8px 6px;
+        }
+
+        /* --- STOPWATCH/COUNTDOWN SECTION STYLES (COMPRESSED) --- */
+        #timer-section {
+            background-color: #1E1E1E;
+            padding: 8px;
+            border-radius: 6px; 
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        #time-display {
+            font-size: 2.7rem; /* Increased size */
+            font-weight: 700;
+            color: #4CAF50;
+            margin-bottom: 5px;
+        }
+        
+        #time-display.countdown-ended {
+             color: #D32F2F;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            margin-top: 6px;
+        }
+        
+        .timer-controls.adjust-controls {
+            margin-top: 4px;
+        }
+
+        .timer-btn {
+            padding: 7px 11px; /* Improved padding for tap target and size */
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            flex-grow: 1; 
+            min-width: 65px; /* Slightly wider */
+            font-size: 13px; /* Base button text remains clear */
+            line-height: 1.2; /* Better text alignment */
+        }
+
+        .timer-btn.primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .timer-btn.primary.pause {
+            background-color: #FF9800;
+        }
+
+        .timer-btn.secondary, .timer-btn.mode-btn {
+            background-color: #424242;
+            color: #E0E0E0;
+        }
+        .timer-btn.secondary:hover, .timer-btn.mode-btn:hover {
+            background-color: #555;
+        }
+        
+        /* --- PLAYER INPUT SECTION STYLES (COMPRESSED) --- */
+        #input-section {
+            background-color: #1E1E1E;
+            padding: 8px;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+            margin-bottom: 10px;
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        
+        /* NEW: Player Number Input */
+        #player-number-input {
+            padding: 7px;
+            border: 1px solid #333;
+            border-radius: 4px;
+            width: 45px; /* Fixed width for number */
+            flex-shrink: 0;
+            /* FIX: Increased font-size to 16px to prevent unwanted mobile zoom */
+            font-size: 16px; 
+            background-color: #2D2D2D;
+            color: #E0E0E0;
+            text-align: center;
+        }
+
+        #player-name {
+            padding: 7px; /* Increased padding */
+            border: 1px solid #333;
+            border-radius: 4px;
+            flex-grow: 1;
+            /* FIX: Increased font-size to 16px to prevent unwanted mobile zoom */
+            font-size: 16px; 
+            background-color: #2D2D2D;
+            color: #E0E0E0;
+        }
+
+        /* Style for the green plus icon button */
+        .add-icon-btn {
+            background-color: #4CAF50;
+            color: white;
+            width: 32px;
+            height: 32px;
+            font-size: 19px; /* Increased size */
+            line-height: 32px;
+            padding: 0;
+            border-radius: 4px;
+            flex-shrink: 0;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        /* --- PLAYER ROSTER STYLES (COMPRESSED) --- */
+        #roster {
+            background-color: #1E1E1E;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            /* Roster is now under input, so we still need margin-bottom for the notes/defaults */
+            margin-bottom: 10px; 
+        }
+
+        .player-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px; /* Increased padding */
+            border-bottom: 1px solid #333;
+        }
+
+        /* NEW: Container for Rank + Number + Name */
+        .player-info-group {
+            display: flex;
+            align-items: center;
+            gap: 6px; /* Spacing between number and name */
+            flex-grow: 1; /* This now takes up the remaining space */
+            padding-right: 8px;
+        }
+
+        /* NEW: Ranking Styles (Updated Colors) */
+        .player-rank {
+            font-weight: 900;
+            font-size: 1.1em; /* Slightly larger than name */
+            margin-right: 8px;
+            width: 25px; /* Fixed width for alignment */
+            text-align: center;
+            flex-shrink: 0;
+            display: inline-block;
+        }
+
+        /* Rank 1: RED */
+        .player-rank.rank-gold {
+            color: #D32F2F; /* Red */
+            text-shadow: 0 0 5px rgba(211, 47, 47, 0.6);
+        }
+
+        /* Rank 2: ORANGE */
+        .player-rank.rank-silver {
+            color: #FF9800; /* Orange */
+            text-shadow: 0 0 5px rgba(255, 152, 0, 0.6);
+        }
+
+        /* Rank 3: YELLOW */
+        .player-rank.rank-bronze {
+            color: #FFEB3B; /* Yellow */
+            text-shadow: 0 0 5px rgba(255, 235, 59, 0.6);
+        }
+
+        /* NEW: Styling for the player number */
+        .player-number {
+            font-weight: 700;
+            color: #64B5F6; /* Use a distinct color for the number */
+            font-size: 15px; 
+            flex-shrink: 0;
+            white-space: nowrap; /* Prevent wrapping of the number */
+        }
+
+        .player-name {
+            font-weight: 500;
+            font-size: 15px; /* Increased size */
+            word-break: break-word; 
+        }
+        
+        /* NEW: Warning icon styles */
+        .warning-icon {
+            font-size: 16px;
+            margin-left: 5px;
+            display: none; /* Hidden by default */
+        }
+
+        /* Low Time Warning (Needs to get ON) */
+        .warning-icon.low {
+            color: #FFC107; /* Amber/Yellow */
+        }
+        
+        .player-time {
+            font-weight: bold;
+            color: #64B5F6;
+            font-size: 15px; /* Increased size */
+            min-width: 50px; /* Wider to accommodate time */
+            text-align: right;
+            flex-shrink: 0;
+        }
+        
+        .player-controls-group {
+            display: flex;
+            align-items: center;
+            gap: 8px; /* Increased gap */
+            flex-shrink: 0;
+        }
+
+        .toggle-btn {
+            padding: 5px 8px; /* Increased padding */
+            width: 48px; /* Wider button */
+            font-size: 13px;
+            border-radius: 4px;
+            flex-shrink: 0;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Button color reflects the CURRENT STATUS */
+        /* Status ON: Player is ON the field. Button is Green. Text is "OFF" (action to take). */
+        .toggle-btn.status-on {
+            background-color: #4CAF50; /* Green */
+            color: white;
+        }
+
+        /* Status OFF: Player is OFF the field. Button is Red. Text is "ON" (action to take). */
+        .toggle-btn.status-off {
+            background-color: #D32F2F; /* Red */
+            color: white;
+        }
+        
+        .delete-btn {
+            width: 24px; /* Bigger delete button */
+            height: 24px;
+            font-size: 13px;
+            line-height: 1;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #424242;
+            color: white;
+        }
+
+        /* --- NOTES SECTION STYLES (COMPRESSED) --- */
+        #notes-section {
+            width: 100%;
+            margin-top: 10px;
+            padding: 8px;
+            border-radius: 6px;
+        }
+
+        #game-notes {
+            min-height: 80px;
+            padding: 7px; /* Increased padding/size */
+            /* FIX: Increased font-size to 16px to prevent unwanted mobile zoom */
+            font-size: 16px; 
+            border-radius: 4px;
+            background-color: #2D2D2D;
+            color: #E0E0E0;
+            resize: vertical;
+            width: 100%;
+            border: 1px solid #333;
+        }
+        
+        /* --- MODAL STYLES --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none; /* Hidden by default */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: #1E1E1E;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 350px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+            /* Allow text to be left aligned for suggestions */
+            text-align: left; 
+        }
+        
+        /* Ensure modal title stays centered */
+        #modal-title {
+            font-size: 1.3rem; /* Increased size */
+            margin-top: 0;
+            color: #E0E0E0;
+            text-align: center;
+        }
+
+        #modal-message {
+            margin-bottom: 20px;
+            color: #B0B0B0;
+            font-size: 14px; /* Increased size */
+            white-space: pre-line; /* Handle newline characters in the message */
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: space-around;
+            text-align: center; /* Center buttons */
+        }
+        
+        .modal-buttons .timer-btn {
+            flex-basis: 50%;
+            padding: 8px 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-wrapper">
+        <div class="app-container">
+            <!-- TIMER SECTION -->
+            <div id="timer-section">
+                <div id="time-display">00:00</div>
+                <div class="timer-controls mode-main-controls">
+                    <button id="mode-toggle-btn" class="timer-btn mode-btn">Countdown</button>
+                    <button id="start-pause-btn" class="timer-btn primary">Start</button>
+                    <button id="reset-btn" class="timer-btn secondary">Reset</button>
+                </div>
+                <!-- Adjustment buttons are now present for both modes and can be used while running -->
+                <div class="timer-controls adjust-controls">
+                    <button id="add-minute-btn" class="timer-btn secondary">+1 Min</button>
+                    <button id="subtract-minute-btn" class="timer-btn secondary">–1 Min</button>
+                </div>
+            </div>
+            <!-- END TIMER SECTION -->
+
+            <!-- PLAYER INPUT SECTION -->
+            <div id="input-section">
+                <input type="text" id="player-number-input" placeholder="No."> <!-- NEW NUMBER INPUT -->
+                <input type="text" id="player-name" placeholder="Enter player's name">
+                <button id="add-player-btn" class="add-icon-btn">+</button>
+            </div>
+            <!-- END PLAYER INPUT SECTION -->
+            
+            <!-- PLAYER ROSTER (MOVED BELOW INPUT) -->
+            <div id="roster">
+                <!-- Player items will be added here by JavaScript -->
+            </div>
+            <!-- END ROSTER SECTION -->
+
+
+            <div id="notes-section">
+                <textarea id="game-notes" placeholder="Add game notes here..."></textarea>
+            </div>
+            
+            <!-- *** FINISH GAME BUTTON (MOVED & RENAMED) *** -->
+            <div class="timer-controls" style="margin-top: 10px;">
+                <button id="save-to-sheets-btn" class="timer-btn primary" style="flex-grow: unset; width: 100%; background-color: #1a73e8;">Finish Game</button>
+            </div>
+            
+            <!-- Substitution Suggestion Button -->
+            <div class="timer-controls" style="margin-top: 5px;"> 
+                <button id="suggest-sub-btn" class="timer-btn secondary" style="flex-grow: unset; width: 100%;">Substitute Suggestion</button>
+            </div>
+            
+            <!-- DEFAULT PLAYERS BUTTON -->
+            <div class="timer-controls" style="margin-top: 5px;">
+                <button id="add-default-players-btn" class="timer-btn secondary" style="flex-grow: unset; width: 100%;">Add Default Players</button>
+            </div>
+
+        </div>
+    </div>
+    
+    <!-- Custom Confirmation Modal -->
+    <div id="custom-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="modal-title"></h3>
+            <p id="modal-message"></p>
+            <div class="modal-buttons">
+                <button id="modal-cancel-btn" class="timer-btn secondary">Cancel</button>
+                <button id="modal-confirm-btn" class="timer-btn primary">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONSTANTS ---
+        const MAX_PLAYERS_ON_FIELD = 5;
+        const MIN_GAME_TIME_FOR_WARNINGS = 180;
+        const LOW_TIME_RATIO = 0.65;
+        const LOW_TIME_DIFFERENCE_THRESHOLD = 30;
+
+        // --- UTILITY FUNCTION ---
+        function formatTime(seconds) {
+            if (seconds < 0) seconds = 0;
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+        }
+        
+        // --- MODAL LOGIC ---
+        const customModal = document.getElementById('custom-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalMessage = document.getElementById('modal-message');
+        const modalConfirmBtn = document.getElementById('modal-confirm-btn');
+        const modalCancelBtn = document.getElementById('modal-cancel-btn');
+
+        let confirmationCallback = null;
+
+        function resetModalButtons() {
+            modalConfirmBtn.textContent = 'Confirm';
+            modalCancelBtn.style.display = 'inline-block';
+        }
+
+        function showConfirmation(title, message, callback) {
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            confirmationCallback = callback;
+            customModal.style.display = 'flex';
+        }
+
+        modalConfirmBtn.onclick = () => {
+            if (confirmationCallback) confirmationCallback(true);
+            customModal.style.display = 'none';
+            confirmationCallback = null;
+            resetModalButtons();
+        };
+
+        modalCancelBtn.onclick = () => {
+            if (confirmationCallback) confirmationCallback(false);
+            customModal.style.display = 'none';
+            confirmationCallback = null;
+            resetModalButtons();
+        };
+
+
+        // --- PLAYER ROSTER LOGIC ---
+        const playerNumberInput = document.getElementById('player-number-input'); 
+        const playerNameInput = document.getElementById('player-name');
+        const addPlayerBtn = document.getElementById('add-player-btn');
+        const rosterDiv = document.getElementById('roster');
+        const suggestSubBtn = document.getElementById('suggest-sub-btn');
+
+        function createPlayerItem(name, number = null) {
+            const playerItem = document.createElement('div');
+            playerItem.className = 'player-item';
+            playerItem.dataset.totalTime = 0;
+            playerItem.dataset.isOnField = '0';
+
+            const playerInfoGroup = document.createElement('div');
+            playerInfoGroup.className = 'player-info-group';
+
+            const playerRank = document.createElement('span');
+            playerRank.className = 'player-rank';
+            playerRank.dataset.role = 'player-rank';
+            playerInfoGroup.appendChild(playerRank);
+
+            if (number !== null) {
+                const playerNumber = document.createElement('span');
+                playerNumber.className = 'player-number';
+                playerNumber.textContent = `#${number}`; 
+                playerInfoGroup.appendChild(playerNumber);
+            }
+
+            const playerName = document.createElement('span');
+            playerName.className = 'player-name';
+            playerName.textContent = name;
+            playerInfoGroup.appendChild(playerName);
+            
+            const lowWarningIcon = document.createElement('span');
+            lowWarningIcon.className = 'warning-icon low';
+            lowWarningIcon.textContent = '⚠️';
+            lowWarningIcon.title = 'Low play time - Consider subbing on';
+            lowWarningIcon.dataset.role = 'low-warning-icon';
+            playerInfoGroup.appendChild(lowWarningIcon); 
+
+            const playerControlsGroup = document.createElement('div');
+            playerControlsGroup.className = 'player-controls-group';
+
+            const timeOnFieldDisplay = document.createElement('span');
+            timeOnFieldDisplay.className = 'player-time';
+            timeOnFieldDisplay.textContent = formatTime(0);
+
+            const toggleBtn = document.createElement('button');
+            toggleBtn.className = 'toggle-btn status-off'; 
+            toggleBtn.textContent = 'ON';
+            
+            toggleBtn.onclick = () => {
+                const isOn = playerItem.dataset.isOnField === '1';
+                
+                if (isOn) {
+                    playerItem.dataset.isOnField = '0';
+                    toggleBtn.textContent = 'ON';
+                    toggleBtn.classList.add('status-off');
+                    toggleBtn.classList.remove('status-on');
+                } else {
+                    const currentOnCount = document.querySelectorAll('.player-item[data-is-on-field="1"]').length;
+                    
+                    if (currentOnCount >= MAX_PLAYERS_ON_FIELD) {
+                        showConfirmation(
+                            'Substitution Limit Reached',
+                            `Cannot sub this player ON. You currently have the maximum of ${MAX_PLAYERS_ON_FIELD} players on the field. Please sub a player OFF first.`,
+                            (confirmed) => {}
+                        );
+                        modalConfirmBtn.textContent = 'OK';
+                        modalCancelBtn.style.display = 'none';
+                        return;
+                    }
+                    playerItem.dataset.isOnField = '1';
+                    toggleBtn.textContent = 'OFF';
+                    toggleBtn.classList.remove('status-off');
+                    toggleBtn.classList.add('status-on');
+
+                    const lowIcon = playerItem.querySelector('[data-role="low-warning-icon"]');
+                    if (lowIcon) lowIcon.style.display = 'none';
+                }
+                updateSubstitutionWarnings();
+            };
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.textContent = '×';
+            deleteBtn.title = 'Remove Player';
+            
+            deleteBtn.onclick = () => {
+                showConfirmation(
+                    'Remove Player',
+                    `Are you sure you want to remove ${name}? Their accumulated time will be lost.`,
+                    (confirmed) => {
+                        if (confirmed) {
+                            rosterDiv.removeChild(playerItem);
+                            updateSubstitutionWarnings();
+                        }
+                    }
+                );
+            };
+
+            playerControlsGroup.appendChild(timeOnFieldDisplay);
+            playerControlsGroup.appendChild(toggleBtn);
+            playerControlsGroup.appendChild(deleteBtn);
+            
+            playerItem.appendChild(playerInfoGroup);
+            playerItem.appendChild(playerControlsGroup);
+
+            return playerItem;
+        }
+        
+        function addPlayerByName(name, number = null) {
+            const effectiveName = name || (number !== null ? `Player #${number}` : 'Unnamed Player');
+            const newPlayerItem = createPlayerItem(effectiveName, number); 
+            rosterDiv.appendChild(newPlayerItem);
+            updateSubstitutionWarnings();
+        }
+
+        function addPlayerFromInput() {
+            const name = playerNameInput.value.trim();
+            const numberStr = playerNumberInput.value.trim();
+            const number = numberStr && !isNaN(parseInt(numberStr)) ? parseInt(numberStr) : null; 
+
+            if (name || number !== null) { 
+                addPlayerByName(name, number); 
+                playerNameInput.value = '';
+                playerNumberInput.value = '';
+                playerNameInput.focus();
+                
+                setTimeout(() => { window.scrollTo(0, 0); }, 200); 
+
+            } else {
+                console.log('Player name and number cannot both be empty.');
+            }
+        }
+
+        addPlayerBtn.addEventListener('click', addPlayerFromInput);
+        
+        playerNameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addPlayerFromInput();
+        });
+        playerNumberInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addPlayerFromInput();
+        });
+        
+        const DEFAULT_PLAYERS = [
+            { name: 'Ava', number: 6 }, 
+            { name: 'Maddie', number: 32 }, 
+            { name: 'AK', number: 52 }, 
+            { name: 'Indigo', number: 50 }, 
+            { name: 'Aria', number: 7 }, 
+            { name: 'London', number: 8 }
+        ];
+        const addDefaultPlayersBtn = document.getElementById('add-default-players-btn');
+
+        addDefaultPlayersBtn.addEventListener('click', () => {
+            showConfirmation(
+                'Add Default Players',
+                'Are you sure you want to add the default roster? This will not remove existing players.',
+                (confirmed) => {
+                    if (confirmed) {
+                        DEFAULT_PLAYERS.forEach(player => addPlayerByName(player.name, player.number));
+                    }
+                }
+            );
+        });
+        
+        function suggestSubstitution() {
+            const playerItems = document.querySelectorAll('.player-item');
+            if (playerItems.length === 0) {
+                showConfirmation('Suggestion Unavailable', 'Please add players to the roster first.', (c) => {});
+                modalConfirmBtn.textContent = 'OK';
+                modalCancelBtn.style.display = 'none';
+                return;
+            }
+
+            const players = Array.from(playerItems).map(item => {
+                const time = parseInt(item.dataset.totalTime);
+                const isOnField = item.dataset.isOnField === '1';
+                const nameElement = item.querySelector('.player-name');
+                const numberElement = item.querySelector('.player-number');
+                let displayName = nameElement ? nameElement.textContent : 'Unnamed Player';
+                if (numberElement) displayName = `${numberElement.textContent} ${displayName}`;
+                return { element: item, time, isOnField, name: displayName };
+            });
+
+            const onFieldPlayers = players.filter(p => p.isOnField).sort((a, b) => b.time - a.time);
+            const offFieldPlayers = players.filter(p => !p.isOnField).sort((a, b) => a.time - b.time);
+            
+            let message = '';
+            if (onFieldPlayers.length > 0 && offFieldPlayers.length > 0) {
+                const playerToTakeOff = onFieldPlayers[0];
+                const playerToSubOn = offFieldPlayers[0];
+                message = `Based on total playing time, here is the suggested sub:\n\n` +
+                          `\u25b6 Take OFF: ${playerToTakeOff.name} (${formatTime(playerToTakeOff.time)})\n` +
+                          `\u25c0 Sub ON: ${playerToSubOn.name} (${formatTime(playerToSubOn.time)})`;
+            } else {
+                message = onFieldPlayers.length === 0 ? 'There are no players currently on the field to substitute off.' : 'There are no players currently off the field to substitute on.';
+            }
+            showConfirmation('Substitution Suggestion', message, (c) => {});
+            modalConfirmBtn.textContent = 'OK';
+            modalCancelBtn.style.display = 'none';
+        }
+        suggestSubBtn.addEventListener('click', suggestSubstitution);
+        
+        function updateSubstitutionWarnings() {
+            const playerItems = document.querySelectorAll('.player-item');
+            if (playerItems.length === 0) return;
+
+            let totalTimeSum = 0, totalOnFieldTimeSum = 0, playersOnFieldCount = 0;
+            const playerArray = Array.from(playerItems).map(item => {
+                const playerTime = parseInt(item.dataset.totalTime);
+                totalTimeSum += playerTime;
+                if (item.dataset.isOnField === '1') {
+                    totalOnFieldTimeSum += playerTime;
+                    playersOnFieldCount++;
+                }
+                return { element: item, time: playerTime, rankElement: item.querySelector('[data-role="player-rank"]') };
+            });
+
+            if (totalTimeSum > 0) {
+                playerArray.sort((a, b) => b.time - a.time);
+                let currentRank = 0, previousTime = -1;
+                playerArray.forEach((player, index) => {
+                    if (player.time !== previousTime) currentRank++;
+                    if (index === 0) currentRank = 1;
+                    previousTime = player.time;
+                    player.rankElement.textContent = currentRank;
+                    player.rankElement.className = 'player-rank'; // Reset
+                    if (currentRank === 1) player.rankElement.classList.add('rank-gold');
+                    else if (currentRank === 2) player.rankElement.classList.add('rank-silver');
+                    else if (currentRank === 3) player.rankElement.classList.add('rank-bronze');
+                });
+            } else {
+                playerArray.forEach(p => { p.rankElement.textContent = ''; p.rankElement.className = 'player-rank'; });
+            }
+
+            if (playerArray.length < 2 || totalSeconds < MIN_GAME_TIME_FOR_WARNINGS || totalTimeSum === 0) {
+                 playerItems.forEach(item => {
+                    const lowIcon = item.querySelector('[data-role="low-warning-icon"]');
+                    if (lowIcon) lowIcon.style.display = 'none';
+                 });
+                 return;
+            }
+
+            const lowTimeAverage = playersOnFieldCount > 0 ? totalOnFieldTimeSum / playersOnFieldCount : 0;
+            playerItems.forEach(item => {
+                const playerTime = parseInt(item.dataset.totalTime);
+                const lowIcon = item.querySelector('[data-role="low-warning-icon"]');
+                const isOnField = item.dataset.isOnField === '1';
+                if (lowIcon) lowIcon.style.display = 'none';
+                if (lowIcon && !isOnField && lowTimeAverage > 0) {
+                    const isRatioLow = playerTime < lowTimeAverage * LOW_TIME_RATIO;
+                    const isDifferenceMeaningful = (lowTimeAverage - playerTime) >= LOW_TIME_DIFFERENCE_THRESHOLD;
+                    if (isRatioLow && isDifferenceMeaningful) lowIcon.style.display = 'inline';
+                }
+            });
+        }
+        
+        // --- STOPWATCH/COUNTDOWN TOGGLE LOGIC ---
+        const INITIAL_STOPWATCH_SECONDS = 0;
+        const DEFAULT_COUNTDOWN_SECONDS = 2400;
+        let countdownInterval = null, totalSeconds = INITIAL_STOPWATCH_SECONDS, isRunning = false, isCountdownMode = false;
+        const timeDisplay = document.getElementById('time-display');
+        const startPauseBtn = document.getElementById('start-pause-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const modeToggleBtn = document.getElementById('mode-toggle-btn');
+        const addMinuteBtn = document.getElementById('add-minute-btn');
+        const subtractMinuteBtn = document.getElementById('subtract-minute-btn');
+
+        function startTimer() {
+            if (isRunning || (isCountdownMode && totalSeconds <= 0)) return;
+            isRunning = true;
+            startPauseBtn.textContent = 'Pause';
+            startPauseBtn.classList.add('pause');
+
+            countdownInterval = setInterval(() => {
+                if (isCountdownMode) {
+                    if (totalSeconds > 0) totalSeconds--;
+                    else {
+                        clearInterval(countdownInterval);
+                        isRunning = false;
+                        startPauseBtn.textContent = 'Done!';
+                        startPauseBtn.classList.remove('pause');
+                        timeDisplay.classList.add('countdown-ended');
+                    }
+                } else totalSeconds++;
+                timeDisplay.textContent = formatTime(totalSeconds);
+                timeDisplay.classList.toggle('countdown-ended', isCountdownMode && totalSeconds <= 60 && totalSeconds > 0);
+
+                document.querySelectorAll('.player-item').forEach(item => {
+                    if (isRunning && item.dataset.isOnField === '1') {
+                        let currentTime = parseInt(item.dataset.totalTime) + 1;
+                        item.dataset.totalTime = currentTime;
+                        item.querySelector('.player-time').textContent = formatTime(currentTime);
+                    }
+                });
+                updateSubstitutionWarnings();
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            clearInterval(countdownInterval);
+            isRunning = false;
+            startPauseBtn.textContent = 'Resume';
+            startPauseBtn.classList.remove('pause');
+        }
+
+        function resetTimer() {
+            clearInterval(countdownInterval);
+            isRunning = false;
+            startPauseBtn.textContent = 'Start';
+            startPauseBtn.classList.remove('pause');
+            timeDisplay.classList.remove('countdown-ended');
+            totalSeconds = isCountdownMode ? DEFAULT_COUNTDOWN_SECONDS : INITIAL_STOPWATCH_SECONDS;
+            timeDisplay.textContent = formatTime(totalSeconds);
+            document.querySelectorAll('.player-item').forEach(item => {
+                item.dataset.totalTime = 0;
+                item.querySelector('.player-time').textContent = formatTime(0);
+                item.dataset.isOnField = '0'; 
+                const toggleBtn = item.querySelector('.toggle-btn');
+                if(toggleBtn) {
+                     toggleBtn.textContent = 'ON';
+                     toggleBtn.classList.add('status-off');
+                     toggleBtn.classList.remove('status-on');
+                }
+            });
+            updateSubstitutionWarnings();
+        }
+        
+        function adjustTime(seconds) {
+            totalSeconds = Math.max(0, totalSeconds + seconds);
+            timeDisplay.textContent = formatTime(totalSeconds);
+            if (isCountdownMode && totalSeconds === 0 && isRunning) {
+                clearInterval(countdownInterval);
+                isRunning = false;
+                startPauseBtn.textContent = 'Done!';
+                startPauseBtn.classList.remove('pause');
+                timeDisplay.classList.add('countdown-ended');
+            }
+            updateSubstitutionWarnings();
+        }
+
+        function toggleMode() {
+            const newMode = isCountdownMode ? 'Stopwatch' : 'Countdown';
+            showConfirmation(
+                'Confirm Mode Switch',
+                `Are you sure you want to switch to ${newMode} mode? This will reset the main timer and all player times.`,
+                (confirmed) => {
+                    if (confirmed) {
+                        isCountdownMode = !isCountdownMode;
+                        modeToggleBtn.textContent = isCountdownMode ? 'Stopwatch' : 'Countdown';
+                        resetTimer();
+                    }
+                }
+            );
+        }
+
+        startPauseBtn.addEventListener('click', () => isRunning ? pauseTimer() : startTimer());
+        resetBtn.addEventListener('click', () => {
+            showConfirmation(
+                'Confirm Timer Reset',
+                'Are you sure you want to reset the main timer and all player times to zero?',
+                (confirmed) => { if (confirmed) resetTimer(); }
+            );
+        });
+        modeToggleBtn.addEventListener('click', toggleMode);
+        addMinuteBtn.addEventListener('click', () => adjustTime(60));
+        subtractMinuteBtn.addEventListener('click', () => adjustTime(-60));
+        timeDisplay.textContent = formatTime(INITIAL_STOPWATCH_SECONDS);
+
+        // --- *** GOOGLE SHEETS INTEGRATION *** ---
+        const saveToSheetsBtn = document.getElementById('save-to-sheets-btn');
+
+        // This is your unique Web App URL.
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwkmM9J3rYZlCCOBOfD-g6DysPZYRPzURbonEED-B_LOGeb18XGZT8bhTOOC5-rD8PI/exec';
+
+        function collectGameData() {
+            const mainTime = document.getElementById('time-display').textContent;
+            const gameNotes = document.getElementById('game-notes').value;
+            const players = [];
+            document.querySelectorAll('.player-item').forEach(item => {
+                players.push({
+                    rank: item.querySelector('.player-rank')?.textContent || 'N/A',
+                    number: item.querySelector('.player-number')?.textContent || 'N/A',
+                    name: item.querySelector('.player-name')?.textContent || 'Unnamed',
+                    time: item.querySelector('.player-time')?.textContent || '00:00'
+                });
+            });
+            return {
+                gameDate: new Date().toLocaleString(),
+                mainTime: mainTime,
+                players: players,
+                notes: gameNotes
+            };
+        }
+
+        function sendDataToSheets() {
+            const gameData = collectGameData();
+            
+            saveToSheetsBtn.disabled = true;
+            saveToSheetsBtn.textContent = 'Saving...';
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'cors',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(gameData)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showConfirmation('Success!', 'Game data was saved to your Google Sheet.', () => {});
+                } else {
+                    showConfirmation('Error', `An error occurred: ${data.message || 'Unknown error.'}`, () => {});
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showConfirmation('Network Error', `A network error occurred. Ensure the script URL is correct and you have an internet connection. Details: ${error}`, () => {});
+            })
+            .finally(() => {
+                saveToSheetsBtn.disabled = false;
+                saveToSheetsBtn.textContent = 'Finish Game'; // Reset text back to Finish Game
+                modalConfirmBtn.textContent = 'OK';
+                modalCancelBtn.style.display = 'none';
+            });
+        }
+        
+        // *** UPDATED EVENT LISTENER WITH CONFIRMATION ***
+        saveToSheetsBtn.addEventListener('click', () => {
+            showConfirmation(
+                'Finish and Save Game',
+                'Are you sure you want to end this game session? The final times will be saved to your Google Sheet.',
+                (confirmed) => {
+                    if (confirmed) {
+                        sendDataToSheets();
+                    }
+                }
+            );
+        });
+
+    </script>
+</body>
+</html>
