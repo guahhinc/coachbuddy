@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tracker</title>
+    <title>TLS Coachbuddy</title>
     <style>
         /* CRITICAL FIX: Ensure padding and borders do not expand element size beyond 100% */
         * {
@@ -928,7 +928,7 @@
         saveToSheetsBtn.addEventListener('click', () => {
             showConfirmation(
                 'Finish and Save Game',
-                'Are you sure you want to end this game session? The final times will be saved to your Google Sheet.',
+                'Are you sure you want to end this game session? The final times will be saved to an online database.',
                 (confirmed) => {
                     if (confirmed) {
                         sendDataToSheets();
