@@ -66,7 +66,7 @@
             margin-top: 0; 
             margin-bottom: 10px;
         }
-        #game-notes, #team-name-input { 
+        #game-notes, #team-select { 
             padding: 7px;
             border: 1px solid #333;
             border-radius: 4px;
@@ -338,8 +338,12 @@
             
             <!-- TEAM NAME SECTION -->
             <div id="team-name-section">
-                <label for="team-name-input" style="display:block; margin-bottom: 5px; font-weight: bold;">Team Name:</label>
-                <input type="text" id="team-name-input" placeholder="Enter Team Name (Required)">
+                <label for="team-select" style="display:block; margin-bottom: 5px; font-weight: bold;">Team Name:</label>
+                <select id="team-select">
+                    <option value="" disabled selected>Select a Team...</option>
+                    <option value="TLS Aces">TLS Aces</option>
+                    <option value="Test Team (Dont Use)">Test Team (Dont Use)</option>
+                </select>
             </div>
             <!-- END TEAM NAME SECTION -->
             
@@ -413,7 +417,7 @@
         const LOW_TIME_DIFFERENCE_THRESHOLD = 30;
         const INITIAL_STOPWATCH_SECONDS = 0;
         const DEFAULT_COUNTDOWN_SECONDS = 2400; // 40 minutes
-        const LOCAL_STORAGE_KEY = 'coachbuddyTeamName'; // Key for browser storage
+        const LOCAL_STORAGE_KEY = 'coachbuddySelectedTeam'; // Key for browser storage
 
         // 🔥 CRITICAL FIX: NEW SCRIPT URL PROVIDED BY USER
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw7Xa1_PWR2jhYdIYimi460fxJYuyY_ffIx7IcG0ys3pX-FoCMScZT3ABdLIyD0YuZ9fg/exec';
@@ -443,20 +447,20 @@
         const suggestSubBtn = document.getElementById('suggest-sub-btn');
         const addDefaultPlayersBtn = document.getElementById('add-default-players-btn');
         const saveToSheetsBtn = document.getElementById('save-to-sheets-btn');
-        const teamNameInput = document.getElementById('team-name-input'); 
+        const teamSelect = document.getElementById('team-select'); 
 
         // --- INITIALIZATION: Load saved team name ---
-        function loadTeamName() {
-            const savedName = localStorage.getItem(LOCAL_STORAGE_KEY);
-            if (savedName) {
-                teamNameInput.value = savedName;
+        function loadSelectedTeam() {
+            const savedTeam = localStorage.getItem(LOCAL_STORAGE_KEY);
+            if (savedTeam) {
+                teamSelect.value = savedTeam;
             }
         }
-        // Save the team name to local storage whenever the input changes
-        teamNameInput.addEventListener('input', () => {
-            localStorage.setItem(LOCAL_STORAGE_KEY, teamNameInput.value.trim());
+        // Save the selected team to local storage whenever the selection changes
+        teamSelect.addEventListener('change', () => {
+            localStorage.setItem(LOCAL_STORAGE_KEY, teamSelect.value);
         });
-        window.addEventListener('load', loadTeamName);
+        window.addEventListener('load', loadSelectedTeam);
         
 
         // --- MODAL LOGIC (UNTOUCHED) ---
@@ -629,22 +633,43 @@
             if (e.key === 'Enter') addPlayerFromInput();
         });
         
-        const DEFAULT_PLAYERS = [
-            { name: 'Ava', number: 6 }, 
-            { name: 'Maddie', number: 32 }, 
-            { name: 'AK', number: 52 }, 
-            { name: 'Indigo', number: 50 }, 
-            { name: 'Aria', number: 7 }, 
-            { name: 'London', number: 8 }
-        ];
+        const DEFAULT_ROSTERS = {
+            'TLS Aces': [
+                { name: 'Ava', number: 6 }, 
+                { name: 'Maddie', number: 32 }, 
+                { name: 'AK', number: 52 }, 
+                { name: 'Indigo', number: 50 }, 
+                { name: 'Aria', number: 7 }, 
+                { name: 'London', number: 8 },
+                { name: 'Sienna', number: null },
+                { name: 'Amelia', number: null }
+            ],
+            'Test Team (Dont Use)': [] // No default players for this team
+        };
 
         addDefaultPlayersBtn.addEventListener('click', () => {
+            const selectedTeam = teamSelect.value;
+            if (!selectedTeam) {
+                showConfirmation('No Team Selected', 'Please select a team from the dropdown before adding default players.', () => {});
+                modalConfirmBtn.textContent = 'OK';
+                modalCancelBtn.style.display = 'none';
+                return;
+            }
+
+            const roster = DEFAULT_ROSTERS[selectedTeam];
+            if (!roster || roster.length === 0) {
+                 showConfirmation('No Default Roster', `There are no default players defined for the team "${selectedTeam}".`, () => {});
+                 modalConfirmBtn.textContent = 'OK';
+                 modalCancelBtn.style.display = 'none';
+                 return;
+            }
+
             showConfirmation(
-                'Add Default Players',
-                'Are you sure you want to add the default roster? This will not remove existing players.',
+                `Add Roster for ${selectedTeam}`,
+                `Are you sure you want to add the default roster for ${selectedTeam}? This will not remove existing players.`,
                 (confirmed) => {
                     if (confirmed) {
-                        DEFAULT_PLAYERS.forEach(player => addPlayerByName(player.name, player.number));
+                        roster.forEach(player => addPlayerByName(player.name, player.number));
                     }
                 }
             );
@@ -877,7 +902,7 @@
 
         // --- GOOGLE SHEETS INTEGRATION (RANK REMAINS REMOVED from payload) ---
         function collectGameData() {
-            const teamName = teamNameInput.value.trim() || ''; 
+            const teamName = teamSelect.value || ''; 
             const mainTime = document.getElementById('time-display').textContent;
             const gameNotes = document.getElementById('game-notes').value;
             const players = [];
@@ -904,7 +929,7 @@
             
             // *** VALIDATION CHECK ***
             if (!gameData.teamName) {
-                showConfirmation('Required Field Missing', 'Please enter a **Team Name** before saving the game data.', () => {});
+                showConfirmation('Required Field Missing', 'Please select a **Team Name** before saving the game data.', () => {});
                 modalConfirmBtn.textContent = 'OK';
                 modalCancelBtn.style.display = 'none';
                 return;
