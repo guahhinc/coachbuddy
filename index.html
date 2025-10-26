@@ -50,7 +50,7 @@
         }
 
         /* --- SECTION BASE STYLES --- */
-        #timer-section, #input-section, #roster, #notes-section, #team-name-section {
+        #timer-section, #input-section, #roster, #notes-section, #team-name-section, #mini-timer-section {
             background-color: #1E1E1E;
             padding: 8px;
             border-radius: 6px; 
@@ -115,6 +115,10 @@
             min-width: 65px;
             font-size: 13px;
             line-height: 1.2;
+        }
+        .timer-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
         .timer-btn.primary {
             background-color: #007bff;
@@ -190,11 +194,11 @@
             padding-right: 8px;
         }
         
-        /* UPDATED: Player Rank Styling for Dense Ranking - Rank 3+ default */
+        /* UPDATED: Player Rank Styling for Dense Ranking - Rank 5+ default */
         .player-rank {
             font-weight: 700;
-            color: white; /* Default text color (for rank 3+) */
-            background-color: #424242; /* Default dark gray background (for rank 3+) */
+            color: white; /* Default text color (for rank 5+) */
+            background-color: #424242; /* Default dark gray background (for rank 5+) */
             font-size: 14px;
             width: 28px; 
             height: 28px;
@@ -207,16 +211,13 @@
         }
         
         /* Rank 1: RED */
-        .player-rank.rank-color-1 {
-            background-color: #D32F2F; 
-            color: white; 
-        }
-
+        .player-rank.rank-color-1 { background-color: #D32F2F; color: white; }
         /* Rank 2: YELLOW */
-        .player-rank.rank-color-2 {
-            background-color: #FFC107; 
-            color: #121212; /* Dark text for visibility on Yellow */
-        }
+        .player-rank.rank-color-2 { background-color: #FFC107; color: #121212; }
+        /* Rank 3: GREEN */
+        .player-rank.rank-color-3 { background-color: #4CAF50; color: white; }
+        /* Rank 4: BLUE */
+        .player-rank.rank-color-4 { background-color: #007bff; color: white; }
         
         .player-number {
             font-weight: 700;
@@ -254,7 +255,7 @@
         }
         .toggle-btn {
             padding: 5px 8px;
-            width: 48px;
+            width: 60px;
             font-size: 13px;
             border-radius: 4px;
             flex-shrink: 0;
@@ -262,74 +263,56 @@
             cursor: pointer;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
         }
-        .toggle-btn.status-on {
-            background-color: #4CAF50;
-            color: white;
-        }
-        .toggle-btn.status-off {
-            background-color: #D32F2F;
-            color: white;
-        }
+        .toggle-btn.status-on { background-color: #4CAF50; color: white; }
+        .toggle-btn.status-off { background-color: #D32F2F; color: white; }
         .delete-btn {
-            width: 24px;
-            height: 24px;
-            font-size: 13px;
-            line-height: 1;
-            border-radius: 4px;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #424242;
-            color: white;
+            width: 24px; height: 24px; font-size: 13px; line-height: 1; border-radius: 4px;
+            border: none; cursor: pointer; display: flex; align-items: center;
+            justify-content: center; background-color: #424242; color: white;
         }
+
+        /* --- MODIFIED: MINI TIMER SECTION --- */
+        #mini-timer-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 8px;
+        }
+        #mini-time-display { font-size: 1.8rem; font-weight: 700; color: #E0E0E0; }
+        #mini-time-display.countdown-ended { color: #D32F2F; }
+        .mini-timer-controls { display: flex; gap: 6px; }
 
         
         /* --- MODAL STYLES --- */
         .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.7); display: none;
+            justify-content: center; align-items: center; z-index: 1000;
         }
         .modal-content {
-            background-color: #1E1E1E;
-            padding: 20px;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 350px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
-            text-align: left;
+            background-color: #1E1E1E; padding: 20px; border-radius: 8px;
+            width: 90%; max-width: 400px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6); text-align: left;
         }
-        #modal-title {
-            font-size: 1.3rem;
-            margin-top: 0;
-            color: #E0E0E0;
-            text-align: center;
+        #modal-title { font-size: 1.4rem; margin-top: 0; color: #E0E0E0; text-align: center; }
+        #modal-message { margin-bottom: 20px; color: #B0B0B0; font-size: 16px; white-space: pre-line; }
+        
+        /* Suggestion text styling */
+        .suggestion-group {
+            background-color: #2D2D2D; padding: 12px; border-radius: 6px; margin-bottom: 12px;
         }
-        #modal-message {
-            margin-bottom: 20px;
-            color: #B0B0B0;
-            font-size: 14px; 
-            white-space: pre-line;
-        }
+        .suggestion-group strong { font-size: 1.2rem; color: white; display: block; margin-bottom: 6px; }
+        .suggestion-group .sub-off { color: #FF8A80; }
+        .suggestion-group .sub-on { color: #B9F6CA; }
+        .suggestion-group p { margin: 4px 0; font-size: 1.1rem; }
+
         .modal-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: space-around;
-            text-align: center; 
+            display: flex; flex-direction: column; gap: 10px;
+            justify-content: center; text-align: center; 
         }
-        .modal-buttons .timer-btn {
-            flex-basis: 50%;
-            padding: 8px 15px;
-        }
+        .modal-buttons .timer-btn { flex-basis: auto; padding: 10px 15px; font-size: 14px; }
+        /* Separator for close button */
+        .modal-buttons .suggestion-close-btn { margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -345,7 +328,6 @@
                     <option value="Test Team (Dont Use)">Test Team (Dont Use)</option>
                 </select>
             </div>
-            <!-- END TEAM NAME SECTION -->
             
             <!-- TIMER SECTION -->
             <div id="timer-section">
@@ -367,21 +349,24 @@
                 <input type="text" id="player-name" placeholder="Enter player's name">
                 <button id="add-player-btn" class="add-icon-btn">+</button>
             </div>
-            <!-- END PLAYER INPUT SECTION -->
             
             <!-- PLAYER ROSTER -->
-            <div id="roster">
-                <!-- Player items will be added here by JavaScript -->
+            <div id="roster"></div>
+
+            <!-- MODIFIED: MINI TIMER SECTION -->
+            <div id="mini-timer-section">
+                <div id="mini-time-display">03:00</div>
+                <div class="mini-timer-controls">
+                    <button id="mini-start-pause-btn" class="timer-btn primary">Start</button>
+                    <button id="mini-reset-btn" class="timer-btn secondary">Reset</button>
+                </div>
             </div>
-            <!-- END ROSTER SECTION -->
 
             <!-- NOTES SECTION -->
             <div id="notes-section">
                 <label for="game-notes" style="display:block; margin-bottom: 5px; font-weight: bold;">Notes:</label>
                 <textarea id="game-notes" placeholder="Add game notes here..."></textarea>
             </div>
-            <!-- END NOTES SECTION -->
-
             
             <!-- ACTION BUTTONS -->
             <div class="timer-controls" style="margin-top: 10px;">
@@ -401,11 +386,8 @@
     <div id="custom-modal" class="modal-overlay">
         <div class="modal-content">
             <h3 id="modal-title"></h3>
-            <p id="modal-message"></p>
-            <div class="modal-buttons">
-                <button id="modal-cancel-btn" class="timer-btn secondary">Cancel</button>
-                <button id="modal-confirm-btn" class="timer-btn primary">Confirm</button>
-            </div>
+            <div id="modal-message"></div>
+            <div id="modal-buttons" class="modal-buttons"></div>
         </div>
     </div>
 
@@ -417,13 +399,14 @@
         const LOW_TIME_DIFFERENCE_THRESHOLD = 30;
         const INITIAL_STOPWATCH_SECONDS = 0;
         const DEFAULT_COUNTDOWN_SECONDS = 2400; // 40 minutes
-        const LOCAL_STORAGE_KEY = 'coachbuddySelectedTeam'; // Key for browser storage
+        const LOCAL_STORAGE_KEY = 'coachbuddySelectedTeam';
+        const DEFAULT_MINI_TIMER_SECONDS = 180; // 3 minutes
 
-        // 🔥 CRITICAL FIX: NEW SCRIPT URL PROVIDED BY USER
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw7Xa1_PWR2jhYdIYimi460fxJYuyY_ffIx7IcG0ys3pX-FoCMScZT3ABdLIyD0YuZ9fg/exec';
         
-        // --- TIMER STATE ---
+        // --- STATE VARIABLES ---
         let countdownInterval = null, totalSeconds = INITIAL_STOPWATCH_SECONDS, isRunning = false, isCountdownMode = false;
+        let miniTimerInterval = null, miniTotalSeconds = DEFAULT_MINI_TIMER_SECONDS, isMiniTimerRunning = false;
 
         // --- UTILITY FUNCTION ---
         function formatTime(seconds) {
@@ -448,90 +431,82 @@
         const addDefaultPlayersBtn = document.getElementById('add-default-players-btn');
         const saveToSheetsBtn = document.getElementById('save-to-sheets-btn');
         const teamSelect = document.getElementById('team-select'); 
+        const miniTimeDisplay = document.getElementById('mini-time-display');
+        const miniStartPauseBtn = document.getElementById('mini-start-pause-btn');
+        const miniResetBtn = document.getElementById('mini-reset-btn');
 
-        // --- INITIALIZATION: Load saved team name ---
-        function loadSelectedTeam() {
+        // --- INITIALIZATION ---
+        window.addEventListener('load', () => {
             const savedTeam = localStorage.getItem(LOCAL_STORAGE_KEY);
-            if (savedTeam) {
-                teamSelect.value = savedTeam;
-            }
-        }
-        // Save the selected team to local storage whenever the selection changes
+            if (savedTeam) teamSelect.value = savedTeam;
+        });
         teamSelect.addEventListener('change', () => {
             localStorage.setItem(LOCAL_STORAGE_KEY, teamSelect.value);
         });
-        window.addEventListener('load', loadSelectedTeam);
         
-
-        // --- MODAL LOGIC (UNTOUCHED) ---
+        // --- ADVANCED MODAL LOGIC ---
         const customModal = document.getElementById('custom-modal');
         const modalTitle = document.getElementById('modal-title');
         const modalMessage = document.getElementById('modal-message');
-        const modalConfirmBtn = document.getElementById('modal-confirm-btn');
-        const modalCancelBtn = document.getElementById('modal-cancel-btn');
+        const modalButtons = document.getElementById('modal-buttons');
 
-        let confirmationCallback = null;
-        function resetModalButtons() {
-            modalConfirmBtn.textContent = 'Confirm';
-            modalCancelBtn.style.display = 'inline-block';
-        }
+        function closeModal() { customModal.style.display = 'none'; }
 
-        function showConfirmation(title, message, callback) {
+        function showCustomModal(title, messageHtml, buttons) {
             modalTitle.textContent = title;
-            modalMessage.textContent = message;
-            confirmationCallback = callback;
+            modalMessage.innerHTML = messageHtml;
+            modalButtons.innerHTML = ''; 
+
+            buttons.forEach(btnInfo => {
+                const button = document.createElement('button');
+                button.textContent = btnInfo.text;
+                button.className = `timer-btn ${btnInfo.className || 'primary'}`;
+                button.onclick = (e) => btnInfo.action(e);
+                modalButtons.appendChild(button);
+            });
             customModal.style.display = 'flex';
         }
+        
+        // MODIFIED: Reworked for consistent button order
+        function showConfirmation(title, message, callback) {
+            let buttons = [];
+            if (callback) {
+                // Confirmation dialog with a choice. Confirm is first, Cancel is last (bottom).
+                buttons.push({ text: 'Confirm', className: 'primary', action: () => { callback(true); closeModal(); } });
+                buttons.push({ text: 'Cancel', className: 'secondary', action: () => { callback(false); closeModal(); } });
+            } else {
+                // Simple "OK" dialog
+                buttons.push({ text: 'OK', className: 'primary', action: closeModal });
+            }
+            showCustomModal(title, `<p>${message}</p>`, buttons);
+        }
 
-        modalConfirmBtn.onclick = () => {
-            if (confirmationCallback) confirmationCallback(true);
-            customModal.style.display = 'none';
-            confirmationCallback = null;
-            resetModalButtons();
-        };
-
-        modalCancelBtn.onclick = () => {
-            if (confirmationCallback) confirmationCallback(false);
-            customModal.style.display = 'none';
-            confirmationCallback = null;
-            resetModalButtons();
-        };
-
-
-        // --- PLAYER ROSTER LOGIC (RANK REVERSED FOR PRIORITY) ---
-
+        // --- PLAYER ROSTER LOGIC ---
         function createPlayerItem(name, number = null) {
             const playerItem = document.createElement('div');
             playerItem.className = 'player-item';
-            playerItem.dataset.totalTime = 0;
-            playerItem.dataset.isOnField = '0';
-            playerItem.dataset.rank = '0'; 
+            playerItem.dataset.totalTime = 0; playerItem.dataset.isOnField = '0'; playerItem.dataset.rank = '0'; 
 
             const playerInfoGroup = document.createElement('div');
             playerInfoGroup.className = 'player-info-group';
 
-            // Rank Display Element
             const playerRankDisplay = document.createElement('span');
-            playerRankDisplay.className = 'player-rank';
-            playerRankDisplay.textContent = '-'; 
+            playerRankDisplay.className = 'player-rank'; playerRankDisplay.textContent = '-'; 
             playerRankDisplay.dataset.role = 'player-rank-display';
             playerInfoGroup.appendChild(playerRankDisplay);
 
             if (number !== null) {
                 const playerNumber = document.createElement('span');
-                playerNumber.className = 'player-number';
-                playerNumber.textContent = `#${number}`; 
+                playerNumber.className = 'player-number'; playerNumber.textContent = `#${number}`; 
                 playerInfoGroup.appendChild(playerNumber);
             }
 
             const playerName = document.createElement('span');
-            playerName.className = 'player-name';
-            playerName.textContent = name;
+            playerName.className = 'player-name'; playerName.textContent = name;
             playerInfoGroup.appendChild(playerName);
             
             const lowWarningIcon = document.createElement('span');
-            lowWarningIcon.className = 'warning-icon low';
-            lowWarningIcon.textContent = '⚠️';
+            lowWarningIcon.className = 'warning-icon low'; lowWarningIcon.textContent = '⚠️';
             lowWarningIcon.title = 'Low play time - Consider subbing on';
             lowWarningIcon.dataset.role = 'low-warning-icon';
             playerInfoGroup.appendChild(lowWarningIcon); 
@@ -539,443 +514,243 @@
             const playerControlsGroup = document.createElement('div');
             playerControlsGroup.className = 'player-controls-group';
             const timeOnFieldDisplay = document.createElement('span');
-            timeOnFieldDisplay.className = 'player-time';
-            timeOnFieldDisplay.textContent = formatTime(0);
+            timeOnFieldDisplay.className = 'player-time'; timeOnFieldDisplay.textContent = formatTime(0);
 
             const toggleBtn = document.createElement('button');
-            toggleBtn.className = 'toggle-btn status-off';
-            toggleBtn.textContent = 'ON';
+            toggleBtn.className = 'toggle-btn status-off'; toggleBtn.textContent = 'ON';
             
             toggleBtn.onclick = () => {
                 const isOn = playerItem.dataset.isOnField === '1';
                 if (isOn) {
                     playerItem.dataset.isOnField = '0';
                     toggleBtn.textContent = 'ON';
-                    toggleBtn.classList.add('status-off');
-                    toggleBtn.classList.remove('status-on');
+                    toggleBtn.classList.add('status-off'); toggleBtn.classList.remove('status-on');
                 } else {
                     const currentOnCount = document.querySelectorAll('.player-item[data-is-on-field="1"]').length;
                     if (currentOnCount >= MAX_PLAYERS_ON_FIELD) {
-                        showConfirmation(
-                            'Substitution Limit Reached',
-                            `Cannot sub this player ON. You currently have the maximum of ${MAX_PLAYERS_ON_FIELD} players on the field. Please sub a player OFF first.`,
-                            (confirmed) => {}
-                        );
-                        modalConfirmBtn.textContent = 'OK';
-                        modalCancelBtn.style.display = 'none';
+                        showConfirmation('Substitution Limit Reached', `Cannot sub this player ON. You have the maximum of ${MAX_PLAYERS_ON_FIELD} players on the field. Please sub a player OFF first.`);
                         return;
                     }
                     playerItem.dataset.isOnField = '1';
                     toggleBtn.textContent = 'OFF';
-                    toggleBtn.classList.remove('status-off');
-                    toggleBtn.classList.add('status-on');
-
+                    toggleBtn.classList.remove('status-off'); toggleBtn.classList.add('status-on');
                     const lowIcon = playerItem.querySelector('[data-role="low-warning-icon"]');
                     if (lowIcon) lowIcon.style.display = 'none';
                 }
                 updateSubstitutionWarnings();
             };
             const deleteBtn = document.createElement('button');
-            deleteBtn.className = 'delete-btn';
-            deleteBtn.textContent = '×';
+            deleteBtn.className = 'delete-btn'; deleteBtn.textContent = '×';
             deleteBtn.title = 'Remove Player';
             deleteBtn.onclick = () => {
-                showConfirmation(
-                    'Remove Player',
-                    `Are you sure you want to remove ${name}? Their accumulated time will be lost.`,
-                    (confirmed) => {
-                        if (confirmed) {
-                            rosterDiv.removeChild(playerItem);
-                            updateSubstitutionWarnings();
-                        }
-                    }
-                );
+                showConfirmation('Remove Player', `Are you sure you want to remove ${name}?`, (confirmed) => {
+                        if (confirmed) { rosterDiv.removeChild(playerItem); updateSubstitutionWarnings(); }
+                });
             };
 
             playerControlsGroup.appendChild(timeOnFieldDisplay);
             playerControlsGroup.appendChild(toggleBtn);
             playerControlsGroup.appendChild(deleteBtn);
-            
             playerItem.appendChild(playerInfoGroup);
             playerItem.appendChild(playerControlsGroup);
-
             return playerItem;
         }
         
         function addPlayerByName(name, number = null) {
             const effectiveName = name || (number !== null ? `Player #${number}` : 'Unnamed Player');
-            const newPlayerItem = createPlayerItem(effectiveName, number); 
-            rosterDiv.appendChild(newPlayerItem);
+            rosterDiv.appendChild(createPlayerItem(effectiveName, number));
             updateSubstitutionWarnings();
         }
 
         function addPlayerFromInput() {
             const name = playerNameInput.value.trim();
-            const numberStr = playerNumberInput.value.trim();
-            const number = numberStr && !isNaN(parseInt(numberStr)) ? parseInt(numberStr) : null;
-            if (name || number !== null) { 
+            const number = parseInt(playerNumberInput.value.trim()) || null;
+            if (name || number) { 
                 addPlayerByName(name, number);
-                playerNameInput.value = '';
-                playerNumberInput.value = '';
-                playerNameInput.focus();
-                
+                playerNameInput.value = ''; playerNumberInput.value = ''; playerNameInput.focus();
                 setTimeout(() => { window.scrollTo(0, 0); }, 200);
-            } else {
-                console.log('Player name and number cannot both be empty.');
             }
         }
 
         addPlayerBtn.addEventListener('click', addPlayerFromInput);
-        playerNameInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') addPlayerFromInput();
-        });
-        playerNumberInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') addPlayerFromInput();
-        });
+        playerNameInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addPlayerFromInput(); });
+        playerNumberInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addPlayerFromInput(); });
         
         const DEFAULT_ROSTERS = {
-            'TLS Aces': [
-                { name: 'Ava', number: 6 }, 
-                { name: 'Maddie', number: 32 }, 
-                { name: 'AK', number: 52 }, 
-                { name: 'Indigo', number: 50 }, 
-                { name: 'Aria', number: 7 }, 
-                { name: 'London', number: 8 },
-                { name: 'Sienna', number: null },
-                { name: 'Amelia', number: 10 }
-            ],
-            'Test Team (Dont Use)': [] // No default players for this team
+            'TLS Aces': [ { name: 'Ava', number: 6 }, { name: 'Maddie', number: 32 }, { name: 'AK', number: 52 }, 
+                { name: 'Indigo', number: 50 }, { name: 'Aria', number: 7 }, { name: 'London', number: 8 },
+                { name: 'Sienna', number: null }, { name: 'Amelia', number: 10 } ],
+            'Test Team (Dont Use)': []
         };
 
         addDefaultPlayersBtn.addEventListener('click', () => {
             const selectedTeam = teamSelect.value;
-            if (!selectedTeam) {
-                showConfirmation('No Team Selected', 'Please select a team from the dropdown before adding default players.', () => {});
-                modalConfirmBtn.textContent = 'OK';
-                modalCancelBtn.style.display = 'none';
-                return;
-            }
-
+            if (!selectedTeam) { showConfirmation('No Team Selected', 'Please select a team before adding default players.'); return; }
             const roster = DEFAULT_ROSTERS[selectedTeam];
-            if (!roster || roster.length === 0) {
-                 showConfirmation('No Default Roster', `There are no default players defined for the team "${selectedTeam}".`, () => {});
-                 modalConfirmBtn.textContent = 'OK';
-                 modalCancelBtn.style.display = 'none';
-                 return;
-            }
-
-            showConfirmation(
-                `Add Roster for ${selectedTeam}`,
-                `Are you sure you want to add the default roster for ${selectedTeam}? This will not remove existing players.`,
-                (confirmed) => {
-                    if (confirmed) {
-                        roster.forEach(player => addPlayerByName(player.name, player.number));
-                    }
-                }
+            if (!roster || roster.length === 0) { showConfirmation('No Default Roster', `No default players defined for "${selectedTeam}".`); return; }
+            showConfirmation(`Add Roster for ${selectedTeam}`, `Add the default roster for ${selectedTeam}? This will not remove existing players.`,
+                (confirmed) => { if (confirmed) roster.forEach(p => addPlayerByName(p.name, p.number)); }
             );
         });
 
+        function performSub(playerOff, playerOn, buttonElement) {
+            if (playerOff && playerOff.element) playerOff.element.querySelector('.toggle-btn')?.click();
+            if (playerOn && playerOn.element) playerOn.element.querySelector('.toggle-btn')?.click();
+            
+            buttonElement.textContent += ' ✅';
+            buttonElement.disabled = true;
+        }
+
         function suggestSubstitution() {
             const playerItems = document.querySelectorAll('.player-item');
-            if (playerItems.length === 0) {
-                showConfirmation('Suggestion Unavailable', 'Please add players to the roster first.', (c) => {});
-                modalConfirmBtn.textContent = 'OK';
-                modalCancelBtn.style.display = 'none';
-                return;
-            }
+            if (playerItems.length < 2) { showConfirmation('Suggestion Unavailable', 'Please add at least two players.'); return; }
 
-            const players = Array.from(playerItems).map(item => {
-                const time = parseInt(item.dataset.totalTime);
-                const isOnField = item.dataset.isOnField === '1';
-                const nameElement = item.querySelector('.player-name');
-                const numberElement = item.querySelector('.player-number');
-                let displayName = nameElement ? nameElement.textContent : 'Unnamed Player';
-                if (numberElement) displayName = `${numberElement.textContent} ${displayName}`;
-                return { element: item, time, isOnField, name: displayName };
-            });
+            const players = Array.from(playerItems).map(item => ({ 
+                element: item, time: parseInt(item.dataset.totalTime), isOnField: item.dataset.isOnField === '1',
+                name: `${item.querySelector('.player-number')?.textContent || ''} ${item.querySelector('.player-name')?.textContent || 'Unnamed'}`.trim()
+            }));
             
-            // Player to TAKE OFF: Highest total time (Rank 1). Sort descending.
-            const onFieldPlayers = players.filter(p => p.isOnField).sort((a, b) => b.time - a.time);
+            const onField = players.filter(p => p.isOnField).sort((a, b) => b.time - a.time);
+            const offField = players.filter(p => !p.isOnField).sort((a, b) => a.time - b.time);
             
-            // Player to SUB ON: Lowest total time. Sort ascending.
-            const offFieldPlayers = players.filter(p => !p.isOnField).sort((a, b) => a.time - b.time);
-            
-            let message = '';
-            if (onFieldPlayers.length > 0 && offFieldPlayers.length > 0) {
-                const playerToTakeOff = onFieldPlayers[0];
-                const playerToSubOn = offFieldPlayers[0];
-                message = `Based on current time balance, here is the suggested substitution:\n\n` +
-                          `\u25b6 Take OFF (Highest Time): ${playerToTakeOff.name} (${formatTime(playerToTakeOff.time)})\n` +
-                          `\u25c0 Sub ON (Lowest Time): ${playerToSubOn.name} (${formatTime(playerToSubOn.time)})`;
+            let messageHtml = '';
+            const buttons = [];
+
+            if (onField.length > 0 && offField.length > 0) {
+                const [playerOff1, playerOn1] = [onField[0], offField[0]];
+                messageHtml += `<div class="suggestion-group"><strong>Suggestion 1</strong><p class="sub-off">▶ OFF: ${playerOff1.name} (${formatTime(playerOff1.time)})</p><p class="sub-on">◀ ON: ${playerOn1.name} (${formatTime(playerOn1.time)})</p></div>`;
+                buttons.push({ text: 'Make Sub Suggestion 1', action: (e) => performSub(playerOff1, playerOn1, e.target) });
+                
+                if (onField.length > 1 && offField.length > 1) {
+                    const [playerOff2, playerOn2] = [onField[1], offField[1]];
+                    messageHtml += `<div class="suggestion-group"><strong>Suggestion 2</strong><p class="sub-off">▶ OFF: ${playerOff2.name} (${formatTime(playerOff2.time)})</p><p class="sub-on">◀ ON: ${playerOn2.name} (${formatTime(playerOn2.time)})</p></div>`;
+                    buttons.push({ text: 'Make Sub Suggestion 2', action: (e) => performSub(playerOff2, playerOn2, e.target) });
+                }
+                buttons.push({ text: 'Close', className: 'secondary suggestion-close-btn', action: closeModal });
             } else {
-                message = onFieldPlayers.length === 0 ?
-                'There are no players currently on the field to substitute off.'
-                : 'There are no players currently off the field to substitute on.';
+                messageHtml = `<p>Cannot make a suggestion. Reason: no players ${onField.length === 0 ? 'on the field' : 'on the bench'}.</p>`;
+                buttons.push({ text: 'OK', className: 'secondary', action: closeModal });
             }
-            showConfirmation('Substitution Suggestion', message, (c) => {});
-            modalConfirmBtn.textContent = 'OK';
-            modalCancelBtn.style.display = 'none';
+            showCustomModal('Substitution Suggestions', messageHtml, buttons);
         }
         suggestSubBtn.addEventListener('click', suggestSubstitution);
 
         function updateSubstitutionWarnings() {
-            const playerItems = document.querySelectorAll('.player-item');
-            if (playerItems.length === 0) return;
-
-            let totalTimeSum = 0, totalOnFieldTimeSum = 0, playersOnFieldCount = 0;
-            
-            // 1. Collect data and calculate sums
-            const playerArray = Array.from(playerItems).map(item => {
-                const playerTime = parseInt(item.dataset.totalTime);
-                totalTimeSum += playerTime;
-                if (item.dataset.isOnField === '1') {
-                    totalOnFieldTimeSum += playerTime;
-                    playersOnFieldCount++;
-                }
-                return { element: item, time: playerTime };
+            const items = document.querySelectorAll('.player-item'); if (items.length === 0) return;
+            let totalTime = 0, onFieldTime = 0, onFieldCount = 0;
+            const players = Array.from(items).map(item => {
+                const time = parseInt(item.dataset.totalTime); totalTime += time;
+                if (item.dataset.isOnField === '1') { onFieldTime += time; onFieldCount++; }
+                return { element: item, time };
             });
 
-            // 2. Rank Logic: Sort by descending time (most time = Rank 1)
-            const sortedPlayers = [...playerArray].sort((a, b) => b.time - a.time); // DESCENDING sort
-
-            // Implement Dense Ranking (1, 1, 2, 2, 3, ...)
-            let denseRank = 0; // The actual rank to display (starts at 0 before first player)
-            let previousTime = -1; // Time of the previous player
-            
-            sortedPlayers.forEach((player) => { 
-                const playerElement = player.element;
-                const rankDisplay = playerElement.querySelector('[data-role="player-rank-display"]');
-                
-                // If the time has changed (i.e., this player is worse than the previous one)
-                if (player.time !== previousTime) {
-                    denseRank++; // Move to the next rank number (1 -> 2 -> 3)
-                }
-                previousTime = player.time; // Update previous time for the next iteration
-
-                // Store and display the rank
-                playerElement.dataset.rank = denseRank;
-                
+            players.sort((a, b) => b.time - a.time);
+            let rank = 0, prevTime = -1;
+            players.forEach(p => { 
+                const rankDisplay = p.element.querySelector('[data-role="player-rank-display"]');
+                if (p.time !== prevTime) rank++; prevTime = p.time; p.element.dataset.rank = rank;
                 if (rankDisplay) {
-                    rankDisplay.textContent = denseRank;
-                    // Reset class list
-                    rankDisplay.classList.remove('rank-color-1', 'rank-color-2');
-                    
-                    // Apply color based on rank
-                    if (denseRank === 1) {
-                        rankDisplay.classList.add('rank-color-1'); // Red
-                    } else if (denseRank === 2) {
-                        rankDisplay.classList.add('rank-color-2'); // Yellow
-                    } 
-                    // Rank 3+ defaults to the base .player-rank style (Dark Gray/White)
+                    rankDisplay.textContent = rank;
+                    rankDisplay.className = 'player-rank'; // Reset
+                    if (rank === 1) rankDisplay.classList.add('rank-color-1');
+                    else if (rank === 2) rankDisplay.classList.add('rank-color-2');
+                    else if (rank === 3) rankDisplay.classList.add('rank-color-3');
+                    else if (rank === 4) rankDisplay.classList.add('rank-color-4');
                 }
             });
             
-            // 3. Low Time Warning Logic
-            if (playerArray.length < 2 || totalSeconds < MIN_GAME_TIME_FOR_WARNINGS || totalTimeSum === 0) {
-                 playerItems.forEach(item => {
-                    const lowIcon = item.querySelector('[data-role="low-warning-icon"]');
-                    if (lowIcon) lowIcon.style.display = 'none';
-                 });
-                 return;
+            if (players.length < 2 || totalSeconds < MIN_GAME_TIME_FOR_WARNINGS || totalTime === 0) {
+                 items.forEach(i => i.querySelector('[data-role="low-warning-icon"]').style.display = 'none'); return;
             }
-
-            const lowTimeAverage = playersOnFieldCount > 0 ? totalOnFieldTimeSum / playersOnFieldCount : 0;
-            playerItems.forEach(item => {
-                const playerTime = parseInt(item.dataset.totalTime);
-                const lowIcon = item.querySelector('[data-role="low-warning-icon"]');
-                const isOnField = item.dataset.isOnField === '1';
-                if (lowIcon) lowIcon.style.display = 'none';
-              
-                if (lowIcon && !isOnField && lowTimeAverage > 0) {
-                    // Check if the off-field player is significantly behind the average on-field time
-                    const isRatioLow = playerTime < lowTimeAverage * LOW_TIME_RATIO;
-                    const isDifferenceMeaningful = (lowTimeAverage - playerTime) >= LOW_TIME_DIFFERENCE_THRESHOLD;
-                    if (isRatioLow && isDifferenceMeaningful) lowIcon.style.display = 'inline';
-                }
+            const avgTime = onFieldCount > 0 ? onFieldTime / onFieldCount : 0;
+            items.forEach(item => {
+                const icon = item.querySelector('[data-role="low-warning-icon"]');
+                const time = parseInt(item.dataset.totalTime), isOn = item.dataset.isOnField === '1';
+                const lowRatio = time < avgTime * LOW_TIME_RATIO, bigDiff = (avgTime - time) >= LOW_TIME_DIFFERENCE_THRESHOLD;
+                if(icon) icon.style.display = (!isOn && avgTime > 0 && lowRatio && bigDiff) ? 'inline' : 'none';
             });
         }
         
-        // --- TIMER LOGIC (UNTOUCHED) ---
+        // --- MAIN TIMER LOGIC ---
         function startTimer() {
             if (isRunning || (isCountdownMode && totalSeconds <= 0)) return;
-            isRunning = true;
-            startPauseBtn.textContent = 'Pause';
-            startPauseBtn.classList.add('pause');
-
+            isRunning = true; startPauseBtn.textContent = 'Pause'; startPauseBtn.classList.add('pause');
             countdownInterval = setInterval(() => {
                 if (isCountdownMode) {
                     if (totalSeconds > 0) totalSeconds--;
-                    else {
-                        clearInterval(countdownInterval);
-                        isRunning = false;
-                        startPauseBtn.textContent = 'Done!';
-                        startPauseBtn.classList.remove('pause');
-                        timeDisplay.classList.add('countdown-ended');
-                    }
+                    else { clearInterval(countdownInterval); isRunning = false; startPauseBtn.textContent = 'Done!'; startPauseBtn.classList.remove('pause'); timeDisplay.classList.add('countdown-ended'); }
                 } else totalSeconds++;
-                
                 timeDisplay.textContent = formatTime(totalSeconds);
                 timeDisplay.classList.toggle('countdown-ended', isCountdownMode && totalSeconds <= 60 && totalSeconds > 0);
-
-                document.querySelectorAll('.player-item').forEach(item => {
-                    if (isRunning && item.dataset.isOnField === '1') {
-                        let currentTime = parseInt(item.dataset.totalTime) + 1;
-                        item.dataset.totalTime = currentTime;
-                        item.querySelector('.player-time').textContent = formatTime(currentTime);
-                    }
+                document.querySelectorAll('.player-item[data-is-on-field="1"]').forEach(item => {
+                    let time = parseInt(item.dataset.totalTime) + 1;
+                    item.dataset.totalTime = time; item.querySelector('.player-time').textContent = formatTime(time);
                 });
                 updateSubstitutionWarnings();
             }, 1000);
         }
-
-        function pauseTimer() {
-            clearInterval(countdownInterval);
-            isRunning = false;
-            startPauseBtn.textContent = 'Resume';
-            startPauseBtn.classList.remove('pause');
-        }
-
+        function pauseTimer() { clearInterval(countdownInterval); isRunning = false; startPauseBtn.textContent = 'Resume'; startPauseBtn.classList.remove('pause'); }
         function resetTimer() {
-            clearInterval(countdownInterval);
-            isRunning = false;
-            startPauseBtn.textContent = 'Start';
-            startPauseBtn.classList.remove('pause');
+            clearInterval(countdownInterval); isRunning = false;
+            startPauseBtn.textContent = 'Start'; startPauseBtn.classList.remove('pause');
             timeDisplay.classList.remove('countdown-ended');
             totalSeconds = isCountdownMode ? DEFAULT_COUNTDOWN_SECONDS : INITIAL_STOPWATCH_SECONDS;
             timeDisplay.textContent = formatTime(totalSeconds);
-            
-            // Reset player data
             document.querySelectorAll('.player-item').forEach(item => {
-                item.dataset.totalTime = 0;
-                item.querySelector('.player-time').textContent = formatTime(0);
+                item.dataset.totalTime = 0; item.querySelector('.player-time').textContent = formatTime(0);
                 item.dataset.isOnField = '0'; 
-                const toggleBtn = item.querySelector('.toggle-btn');
-                if(toggleBtn) {
-                     toggleBtn.textContent = 'ON';
-                     toggleBtn.classList.add('status-off');
-                     toggleBtn.classList.remove('status-on');
-                }
+                const btn = item.querySelector('.toggle-btn');
+                if(btn) { btn.textContent = 'ON'; btn.classList.add('status-off'); btn.classList.remove('status-on'); }
             });
             updateSubstitutionWarnings();
         }
-        
-        function adjustTime(seconds) {
-            totalSeconds = Math.max(0, totalSeconds + seconds);
-            timeDisplay.textContent = formatTime(totalSeconds);
-            if (isCountdownMode && totalSeconds === 0 && isRunning) {
-                clearInterval(countdownInterval);
-                isRunning = false;
-                startPauseBtn.textContent = 'Done!';
-                startPauseBtn.classList.add('countdown-ended');
-            }
-            updateSubstitutionWarnings();
-        }
-
-        function toggleMode() {
-            const newMode = isCountdownMode ? 'Stopwatch' : 'Countdown';
-            showConfirmation(
-                'Confirm Mode Switch',
-                `Are you sure you want to switch to ${newMode} mode? This will reset the main timer and all player times.`,
-                (confirmed) => {
-                    if (confirmed) {
-                        isCountdownMode = !isCountdownMode;
-                        modeToggleBtn.textContent = isCountdownMode ? 'Stopwatch' : 'Countdown';
-                        resetTimer();
-                    }
-                }
-            );
-        }
-
+        function adjustTime(s) { totalSeconds = Math.max(0, totalSeconds + s); timeDisplay.textContent = formatTime(totalSeconds); if (isCountdownMode && totalSeconds === 0 && isRunning) { clearInterval(countdownInterval); isRunning = false; startPauseBtn.textContent = 'Done!'; startPauseBtn.classList.add('countdown-ended'); } updateSubstitutionWarnings(); }
+        function toggleMode() { showConfirmation('Confirm Mode Switch', `Switch mode? This will reset the timer and all player times.`, (c) => { if (c) { isCountdownMode = !isCountdownMode; modeToggleBtn.textContent = isCountdownMode ? 'Stopwatch' : 'Countdown'; resetTimer(); } }); }
         startPauseBtn.addEventListener('click', () => isRunning ? pauseTimer() : startTimer());
-        resetBtn.addEventListener('click', () => {
-            showConfirmation(
-                'Confirm Timer Reset',
-                'Are you sure you want to reset the main timer and all player times to zero?',
-                (confirmed) => { if (confirmed) resetTimer(); }
-            );
-        });
+        resetBtn.addEventListener('click', () => { showConfirmation('Confirm Timer Reset', 'Reset the main timer and all player times?', (c) => { if (c) resetTimer(); }); });
         modeToggleBtn.addEventListener('click', toggleMode);
         addMinuteBtn.addEventListener('click', () => adjustTime(60));
         subtractMinuteBtn.addEventListener('click', () => adjustTime(-60));
         timeDisplay.textContent = formatTime(INITIAL_STOPWATCH_SECONDS);
 
-
-        // --- GOOGLE SHEETS INTEGRATION (RANK REMAINS REMOVED from payload) ---
-        function collectGameData() {
-            const teamName = teamSelect.value || ''; 
-            const mainTime = document.getElementById('time-display').textContent;
-            const gameNotes = document.getElementById('game-notes').value;
-            const players = [];
-            
-            document.querySelectorAll('.player-item').forEach(item => {
-                players.push({
-                    // Rank is INTENTIONALLY NOT included in the payload sent to Google Sheets
-                    number: item.querySelector('.player-number')?.textContent.replace('#', '') || 'N/A', 
-                    name: item.querySelector('.player-name')?.textContent || 'Unnamed',
-                    time: item.querySelector('.player-time')?.textContent || '00:00'
-                });
-            });
-            return {
-                teamName: teamName,
-                gameDate: new Date().toLocaleString(),
-                mainTime: mainTime,
-                players: players,
-                notes: gameNotes
-            };
+        // --- MINI TIMER LOGIC ---
+        function startMiniTimer() {
+            if (isMiniTimerRunning || miniTotalSeconds <= 0) return;
+            isMiniTimerRunning = true; miniStartPauseBtn.textContent = 'Pause'; miniStartPauseBtn.classList.add('pause');
+            miniTimerInterval = setInterval(() => {
+                if (miniTotalSeconds > 0) { miniTotalSeconds--; miniTimeDisplay.textContent = formatTime(miniTotalSeconds); } 
+                else { clearInterval(miniTimerInterval); isMiniTimerRunning = false; miniStartPauseBtn.textContent = 'Done!'; miniStartPauseBtn.classList.remove('pause'); miniTimeDisplay.classList.add('countdown-ended'); }
+            }, 1000);
         }
+        function pauseMiniTimer() { clearInterval(miniTimerInterval); isMiniTimerRunning = false; miniStartPauseBtn.textContent = 'Resume'; miniStartPauseBtn.classList.remove('pause'); }
+        function resetMiniTimer() {
+            clearInterval(miniTimerInterval); isMiniTimerRunning = false;
+            miniStartPauseBtn.textContent = 'Start'; miniStartPauseBtn.classList.remove('pause');
+            miniTotalSeconds = DEFAULT_MINI_TIMER_SECONDS;
+            miniTimeDisplay.textContent = formatTime(miniTotalSeconds); miniTimeDisplay.classList.remove('countdown-ended');
+        }
+        miniStartPauseBtn.addEventListener('click', () => isMiniTimerRunning ? pauseMiniTimer() : startMiniTimer());
+        miniResetBtn.addEventListener('click', resetMiniTimer);
 
+        // --- GOOGLE SHEETS INTEGRATION ---
+        function collectGameData() {
+            const players = [];
+            document.querySelectorAll('.player-item').forEach(item => {
+                players.push({ number: item.querySelector('.player-number')?.textContent.replace('#', '') || 'N/A', 
+                name: item.querySelector('.player-name')?.textContent || 'Unnamed', time: item.querySelector('.player-time')?.textContent || '00:00' });
+            });
+            return { teamName: teamSelect.value || '', gameDate: new Date().toLocaleString(), mainTime: timeDisplay.textContent, players, notes: document.getElementById('game-notes').value };
+        }
         function sendDataToSheets() {
             const gameData = collectGameData();
-            
-            // *** VALIDATION CHECK ***
-            if (!gameData.teamName) {
-                showConfirmation('Required Field Missing', 'Please select a **Team Name** before saving the game data.', () => {});
-                modalConfirmBtn.textContent = 'OK';
-                modalCancelBtn.style.display = 'none';
-                return;
-            }
-
-            saveToSheetsBtn.disabled = true;
-            saveToSheetsBtn.textContent = 'Saving...';
-
-            fetch(SCRIPT_URL, {
-                method: 'POST',
-                mode: 'cors',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify(gameData)
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    showConfirmation('Success!', `Game data was saved to the sheet: "${gameData.teamName || 'Game Log'}".`, () => {});
-                } else {
-                    showConfirmation('Error', `An error occurred: ${data.message || 'Unknown error.'}`, () => {});
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showConfirmation('Network Error', `A network error occurred. Ensure the script URL is correct and you have an internet connection. Details: ${error}`, () => {});
-            })
-            .finally(() => {
-                saveToSheetsBtn.disabled = false;
-                saveToSheetsBtn.textContent = 'Finish Game';
-                modalConfirmBtn.textContent = 'OK';
-                modalCancelBtn.style.display = 'none';
-            });
+            if (!gameData.teamName) { showConfirmation('Required Field Missing', 'Please select a Team Name before saving.'); return; }
+            saveToSheetsBtn.disabled = true; saveToSheetsBtn.textContent = 'Saving...';
+            fetch(SCRIPT_URL, { method: 'POST', mode: 'cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(gameData) })
+            .then(res => res.json()).then(data => { showConfirmation('Success!', `Game data saved for "${gameData.teamName}".`); })
+            .catch(error => { console.error('Error:', error); showConfirmation('Network Error', `A network error occurred. Details: ${error}`); })
+            .finally(() => { saveToSheetsBtn.disabled = false; saveToSheetsBtn.textContent = 'Finish Game'; });
         }
-        
-        saveToSheetsBtn.addEventListener('click', () => {
-            showConfirmation(
-                'Finish and Save Game',
-                'Are you sure you want to end this game session? The final times will be saved to your Google Sheet.',
-                (confirmed) => {
-                    if (confirmed) {
-                        sendDataToSheets();
-                    }
-                }
-            );
-        });
-
+        saveToSheetsBtn.addEventListener('click', () => { showConfirmation('Finish and Save Game', 'End this session and save final times to Google Sheets?', (c) => { if (c) sendDataToSheets(); }); });
     </script>
 </body>
 </html>
