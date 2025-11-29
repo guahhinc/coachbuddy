@@ -2,12 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Coachbuddy</title>
+    
+    <!-- FAVICON -->
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCEsy3JshuCcp0rymJuhtf2MTszkAF88z_eQ&s">
+    <link rel="apple-touch-icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCEsy3JshuCcp0rymJuhtf2MTszkAF88z_eQ&s">
+
+    <!-- iOS WEB APP CAPABILITIES -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Coachbuddy">
+    <meta name="theme-color" content="#121212">
+
     <style>
         /* CRITICAL FIX: Ensure padding and borders do not expand element size beyond 100% */
         * {
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
         }
         
         html {
@@ -16,7 +28,7 @@
 
         /* Base and Mobile-First Styling */
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #121212; /* Dark background for modern look */
@@ -47,10 +59,12 @@
             width: 100%;
             max-width: 480px;
             padding: 8px 6px;
+            /* Ensure bottom padding for iPhone Home bar */
+            padding-bottom: 40px; 
         }
 
         /* --- SECTION BASE STYLES --- */
-        #timer-section, #input-section, #roster, #notes-section, #team-name-section, #mini-timer-section {
+        #timer-section, #input-section, #roster-container, #notes-section, #team-name-section, #mini-timer-section {
             background-color: #1E1E1E;
             padding: 8px;
             border-radius: 6px; 
@@ -91,6 +105,7 @@
             font-weight: 700;
             color: #4CAF50;
             margin-bottom: 5px;
+            font-variant-numeric: tabular-nums;
         }
         #time-display.countdown-ended {
              color: #D32F2F;
@@ -174,10 +189,39 @@
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
         }
 
+        /* --- ROSTER TOOLBAR (Order Button) --- */
+        .roster-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #333;
+        }
+        .roster-title {
+            font-weight: bold;
+            font-size: 14px;
+            color: #B0B0B0;
+        }
+        #order-btn {
+            background-color: #333;
+            color: #E0E0E0;
+            border: 1px solid #444;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        #order-btn:active {
+            background-color: #555;
+        }
+
         /* --- PLAYER ROSTER STYLES --- */
         #roster {
             overflow: hidden;
-            margin-bottom: 10px;
         }
         .player-item {
             display: flex;
@@ -194,7 +238,7 @@
             padding-right: 8px;
         }
         
-        /* UPDATED: Player Rank Styling for Dense Ranking - Rank 5+ default */
+        /* UPDATED: Player Rank Styling */
         .player-rank {
             font-weight: 700;
             color: white; /* Default text color (for rank 5+) */
@@ -210,13 +254,10 @@
             transition: background-color 0.3s, color 0.3s;
         }
         
-        /* Rank 1: RED */
+        /* Rank Colors */
         .player-rank.rank-color-1 { background-color: #D32F2F; color: white; }
-        /* Rank 2: YELLOW */
         .player-rank.rank-color-2 { background-color: #FFC107; color: #121212; }
-        /* Rank 3: GREEN */
         .player-rank.rank-color-3 { background-color: #4CAF50; color: white; }
-        /* Rank 4: BLUE */
         .player-rank.rank-color-4 { background-color: #007bff; color: white; }
         
         .player-number {
@@ -235,6 +276,12 @@
             font-size: 16px;
             margin-left: 5px;
             display: none; 
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
         }
         .warning-icon.low {
             color: #FFC107;
@@ -246,6 +293,7 @@
             min-width: 50px;
             text-align: right;
             flex-shrink: 0;
+            font-variant-numeric: tabular-nums;
         }
         .player-controls-group {
             display: flex;
@@ -278,7 +326,12 @@
             align-items: center;
             padding: 6px 8px;
         }
-        #mini-time-display { font-size: 1.8rem; font-weight: 700; color: #E0E0E0; }
+        #mini-time-display { 
+            font-size: 1.8rem; 
+            font-weight: 700; 
+            color: #E0E0E0; 
+            font-variant-numeric: tabular-nums;
+        }
         #mini-time-display.countdown-ended { color: #D32F2F; }
         .mini-timer-controls { display: flex; gap: 6px; }
 
@@ -345,13 +398,19 @@
       
             <!-- PLAYER INPUT SECTION -->
             <div id="input-section">
-                <input type="text" id="player-number-input" placeholder="No."> 
+                <input type="text" id="player-number-input" placeholder="No." inputmode="numeric"> 
                 <input type="text" id="player-name" placeholder="Enter player's name">
                 <button id="add-player-btn" class="add-icon-btn">+</button>
             </div>
             
             <!-- PLAYER ROSTER -->
-            <div id="roster"></div>
+            <div id="roster-container">
+                <div class="roster-header">
+                    <span class="roster-title">Current Roster</span>
+                    <button id="order-btn">Order ⇩</button>
+                </div>
+                <div id="roster"></div>
+            </div>
 
             <!-- MODIFIED: MINI TIMER SECTION -->
             <div id="mini-timer-section">
@@ -394,9 +453,12 @@
     <script>
         // --- CONSTANTS ---
         const MAX_PLAYERS_ON_FIELD = 5;
-        const MIN_GAME_TIME_FOR_WARNINGS = 180;
-        const LOW_TIME_RATIO = 0.65;
-        const LOW_TIME_DIFFERENCE_THRESHOLD = 30;
+        const MIN_GAME_TIME_FOR_WARNINGS = 180; // 3 minutes before warnings start
+        
+        // WARNING CONFIGURATION
+        const LOW_TIME_RATIO = 0.65; // Warn if < 65% of average
+        const SIGNIFICANT_TIME_GAP = 240; // 4 minutes (240s). If player is 4 mins behind average, warn regardless of %
+
         const INITIAL_STOPWATCH_SECONDS = 0;
         const DEFAULT_COUNTDOWN_SECONDS = 2400; // 40 minutes
         const LOCAL_STORAGE_KEY = 'coachbuddySelectedTeam';
@@ -434,6 +496,7 @@
         const miniTimeDisplay = document.getElementById('mini-time-display');
         const miniStartPauseBtn = document.getElementById('mini-start-pause-btn');
         const miniResetBtn = document.getElementById('mini-reset-btn');
+        const orderBtn = document.getElementById('order-btn');
 
         // --- INITIALIZATION ---
         window.addEventListener('load', () => {
@@ -467,7 +530,6 @@
             customModal.style.display = 'flex';
         }
         
-        // MODIFIED: Reworked for consistent button order
         function showConfirmation(title, message, callback) {
             let buttons = [];
             if (callback) {
@@ -568,6 +630,7 @@
             if (name || number) { 
                 addPlayerByName(name, number);
                 playerNameInput.value = ''; playerNumberInput.value = ''; playerNameInput.focus();
+                // Prevent mobile keyboard from hiding context
                 setTimeout(() => { window.scrollTo(0, 0); }, 200);
             }
         }
@@ -575,6 +638,23 @@
         addPlayerBtn.addEventListener('click', addPlayerFromInput);
         playerNameInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addPlayerFromInput(); });
         playerNumberInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addPlayerFromInput(); });
+
+        // --- ORDERING LOGIC ---
+        function orderRoster() {
+            const items = Array.from(rosterDiv.children);
+            
+            // Sort Descending (High Time to Low Time)
+            items.sort((a, b) => {
+                const timeA = parseInt(a.dataset.totalTime);
+                const timeB = parseInt(b.dataset.totalTime);
+                return timeB - timeA;
+            });
+
+            // Update DOM
+            items.forEach(item => rosterDiv.appendChild(item));
+        }
+        
+        orderBtn.addEventListener('click', orderRoster);
         
         const DEFAULT_ROSTERS = {
             'TLS Aces': [ { name: 'Ava', number: 6 }, { name: 'Maddie', number: 32 }, { name: 'AK', number: 52 }, 
@@ -644,6 +724,7 @@
                 return { element: item, time };
             });
 
+            // Calculate Ranks
             players.sort((a, b) => b.time - a.time);
             let rank = 0, prevTime = -1;
             players.forEach(p => { 
@@ -659,15 +740,30 @@
                 }
             });
             
+            // WARNING LOGIC
             if (players.length < 2 || totalSeconds < MIN_GAME_TIME_FOR_WARNINGS || totalTime === 0) {
                  items.forEach(i => i.querySelector('[data-role="low-warning-icon"]').style.display = 'none'); return;
             }
+            
             const avgTime = onFieldCount > 0 ? onFieldTime / onFieldCount : 0;
+            
             items.forEach(item => {
                 const icon = item.querySelector('[data-role="low-warning-icon"]');
-                const time = parseInt(item.dataset.totalTime), isOn = item.dataset.isOnField === '1';
-                const lowRatio = time < avgTime * LOW_TIME_RATIO, bigDiff = (avgTime - time) >= LOW_TIME_DIFFERENCE_THRESHOLD;
-                if(icon) icon.style.display = (!isOn && avgTime > 0 && lowRatio && bigDiff) ? 'inline' : 'none';
+                const time = parseInt(item.dataset.totalTime);
+                const isOn = item.dataset.isOnField === '1';
+                
+                // Condition 1: Time is significantly lower by percentage (< 65%)
+                const isLowRatio = time < (avgTime * LOW_TIME_RATIO);
+                
+                // Condition 2: Time is significantly lower by hard minutes (e.g. 4 minutes less)
+                const isBigGap = (avgTime - time) > SIGNIFICANT_TIME_GAP;
+
+                // Show warning if player is OFF field AND either condition is met
+                if (!isOn && avgTime > 0 && (isLowRatio || isBigGap)) {
+                    icon.style.display = 'inline';
+                } else {
+                    icon.style.display = 'none';
+                }
             });
         }
         
