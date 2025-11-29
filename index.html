@@ -189,7 +189,7 @@
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
         }
 
-        /* --- ROSTER TOOLBAR (Order Button) --- */
+        /* --- ROSTER TOOLBAR (Sort Buttons) --- */
         .roster-header {
             display: flex;
             justify-content: space-between;
@@ -203,19 +203,24 @@
             font-size: 14px;
             color: #B0B0B0;
         }
-        #order-btn {
+        .sort-buttons-group {
+            display: flex;
+            gap: 6px;
+        }
+        .sort-btn {
             background-color: #333;
             color: #E0E0E0;
             border: 1px solid #444;
-            padding: 4px 10px;
+            padding: 5px 10px;
             border-radius: 15px;
-            font-size: 12px;
+            font-size: 11px;
+            font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 5px;
+            justify-content: center;
         }
-        #order-btn:active {
+        .sort-btn:active {
             background-color: #555;
         }
 
@@ -407,7 +412,10 @@
             <div id="roster-container">
                 <div class="roster-header">
                     <span class="roster-title">Current Roster</span>
-                    <button id="order-btn">Order ⇩</button>
+                    <div class="sort-buttons-group">
+                        <button id="sort-desc-btn" class="sort-btn">Most ⇩</button>
+                        <button id="sort-asc-btn" class="sort-btn">Least ⇧</button>
+                    </div>
                 </div>
                 <div id="roster"></div>
             </div>
@@ -496,7 +504,8 @@
         const miniTimeDisplay = document.getElementById('mini-time-display');
         const miniStartPauseBtn = document.getElementById('mini-start-pause-btn');
         const miniResetBtn = document.getElementById('mini-reset-btn');
-        const orderBtn = document.getElementById('order-btn');
+        const sortDescBtn = document.getElementById('sort-desc-btn');
+        const sortAscBtn = document.getElementById('sort-asc-btn');
 
         // --- INITIALIZATION ---
         window.addEventListener('load', () => {
@@ -640,21 +649,22 @@
         playerNumberInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addPlayerFromInput(); });
 
         // --- ORDERING LOGIC ---
-        function orderRoster() {
+        function sortRoster(direction) {
             const items = Array.from(rosterDiv.children);
-            
-            // Sort Descending (High Time to Low Time)
             items.sort((a, b) => {
                 const timeA = parseInt(a.dataset.totalTime);
                 const timeB = parseInt(b.dataset.totalTime);
-                return timeB - timeA;
+                if (direction === 'desc') {
+                    return timeB - timeA; // High to Low
+                } else {
+                    return timeA - timeB; // Low to High
+                }
             });
-
-            // Update DOM
             items.forEach(item => rosterDiv.appendChild(item));
         }
         
-        orderBtn.addEventListener('click', orderRoster);
+        sortDescBtn.addEventListener('click', () => sortRoster('desc'));
+        sortAscBtn.addEventListener('click', () => sortRoster('asc'));
         
         const DEFAULT_ROSTERS = {
             'TLS Aces': [ { name: 'Ava', number: 6 }, { name: 'Maddie', number: 32 }, { name: 'AK', number: 52 }, 
