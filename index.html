@@ -1,13 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Coachbuddy</title>
-    
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
     <!-- FAVICON -->
-    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCEsy3JshuCcp0rymJuhtf2MTszkAF88z_eQ&s">
-    <link rel="apple-touch-icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCEsy3JshuCcp0rymJuhtf2MTszkAF88z_eQ&s">
+    <link rel="icon"
+        href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCEsy3JshuCcp0rymJuhtf2MTszkAF88z_eQ&s">
+    <link rel="apple-touch-icon"
+        href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCEsy3JshuCcp0rymJuhtf2MTszkAF88z_eQ&s">
 
     <!-- iOS WEB APP CAPABILITIES -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -19,36 +27,43 @@
         /* CRITICAL FIX: Ensure padding and borders do not expand element size beyond 100% */
         * {
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+            -webkit-tap-highlight-color: transparent;
+            /* Remove tap highlight on mobile */
         }
-        
+
+        button, input, select, textarea {
+            font-family: inherit;
+        }
+
         html {
             height: 100%;
         }
 
         /* Base and Mobile-First Styling */
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #121212; /* Dark background for modern look */
+            background-color: #121212;
+            /* Dark background for modern look */
             color: #E0E0E0;
-            height: 100%; 
-            overflow-x: hidden; 
-            overflow-y: auto; 
-            
-            font-size: 13px; /* Base font size increased */
-            
+            height: 100%;
+            overflow-x: hidden;
+            overflow-y: auto;
+
+            font-size: 13px;
+            /* Base font size increased */
+
             /* --- ADD HUGE TOP PADDING FOR SCROLL BUFFER --- */
             padding-top: 50vh;
         }
-        
+
         /* Center content and apply background to the main area */
         .app-wrapper {
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 100%; 
+            width: 100%;
             height: auto;
             /* FIX: Push content up to counteract body's top padding, keeping content aligned at the top */
             margin-top: -50vh;
@@ -60,36 +75,44 @@
             max-width: 480px;
             padding: 8px 6px;
             /* Ensure bottom padding for iPhone Home bar */
-            padding-bottom: 40px; 
+            padding-bottom: 40px;
         }
 
         /* --- SECTION BASE STYLES --- */
-        #timer-section, #input-section, #roster-container, #notes-section, #team-name-section, #mini-timer-section {
+        #timer-section,
+        #input-section,
+        #roster-container,
+        #notes-section,
+        #team-name-section,
+        #mini-timer-section {
             background-color: #1E1E1E;
             padding: 8px;
-            border-radius: 6px; 
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+            border-radius: 12px;
             margin-bottom: 10px;
         }
-        
+
         /* --- TEAM NAME/NOTES SECTION STYLES --- */
-        #notes-section, #team-name-section {
+        #notes-section,
+        #team-name-section {
             width: 100%;
             padding: 8px;
-            border-radius: 6px;
-            margin-top: 0; 
+            border-radius: 12px;
+            margin-top: 0;
             margin-bottom: 10px;
         }
-        #game-notes, #team-select { 
+
+        #game-notes,
+        #team-select {
             padding: 7px;
             border: 1px solid #333;
-            border-radius: 4px;
-            font-size: 16px; 
+            border-radius: 8px;
+            font-size: 16px;
             background-color: #2D2D2D;
             color: #E0E0E0;
-            width: 100%; 
+            width: 100%;
             box-sizing: border-box;
         }
+
         #game-notes {
             min-height: 80px;
             resize: vertical;
@@ -100,6 +123,7 @@
         #timer-section {
             text-align: center;
         }
+
         #time-display {
             font-size: 2.7rem;
             font-weight: 700;
@@ -107,68 +131,83 @@
             margin-bottom: 5px;
             font-variant-numeric: tabular-nums;
         }
+
         #time-display.countdown-ended {
-             color: #D32F2F;
+            color: #D32F2F;
         }
+
         .timer-controls {
             display: flex;
             gap: 6px;
             justify-content: center;
             margin-top: 6px;
         }
+
         .timer-controls.adjust-controls {
             margin-top: 4px;
         }
+
         .timer-btn {
             padding: 7px 11px;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
             transition: background-color 0.3s;
-            flex-grow: 1; 
+            flex-grow: 1;
             min-width: 65px;
             font-size: 13px;
             line-height: 1.2;
         }
+
         .timer-btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
         }
+
         .timer-btn.primary {
             background-color: #007bff;
             color: white;
         }
+
         .timer-btn.primary.pause {
             background-color: #FF9800;
         }
-        .timer-btn.secondary, .timer-btn.mode-btn {
+
+        .timer-btn.secondary,
+        .timer-btn.mode-btn {
             background-color: #424242;
             color: #E0E0E0;
         }
-        .timer-btn.secondary:hover, .timer-btn.mode-btn:hover {
+
+        .timer-btn.secondary:hover,
+        .timer-btn.mode-btn:hover {
             background-color: #555;
         }
-        
+
         /* --- PLAYER INPUT SECTION STYLES --- */
         #input-section {
             display: flex;
             gap: 6px;
             align-items: center;
         }
-        #player-number-input, #player-name {
+
+        #player-number-input,
+        #player-name {
             padding: 7px;
             border: 1px solid #333;
-            border-radius: 4px;
-            font-size: 16px; 
+            border-radius: 8px;
+            font-size: 16px;
             background-color: #2D2D2D;
             color: #E0E0E0;
         }
+
         #player-number-input {
-            width: 45px; 
+            width: 45px;
             flex-shrink: 0;
             text-align: center;
         }
+
         #player-name {
             flex-grow: 1;
         }
@@ -179,14 +218,13 @@
             color: white;
             width: 32px;
             height: 32px;
-            font-size: 19px; 
+            font-size: 19px;
             line-height: 32px;
             padding: 0;
-            border-radius: 4px;
+            border-radius: 8px;
             flex-shrink: 0;
             border: none;
             cursor: pointer;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
         }
 
         /* --- ROSTER TOOLBAR (Sort Buttons) --- */
@@ -198,21 +236,24 @@
             padding-bottom: 4px;
             border-bottom: 1px solid #333;
         }
+
         .roster-title {
             font-weight: bold;
             font-size: 14px;
             color: #B0B0B0;
         }
+
         .sort-buttons-group {
             display: flex;
             gap: 6px;
         }
+
         .sort-btn {
             background-color: #333;
             color: #E0E0E0;
             border: 1px solid #444;
             padding: 5px 10px;
-            border-radius: 15px;
+            border-radius: 20px;
             font-size: 11px;
             font-weight: 600;
             cursor: pointer;
@@ -220,6 +261,7 @@
             align-items: center;
             justify-content: center;
         }
+
         .sort-btn:active {
             background-color: #555;
         }
@@ -228,100 +270,151 @@
         #roster {
             overflow: hidden;
         }
+
         .player-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px; 
+            padding: 8px;
             border-bottom: 1px solid #333;
         }
+
         .player-info-group {
             display: flex;
             align-items: center;
-            gap: 6px; 
+            gap: 6px;
             flex-grow: 1;
             padding-right: 8px;
         }
-        
+
         /* UPDATED: Player Rank Styling */
         .player-rank {
             font-weight: 700;
-            color: white; /* Default text color (for rank 5+) */
-            background-color: #424242; /* Default dark gray background (for rank 5+) */
+            color: white;
+            /* Default text color (for rank 5+) */
+            background-color: #424242;
+            /* Default dark gray background (for rank 5+) */
             font-size: 14px;
-            width: 28px; 
+            width: 28px;
             height: 28px;
             line-height: 28px;
             text-align: center;
-            border-radius: 4px;
+            border-radius: 8px;
             flex-shrink: 0;
             margin-right: 4px;
             transition: background-color 0.3s, color 0.3s;
         }
-        
+
         /* Rank Colors */
-        .player-rank.rank-color-1 { background-color: #D32F2F; color: white; }
-        .player-rank.rank-color-2 { background-color: #FFC107; color: #121212; }
-        .player-rank.rank-color-3 { background-color: #4CAF50; color: white; }
-        .player-rank.rank-color-4 { background-color: #007bff; color: white; }
-        
+        .player-rank.rank-color-1 {
+            background-color: #D32F2F;
+            color: white;
+        }
+
+        .player-rank.rank-color-2 {
+            background-color: #FFC107;
+            color: #121212;
+        }
+
+        .player-rank.rank-color-3 {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .player-rank.rank-color-4 {
+            background-color: #007bff;
+            color: white;
+        }
+
         .player-number {
             font-weight: 700;
-            color: #64B5F6; 
+            color: #64B5F6;
             font-size: 15px;
             flex-shrink: 0;
-            white-space: nowrap; 
+            white-space: nowrap;
         }
+
         .player-name {
             font-weight: 500;
-            font-size: 15px; 
+            font-size: 15px;
             word-break: break-word;
         }
+
         .warning-icon {
             font-size: 16px;
             margin-left: 5px;
-            display: none; 
+            display: none;
             animation: pulse 2s infinite;
         }
+
         @keyframes pulse {
-            0% { opacity: 0.6; }
-            50% { opacity: 1; }
-            100% { opacity: 0.6; }
+            0% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.6;
+            }
         }
+
         .warning-icon.low {
             color: #FFC107;
         }
+
         .player-time {
             font-weight: bold;
             color: #64B5F6;
-            font-size: 15px; 
+            font-size: 15px;
             min-width: 50px;
             text-align: right;
             flex-shrink: 0;
             font-variant-numeric: tabular-nums;
         }
+
         .player-controls-group {
             display: flex;
             align-items: center;
-            gap: 8px; 
+            gap: 8px;
             flex-shrink: 0;
         }
+
         .toggle-btn {
             padding: 5px 8px;
             width: 60px;
             font-size: 13px;
-            border-radius: 4px;
+            border-radius: 8px;
             flex-shrink: 0;
             border: none;
             cursor: pointer;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
         }
-        .toggle-btn.status-on { background-color: #4CAF50; color: white; }
-        .toggle-btn.status-off { background-color: #D32F2F; color: white; }
+
+        .toggle-btn.status-on {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .toggle-btn.status-off {
+            background-color: #D32F2F;
+            color: white;
+        }
+
         .delete-btn {
-            width: 24px; height: 24px; font-size: 13px; line-height: 1; border-radius: 4px;
-            border: none; cursor: pointer; display: flex; align-items: center;
-            justify-content: center; background-color: #424242; color: white;
+            width: 24px;
+            height: 24px;
+            font-size: 13px;
+            line-height: 1;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #424242;
+            color: white;
         }
 
         /* --- MODIFIED: MINI TIMER SECTION --- */
@@ -331,62 +424,125 @@
             align-items: center;
             padding: 6px 8px;
         }
-        #mini-time-display { 
-            font-size: 1.8rem; 
-            font-weight: 700; 
-            color: #E0E0E0; 
+
+        #mini-time-display {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #E0E0E0;
             font-variant-numeric: tabular-nums;
         }
-        #mini-time-display.countdown-ended { color: #D32F2F; }
-        .mini-timer-controls { display: flex; gap: 6px; }
 
-        
+        #mini-time-display.countdown-ended {
+            color: #D32F2F;
+        }
+
+        .mini-timer-controls {
+            display: flex;
+            gap: 6px;
+        }
+
+
         /* --- MODAL STYLES --- */
         .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.7); display: none;
-            justify-content: center; align-items: center; z-index: 1000;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
         }
+
         .modal-content {
-            background-color: #1E1E1E; padding: 20px; border-radius: 8px;
-            width: 90%; max-width: 400px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6); text-align: left;
+            background-color: #1E1E1E;
+            padding: 20px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 400px;
+            text-align: left;
         }
-        #modal-title { font-size: 1.4rem; margin-top: 0; color: #E0E0E0; text-align: center; }
-        #modal-message { margin-bottom: 20px; color: #B0B0B0; font-size: 16px; white-space: pre-line; }
-        
+
+        #modal-title {
+            font-size: 1.4rem;
+            margin-top: 0;
+            color: #E0E0E0;
+            text-align: center;
+        }
+
+        #modal-message {
+            margin-bottom: 20px;
+            color: #B0B0B0;
+            font-size: 16px;
+            white-space: pre-line;
+        }
+
         /* Suggestion text styling */
         .suggestion-group {
-            background-color: #2D2D2D; padding: 12px; border-radius: 6px; margin-bottom: 12px;
+            background-color: #2D2D2D;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 12px;
         }
-        .suggestion-group strong { font-size: 1.2rem; color: white; display: block; margin-bottom: 6px; }
-        .suggestion-group .sub-off { color: #FF8A80; }
-        .suggestion-group .sub-on { color: #B9F6CA; }
-        .suggestion-group p { margin: 4px 0; font-size: 1.1rem; }
+
+        .suggestion-group strong {
+            font-size: 1.2rem;
+            color: white;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .suggestion-group .sub-off {
+            color: #FF8A80;
+        }
+
+        .suggestion-group .sub-on {
+            color: #B9F6CA;
+        }
+
+        .suggestion-group p {
+            margin: 4px 0;
+            font-size: 1.1rem;
+        }
 
         .modal-buttons {
-            display: flex; flex-direction: column; gap: 10px;
-            justify-content: center; text-align: center; 
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            justify-content: center;
+            text-align: center;
         }
-        .modal-buttons .timer-btn { flex-basis: auto; padding: 10px 15px; font-size: 14px; }
+
+        .modal-buttons .timer-btn {
+            flex-basis: auto;
+            padding: 10px 15px;
+            font-size: 14px;
+        }
+
         /* Separator for close button */
-        .modal-buttons .suggestion-close-btn { margin-top: 15px; }
+        .modal-buttons .suggestion-close-btn {
+            margin-top: 15px;
+        }
     </style>
 </head>
+
 <body>
     <div class="app-wrapper">
         <div class="app-container">
-            
+
             <!-- TEAM NAME SECTION -->
             <div id="team-name-section">
-                <label for="team-select" style="display:block; margin-bottom: 5px; font-weight: bold;">Team Name:</label>
+                <label for="team-select" style="display:block; margin-bottom: 5px; font-weight: bold;">Team
+                    Name:</label>
                 <select id="team-select">
                     <option value="" disabled selected>Select a Team...</option>
                     <option value="TLS Aces">TLS Aces</option>
-                    <option value="Test Team (Dont Use)">Test Team (Dont Use)</option>
+                    <option value="Testing Team">Testing Team</option>
                 </select>
             </div>
-            
+
             <!-- TIMER SECTION -->
             <div id="timer-section">
                 <div id="time-display">00:00</div>
@@ -400,14 +556,14 @@
                     <button id="subtract-minute-btn" class="timer-btn secondary">–1 Min</button>
                 </div>
             </div>
-      
+
             <!-- PLAYER INPUT SECTION -->
             <div id="input-section">
-                <input type="text" id="player-number-input" placeholder="No." inputmode="numeric"> 
+                <input type="text" id="player-number-input" placeholder="No." inputmode="numeric">
                 <input type="text" id="player-name" placeholder="Enter player's name">
                 <button id="add-player-btn" class="add-icon-btn">+</button>
             </div>
-            
+
             <!-- PLAYER ROSTER -->
             <div id="roster-container">
                 <div class="roster-header">
@@ -434,21 +590,24 @@
                 <label for="game-notes" style="display:block; margin-bottom: 5px; font-weight: bold;">Notes:</label>
                 <textarea id="game-notes" placeholder="Add game notes here..."></textarea>
             </div>
-            
+
             <!-- ACTION BUTTONS -->
             <div class="timer-controls" style="margin-top: 10px;">
-                <button id="save-to-sheets-btn" class="timer-btn primary" style="flex-grow: unset; width: 100%; background-color: #1a73e8;">Finish Game</button>
-            </div>
-            <div class="timer-controls" style="margin-top: 5px;"> 
-                <button id="suggest-sub-btn" class="timer-btn secondary" style="flex-grow: unset; width: 100%;">Substitute Suggestion</button>
+                <button id="save-to-sheets-btn" class="timer-btn primary"
+                    style="flex-grow: unset; width: 100%; background-color: #1a73e8;">Finish Game</button>
             </div>
             <div class="timer-controls" style="margin-top: 5px;">
-                <button id="add-default-players-btn" class="timer-btn secondary" style="flex-grow: unset; width: 100%;">Add Default Players</button>
+                <button id="suggest-sub-btn" class="timer-btn secondary"
+                    style="flex-grow: unset; width: 100%;">Substitute Suggestion</button>
+            </div>
+            <div class="timer-controls" style="margin-top: 5px;">
+                <button id="add-default-players-btn" class="timer-btn secondary"
+                    style="flex-grow: unset; width: 100%;">Add Default Players</button>
             </div>
 
         </div>
     </div>
-    
+
     <!-- Custom Confirmation Modal -->
     <div id="custom-modal" class="modal-overlay">
         <div class="modal-content">
@@ -462,7 +621,7 @@
         // --- CONSTANTS ---
         const MAX_PLAYERS_ON_FIELD = 5;
         const MIN_GAME_TIME_FOR_WARNINGS = 180; // 3 minutes before warnings start
-        
+
         // WARNING CONFIGURATION
         const LOW_TIME_RATIO = 0.65; // Warn if < 65% of average
         const SIGNIFICANT_TIME_GAP = 240; // 4 minutes (240s). If player is 4 mins behind average, warn regardless of %
@@ -472,8 +631,8 @@
         const LOCAL_STORAGE_KEY = 'coachbuddySelectedTeam';
         const DEFAULT_MINI_TIMER_SECONDS = 180; // 3 minutes
 
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw7Xa1_PWR2jhYdIYimi460fxJYuyY_ffIx7IcG0ys3pX-FoCMScZT3ABdLIyD0YuZ9fg/exec';
-        
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzOYayTMqPpYI5p1GTTcnbzQcAGUgJmukPkT1rZ8HiaCE86H9iJxP-hEaw-t23NnxuG6w/exec';
+
         // --- STATE VARIABLES ---
         let countdownInterval = null, totalSeconds = INITIAL_STOPWATCH_SECONDS, isRunning = false, isCountdownMode = false;
         let miniTimerInterval = null, miniTotalSeconds = DEFAULT_MINI_TIMER_SECONDS, isMiniTimerRunning = false;
@@ -485,7 +644,7 @@
             const remainingSeconds = seconds % 60;
             return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
         }
-        
+
         // --- DOM ELEMENTS ---
         const timeDisplay = document.getElementById('time-display');
         const startPauseBtn = document.getElementById('start-pause-btn');
@@ -500,7 +659,7 @@
         const suggestSubBtn = document.getElementById('suggest-sub-btn');
         const addDefaultPlayersBtn = document.getElementById('add-default-players-btn');
         const saveToSheetsBtn = document.getElementById('save-to-sheets-btn');
-        const teamSelect = document.getElementById('team-select'); 
+        const teamSelect = document.getElementById('team-select');
         const miniTimeDisplay = document.getElementById('mini-time-display');
         const miniStartPauseBtn = document.getElementById('mini-start-pause-btn');
         const miniResetBtn = document.getElementById('mini-reset-btn');
@@ -515,7 +674,7 @@
         teamSelect.addEventListener('change', () => {
             localStorage.setItem(LOCAL_STORAGE_KEY, teamSelect.value);
         });
-        
+
         // --- ADVANCED MODAL LOGIC ---
         const customModal = document.getElementById('custom-modal');
         const modalTitle = document.getElementById('modal-title');
@@ -527,7 +686,7 @@
         function showCustomModal(title, messageHtml, buttons) {
             modalTitle.textContent = title;
             modalMessage.innerHTML = messageHtml;
-            modalButtons.innerHTML = ''; 
+            modalButtons.innerHTML = '';
 
             buttons.forEach(btnInfo => {
                 const button = document.createElement('button');
@@ -538,7 +697,7 @@
             });
             customModal.style.display = 'flex';
         }
-        
+
         function showConfirmation(title, message, callback) {
             let buttons = [];
             if (callback) {
@@ -556,31 +715,31 @@
         function createPlayerItem(name, number = null) {
             const playerItem = document.createElement('div');
             playerItem.className = 'player-item';
-            playerItem.dataset.totalTime = 0; playerItem.dataset.isOnField = '0'; playerItem.dataset.rank = '0'; 
+            playerItem.dataset.totalTime = 0; playerItem.dataset.isOnField = '0'; playerItem.dataset.rank = '0';
 
             const playerInfoGroup = document.createElement('div');
             playerInfoGroup.className = 'player-info-group';
 
             const playerRankDisplay = document.createElement('span');
-            playerRankDisplay.className = 'player-rank'; playerRankDisplay.textContent = '-'; 
+            playerRankDisplay.className = 'player-rank'; playerRankDisplay.textContent = '-';
             playerRankDisplay.dataset.role = 'player-rank-display';
             playerInfoGroup.appendChild(playerRankDisplay);
 
             if (number !== null) {
                 const playerNumber = document.createElement('span');
-                playerNumber.className = 'player-number'; playerNumber.textContent = `#${number}`; 
+                playerNumber.className = 'player-number'; playerNumber.textContent = `#${number}`;
                 playerInfoGroup.appendChild(playerNumber);
             }
 
             const playerName = document.createElement('span');
             playerName.className = 'player-name'; playerName.textContent = name;
             playerInfoGroup.appendChild(playerName);
-            
+
             const lowWarningIcon = document.createElement('span');
             lowWarningIcon.className = 'warning-icon low'; lowWarningIcon.textContent = '⚠️';
             lowWarningIcon.title = 'Low play time - Consider subbing on';
             lowWarningIcon.dataset.role = 'low-warning-icon';
-            playerInfoGroup.appendChild(lowWarningIcon); 
+            playerInfoGroup.appendChild(lowWarningIcon);
 
             const playerControlsGroup = document.createElement('div');
             playerControlsGroup.className = 'player-controls-group';
@@ -589,7 +748,7 @@
 
             const toggleBtn = document.createElement('button');
             toggleBtn.className = 'toggle-btn status-off'; toggleBtn.textContent = 'ON';
-            
+
             toggleBtn.onclick = () => {
                 const isOn = playerItem.dataset.isOnField === '1';
                 if (isOn) {
@@ -615,7 +774,7 @@
             deleteBtn.title = 'Remove Player';
             deleteBtn.onclick = () => {
                 showConfirmation('Remove Player', `Are you sure you want to remove ${name}?`, (confirmed) => {
-                        if (confirmed) { rosterDiv.removeChild(playerItem); updateSubstitutionWarnings(); }
+                    if (confirmed) { rosterDiv.removeChild(playerItem); updateSubstitutionWarnings(); }
                 });
             };
 
@@ -626,7 +785,7 @@
             playerItem.appendChild(playerControlsGroup);
             return playerItem;
         }
-        
+
         function addPlayerByName(name, number = null) {
             const effectiveName = name || (number !== null ? `Player #${number}` : 'Unnamed Player');
             rosterDiv.appendChild(createPlayerItem(effectiveName, number));
@@ -636,7 +795,7 @@
         function addPlayerFromInput() {
             const name = playerNameInput.value.trim();
             const number = parseInt(playerNumberInput.value.trim()) || null;
-            if (name || number) { 
+            if (name || number) {
                 addPlayerByName(name, number);
                 playerNameInput.value = ''; playerNumberInput.value = ''; playerNameInput.focus();
                 // Prevent mobile keyboard from hiding context
@@ -662,15 +821,15 @@
             });
             items.forEach(item => rosterDiv.appendChild(item));
         }
-        
+
         sortDescBtn.addEventListener('click', () => sortRoster('desc'));
         sortAscBtn.addEventListener('click', () => sortRoster('asc'));
-        
+
         const DEFAULT_ROSTERS = {
-            'TLS Aces': [ { name: 'Ava', number: 6 }, { name: 'Maddie', number: 32 }, { name: 'AK', number: 52 }, 
-                { name: 'Indigo', number: 50 }, { name: 'Aria', number: 7 }, { name: 'London', number: 8 },
-                { name: 'Sienna', number: null }, { name: 'Amelia', number: 10 } ],
-            'Test Team (Dont Use)': []
+            'TLS Aces': [{ name: 'Ava', number: 6 }, { name: 'Maddie', number: 32 }, { name: 'AK', number: 52 },
+            { name: 'Indigo', number: 50 }, { name: 'Aria', number: 7 }, { name: 'London', number: 8 },
+            { name: 'Elektra', number: null }, { name: 'Mila', number: null }],
+            'Testing Team': [{ name: 'Tester 1', number: 1 }, { name: 'Tester 2', number: 2 }, { name: 'Tester 3', number: 3 }, { name: 'Tester 4', number: 4 }]
         };
 
         addDefaultPlayersBtn.addEventListener('click', () => {
@@ -686,7 +845,7 @@
         function performSub(playerOff, playerOn, buttonElement) {
             if (playerOff && playerOff.element) playerOff.element.querySelector('.toggle-btn')?.click();
             if (playerOn && playerOn.element) playerOn.element.querySelector('.toggle-btn')?.click();
-            
+
             buttonElement.textContent += ' ✅';
             buttonElement.disabled = true;
         }
@@ -695,14 +854,14 @@
             const playerItems = document.querySelectorAll('.player-item');
             if (playerItems.length < 2) { showConfirmation('Suggestion Unavailable', 'Please add at least two players.'); return; }
 
-            const players = Array.from(playerItems).map(item => ({ 
+            const players = Array.from(playerItems).map(item => ({
                 element: item, time: parseInt(item.dataset.totalTime), isOnField: item.dataset.isOnField === '1',
                 name: `${item.querySelector('.player-number')?.textContent || ''} ${item.querySelector('.player-name')?.textContent || 'Unnamed'}`.trim()
             }));
-            
+
             const onField = players.filter(p => p.isOnField).sort((a, b) => b.time - a.time);
             const offField = players.filter(p => !p.isOnField).sort((a, b) => a.time - b.time);
-            
+
             let messageHtml = '';
             const buttons = [];
 
@@ -710,7 +869,7 @@
                 const [playerOff1, playerOn1] = [onField[0], offField[0]];
                 messageHtml += `<div class="suggestion-group"><strong>Suggestion 1</strong><p class="sub-off">▶ OFF: ${playerOff1.name} (${formatTime(playerOff1.time)})</p><p class="sub-on">◀ ON: ${playerOn1.name} (${formatTime(playerOn1.time)})</p></div>`;
                 buttons.push({ text: 'Make Sub Suggestion 1', action: (e) => performSub(playerOff1, playerOn1, e.target) });
-                
+
                 if (onField.length > 1 && offField.length > 1) {
                     const [playerOff2, playerOn2] = [onField[1], offField[1]];
                     messageHtml += `<div class="suggestion-group"><strong>Suggestion 2</strong><p class="sub-off">▶ OFF: ${playerOff2.name} (${formatTime(playerOff2.time)})</p><p class="sub-on">◀ ON: ${playerOn2.name} (${formatTime(playerOn2.time)})</p></div>`;
@@ -737,7 +896,7 @@
             // Calculate Ranks
             players.sort((a, b) => b.time - a.time);
             let rank = 0, prevTime = -1;
-            players.forEach(p => { 
+            players.forEach(p => {
                 const rankDisplay = p.element.querySelector('[data-role="player-rank-display"]');
                 if (p.time !== prevTime) rank++; prevTime = p.time; p.element.dataset.rank = rank;
                 if (rankDisplay) {
@@ -749,22 +908,22 @@
                     else if (rank === 4) rankDisplay.classList.add('rank-color-4');
                 }
             });
-            
+
             // WARNING LOGIC
             if (players.length < 2 || totalSeconds < MIN_GAME_TIME_FOR_WARNINGS || totalTime === 0) {
-                 items.forEach(i => i.querySelector('[data-role="low-warning-icon"]').style.display = 'none'); return;
+                items.forEach(i => i.querySelector('[data-role="low-warning-icon"]').style.display = 'none'); return;
             }
-            
+
             const avgTime = onFieldCount > 0 ? onFieldTime / onFieldCount : 0;
-            
+
             items.forEach(item => {
                 const icon = item.querySelector('[data-role="low-warning-icon"]');
                 const time = parseInt(item.dataset.totalTime);
                 const isOn = item.dataset.isOnField === '1';
-                
+
                 // Condition 1: Time is significantly lower by percentage (< 65%)
                 const isLowRatio = time < (avgTime * LOW_TIME_RATIO);
-                
+
                 // Condition 2: Time is significantly lower by hard minutes (e.g. 4 minutes less)
                 const isBigGap = (avgTime - time) > SIGNIFICANT_TIME_GAP;
 
@@ -776,7 +935,7 @@
                 }
             });
         }
-        
+
         // --- MAIN TIMER LOGIC ---
         function startTimer() {
             if (isRunning || (isCountdownMode && totalSeconds <= 0)) return;
@@ -804,9 +963,9 @@
             timeDisplay.textContent = formatTime(totalSeconds);
             document.querySelectorAll('.player-item').forEach(item => {
                 item.dataset.totalTime = 0; item.querySelector('.player-time').textContent = formatTime(0);
-                item.dataset.isOnField = '0'; 
+                item.dataset.isOnField = '0';
                 const btn = item.querySelector('.toggle-btn');
-                if(btn) { btn.textContent = 'ON'; btn.classList.add('status-off'); btn.classList.remove('status-on'); }
+                if (btn) { btn.textContent = 'ON'; btn.classList.add('status-off'); btn.classList.remove('status-on'); }
             });
             updateSubstitutionWarnings();
         }
@@ -824,7 +983,7 @@
             if (isMiniTimerRunning || miniTotalSeconds <= 0) return;
             isMiniTimerRunning = true; miniStartPauseBtn.textContent = 'Pause'; miniStartPauseBtn.classList.add('pause');
             miniTimerInterval = setInterval(() => {
-                if (miniTotalSeconds > 0) { miniTotalSeconds--; miniTimeDisplay.textContent = formatTime(miniTotalSeconds); } 
+                if (miniTotalSeconds > 0) { miniTotalSeconds--; miniTimeDisplay.textContent = formatTime(miniTotalSeconds); }
                 else { clearInterval(miniTimerInterval); isMiniTimerRunning = false; miniStartPauseBtn.textContent = 'Done!'; miniStartPauseBtn.classList.remove('pause'); miniTimeDisplay.classList.add('countdown-ended'); }
             }, 1000);
         }
@@ -842,8 +1001,10 @@
         function collectGameData() {
             const players = [];
             document.querySelectorAll('.player-item').forEach(item => {
-                players.push({ number: item.querySelector('.player-number')?.textContent.replace('#', '') || 'N/A', 
-                name: item.querySelector('.player-name')?.textContent || 'Unnamed', time: item.querySelector('.player-time')?.textContent || '00:00' });
+                players.push({
+                    number: item.querySelector('.player-number')?.textContent.replace('#', '') || 'N/A',
+                    name: item.querySelector('.player-name')?.textContent || 'Unnamed', time: item.querySelector('.player-time')?.textContent || '00:00'
+                });
             });
             return { teamName: teamSelect.value || '', gameDate: new Date().toLocaleString(), mainTime: timeDisplay.textContent, players, notes: document.getElementById('game-notes').value };
         }
@@ -852,11 +1013,12 @@
             if (!gameData.teamName) { showConfirmation('Required Field Missing', 'Please select a Team Name before saving.'); return; }
             saveToSheetsBtn.disabled = true; saveToSheetsBtn.textContent = 'Saving...';
             fetch(SCRIPT_URL, { method: 'POST', mode: 'cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(gameData) })
-            .then(res => res.json()).then(data => { showConfirmation('Success!', `Game data saved for "${gameData.teamName}".`); })
-            .catch(error => { console.error('Error:', error); showConfirmation('Network Error', `A network error occurred. Details: ${error}`); })
-            .finally(() => { saveToSheetsBtn.disabled = false; saveToSheetsBtn.textContent = 'Finish Game'; });
+                .then(res => res.json()).then(data => { showConfirmation('Success!', `Game data saved for "${gameData.teamName}".`); })
+                .catch(error => { console.error('Error:', error); showConfirmation('Network Error', `A network error occurred. Details: ${error}`); })
+                .finally(() => { saveToSheetsBtn.disabled = false; saveToSheetsBtn.textContent = 'Finish Game'; });
         }
         saveToSheetsBtn.addEventListener('click', () => { showConfirmation('Finish and Save Game', 'End this session and save final times to Google Sheets?', (c) => { if (c) sendDataToSheets(); }); });
     </script>
 </body>
+
 </html>
