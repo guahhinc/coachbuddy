@@ -615,8 +615,8 @@
                 <div class="roster-header">
                     <span class="roster-title">Current Roster</span>
                     <div class="sort-buttons-group">
-                        <button id="sort-desc-btn" class="sort-btn">Most ⇩</button>
-                        <button id="sort-asc-btn" class="sort-btn">Least ⇧</button>
+                        <button id="sort-desc-btn" class="sort-btn">Most Sort</button>
+                        <button id="sort-asc-btn" class="sort-btn">Least Sort</button>
                     </div>
                 </div>
                 <div id="roster"></div>
@@ -667,6 +667,7 @@
         </div>
     </div>
 
+    <script src="ai.js"></script>
     <script>
         // --- CONSTANTS ---
         const MAX_PLAYERS_ON_FIELD = 5;
@@ -933,112 +934,78 @@
             const offField = [];
 
             playerItems.forEach(item => {
-                const name = `${item.querySelector('.player-number')?.textContent || ''} ${item.querySelector('.player-name')?.textContent || 'Unnamed'}`.trim();
+                const baseName = item.querySelector('.player-name')?.textContent || 'Unnamed';
+                const fullName = `${item.querySelector('.player-number')?.textContent || ''} ${baseName}`.trim();
                 const time = parseInt(item.dataset.totalTime);
                 const isOnField = item.dataset.isOnField === '1';
 
-                const playerData = `- ${name} (Time played: ${formatTime(time)})`;
-                if (isOnField) onField.push(playerData);
-                else offField.push(playerData);
+                const playerObj = { name: baseName, fullName, time, isOnField };
+                if (isOnField) onField.push(playerObj);
+                else offField.push(playerObj);
             });
 
             const notes = document.getElementById('game-notes').value.trim();
             const timeStr = formatTime(totalSeconds);
-
-            const prompt = `You are a coach assistant for a U14 Girls Domestic Basketball team. We have ${onField.length} players on the field and ${offField.length} on the bench.
-Our players ranked from best to worst are: London, Indigo, Mila, Aria, Maddie, Ava, AK, Elektra.
-Goal for this substitution: ${goal}
-Current Game Time: ${timeStr} (Max time: 40:00 - two 20min halves)
-${notes ? `Game Notes (injuries, late players, etc): ${notes}\n` : ''}
-Current players on the field:
-${onField.length > 0 ? onField.join('\n') : 'None'}
-
-Current players on the bench:
-${offField.length > 0 ? offField.join('\n') : 'None'}
-
-Who should I sub OUT (from the field) and who should I sub IN (from the bench)?
-Preferably suggest subbing 2 players at once but you can do more or less if needed and also there needs to be 5 players on the court at all times.
-Show player names in bold and also tell me how long I should wait until the NEXT substitution (e.g., "Sub again in 3 minutes")( Max: 4 minutes | Min: 2 Minutes).
-Provide a short, direct suggestion (max 3 sentences). Explain why based on the goal.
-Show a line that just has the names of the players that will be on after these suggestions are made (e.g., "Players that will be on: London, Indigo, Mila").
-
-
-At the very end of your response, provide exactly ONE line formatted exactly like this:
-[SUB_ACTION] {"out": ["Player Name 1"], "in": ["Player Name 2"]}
-Use ONLY the first names (or base names) of the players without numbers or times (e.g., "Ava" instead of "#6 Ava"). If no substitutions are suggested, return:
-[SUB_ACTION] {"out": [], "in": []}`;
+            const teamName = document.getElementById('team-select').value;
 
             try {
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'cors',
-                    signal: aiAbortController.signal,
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({
-                        action: 'get_ai_suggestion',
-                        prompt: prompt
-                    })
-                });
-                const data = await response.json();
+                let suggestionText = await getBuiltInAiSuggestion(
+                    teamName,
+                    onField,
+                    offField,
+                    notes,
+                    goal,
+                    timeStr,
+                    aiAbortController.signal
+                );
 
                 buttonsDiv.innerHTML = ''; // clear cancel button
 
-                if (data.error) {
-                    const errorMsg = typeof data.error === 'object' ? JSON.stringify(data.error, null, 2) : data.error;
-                    throw new Error(errorMsg);
+                let subActions = null;
+                const actionRegex = /\[SUB_ACTION\]\s*({.*})/;
+                const match = suggestionText.match(actionRegex);
+                if (match) {
+                    try {
+                        subActions = JSON.parse(match[1]);
+                    } catch (e) {
+                        console.error("Failed to parse sub actions JSON:", e);
+                    }
+                    suggestionText = suggestionText.replace(actionRegex, '').trim();
                 }
 
-                if (data.candidates && data.candidates.length > 0) {
-                    let suggestionText = data.candidates[0].content.parts[0].text;
+                const formattedText = suggestionText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 
-                    let subActions = null;
-                    const actionRegex = /\[SUB_ACTION\]\s*({.*})/;
-                    const match = suggestionText.match(actionRegex);
-                    if (match) {
-                        try {
-                            subActions = JSON.parse(match[1]);
-                        } catch (e) {
-                            console.error("Failed to parse sub actions JSON:", e);
+                const buttons = [];
+                const hasSubs = subActions && (subActions.out.length > 0 || subActions.in.length > 0);
+
+                if (hasSubs) {
+                    buttons.push({
+                        text: 'Make Substitutes',
+                        className: 'primary',
+                        action: (e) => {
+                            const allPlayers = Array.from(document.querySelectorAll('.player-item'));
+
+                            const togglePlayer = (name, targetState) => {
+                                const p = allPlayers.find(item => {
+                                    const pName = item.querySelector('.player-name')?.textContent || '';
+                                    return pName.toLowerCase().includes(name.toLowerCase());
+                                });
+                                if (p && p.dataset.isOnField === targetState) {
+                                    p.querySelector('.toggle-btn')?.click();
+                                }
+                            };
+
+                            subActions.out.forEach(name => togglePlayer(name, '1')); // '1' is ON field, clicking subs them OUT
+                            subActions.in.forEach(name => togglePlayer(name, '0'));  // '0' is OFF field, clicking subs them IN
+
+                            closeModal();
                         }
-                        suggestionText = suggestionText.replace(actionRegex, '').trim();
-                    }
-
-                    const formattedText = suggestionText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-
-                    const buttons = [];
-                    const hasSubs = subActions && (subActions.out.length > 0 || subActions.in.length > 0);
-
-                    if (hasSubs) {
-                        buttons.push({
-                            text: 'Make Substitutes',
-                            className: 'primary',
-                            action: (e) => {
-                                const allPlayers = Array.from(document.querySelectorAll('.player-item'));
-
-                                const togglePlayer = (name, targetState) => {
-                                    const p = allPlayers.find(item => {
-                                        const pName = item.querySelector('.player-name')?.textContent || '';
-                                        return pName.toLowerCase().includes(name.toLowerCase());
-                                    });
-                                    if (p && p.dataset.isOnField === targetState) {
-                                        p.querySelector('.toggle-btn')?.click();
-                                    }
-                                };
-
-                                subActions.out.forEach(name => togglePlayer(name, '1')); // '1' is ON field, clicking subs them OUT
-                                subActions.in.forEach(name => togglePlayer(name, '0'));  // '0' is OFF field, clicking subs them IN
-
-                                closeModal();
-                            }
-                        });
-                    }
-
-                    buttons.push({ text: 'Close', action: closeModal, className: hasSubs ? 'secondary suggestion-close-btn' : 'secondary' });
-
-                    showCustomModal('Smart Suggestions', `<div style="font-size: 1.1rem; line-height: 1.5; color: #E0E0E0; text-align: left; white-space: pre-wrap;">${formattedText}</div>`, buttons);
-                } else {
-                    throw new Error("No suggestion returned");
+                    });
                 }
+
+                buttons.push({ text: 'Close', action: closeModal, className: hasSubs ? 'secondary suggestion-close-btn' : 'secondary' });
+
+                showCustomModal('Guahh AI Suggestions', `<div style="font-size: 1.1rem; line-height: 1.5; color: #E0E0E0; text-align: left; white-space: pre-wrap;">${formattedText}</div>`, buttons);
             } catch (error) {
                 if (error.name === 'AbortError') return; // Do nothing if aborted by user
                 buttonsDiv.innerHTML = '';
@@ -1072,7 +1039,7 @@ Use ONLY the first names (or base names) of the players without numbers or times
                 </div>
             `;
 
-            showCustomModal('Smart Suggestions', messageHtml, [
+            showCustomModal('Guahh AI Suggestions', messageHtml, [
                 {
                     text: 'Ask Guahh AI', className: 'primary', action: (e) => {
                         e.target.disabled = true;
@@ -1219,7 +1186,7 @@ Use ONLY the first names (or base names) of the players without numbers or times
         saveToSheetsBtn.addEventListener('click', () => { showConfirmation('Finish and Save Game', 'End this session and save final times to Google Sheets?', (c) => { if (c) sendDataToSheets(); }); });
 
         document.getElementById('update-app-btn').addEventListener('click', () => {
-            showConfirmation('Update App', 'Are you sure you want to update the app? This will refresh the page | Current Version: v2.2.2', (confirmed) => {
+            showConfirmation('Update App', 'Are you sure you want to update the app? This will refresh the page | Current Version: v2.3', (confirmed) => {
                 if (confirmed) location.reload(true);
             });
         });
