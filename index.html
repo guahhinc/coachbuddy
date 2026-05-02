@@ -31,7 +31,10 @@
             /* Remove tap highlight on mobile */
         }
 
-        button, input, select, textarea {
+        button,
+        input,
+        select,
+        textarea {
             font-family: inherit;
         }
 
@@ -138,26 +141,34 @@
 
         .timer-controls {
             display: flex;
-            gap: 6px;
+            gap: 8px;
             justify-content: center;
-            margin-top: 6px;
+            margin-top: 8px;
+            width: 100%;
         }
 
         .timer-controls.adjust-controls {
-            margin-top: 4px;
+            margin-top: 6px;
         }
 
         .timer-btn {
-            padding: 7px 11px;
+            padding: 9px 12px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.3s;
-            flex-grow: 1;
-            min-width: 65px;
+            font-weight: 600;
+            transition: all 0.2s ease;
             font-size: 13px;
             line-height: 1.2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 36px;
+        }
+
+        /* Buttons inside timer controls rows should be equal width */
+        .timer-controls .timer-btn {
+            flex: 1;
         }
 
         .timer-btn:disabled {
@@ -438,7 +449,11 @@
 
         .mini-timer-controls {
             display: flex;
-            gap: 6px;
+            gap: 8px;
+        }
+
+        .mini-timer-controls .timer-btn {
+            min-width: 70px;
         }
 
 
@@ -547,13 +562,12 @@
             <div id="timer-section">
                 <div id="time-display">00:00</div>
                 <div class="timer-controls mode-main-controls">
-                    <button id="mode-toggle-btn" class="timer-btn mode-btn">Countdown</button>
                     <button id="start-pause-btn" class="timer-btn primary">Start</button>
                     <button id="reset-btn" class="timer-btn secondary">Reset</button>
                 </div>
                 <div class="timer-controls adjust-controls">
-                    <button id="add-minute-btn" class="timer-btn secondary">+1 Min</button>
-                    <button id="subtract-minute-btn" class="timer-btn secondary">–1 Min</button>
+                    <button id="add-minute-btn" class="timer-btn secondary">+30 Sec</button>
+                    <button id="subtract-minute-btn" class="timer-btn secondary">–30 Sec</button>
                 </div>
             </div>
 
@@ -592,17 +606,20 @@
             </div>
 
             <!-- ACTION BUTTONS -->
-            <div class="timer-controls" style="margin-top: 10px;">
+            <div style="margin-top: 10px;">
                 <button id="save-to-sheets-btn" class="timer-btn primary"
-                    style="flex-grow: unset; width: 100%; background-color: #1a73e8;">Finish Game</button>
+                    style="width: 100%; background-color: #1a73e8;">Finish Game</button>
             </div>
-            <div class="timer-controls" style="margin-top: 5px;">
+            <div style="margin-top: 5px;">
                 <button id="suggest-sub-btn" class="timer-btn secondary"
-                    style="flex-grow: unset; width: 100%;">Substitute Suggestion</button>
+                    style="width: 100%; background-color: #673ab7; color: white; border: none; font-weight: bold;">Smart
+                    Suggestions</button>
             </div>
-            <div class="timer-controls" style="margin-top: 5px;">
-                <button id="add-default-players-btn" class="timer-btn secondary"
-                    style="flex-grow: unset; width: 100%;">Add Default Players</button>
+            <div style="margin-top: 5px;">
+                <button id="add-default-players-btn" class="timer-btn secondary" style="width: 100%;">Add Default Players</button>
+            </div>
+            <div style="margin-top: 5px;">
+                <button id="update-app-btn" class="timer-btn secondary" style="width: 100%;">Update App</button>
             </div>
 
         </div>
@@ -620,7 +637,7 @@
     <script>
         // --- CONSTANTS ---
         const MAX_PLAYERS_ON_FIELD = 5;
-        const MIN_GAME_TIME_FOR_WARNINGS = 180; // 3 minutes before warnings start
+        const MIN_GAME_TIME_FOR_WARNINGS = 240; // 4 minutes before warnings start
 
         // WARNING CONFIGURATION
         const LOW_TIME_RATIO = 0.65; // Warn if < 65% of average
@@ -649,7 +666,6 @@
         const timeDisplay = document.getElementById('time-display');
         const startPauseBtn = document.getElementById('start-pause-btn');
         const resetBtn = document.getElementById('reset-btn');
-        const modeToggleBtn = document.getElementById('mode-toggle-btn');
         const addMinuteBtn = document.getElementById('add-minute-btn');
         const subtractMinuteBtn = document.getElementById('subtract-minute-btn');
         const playerNumberInput = document.getElementById('player-number-input');
@@ -850,37 +866,131 @@
             buttonElement.disabled = true;
         }
 
+        let aiAbortController = null;
+
+        async function fetchAiSuggestion() {
+            const goalSelect = document.getElementById('ai-goal-select');
+            const loadingDiv = document.getElementById('ai-loading');
+            const buttonsDiv = document.getElementById('modal-buttons');
+
+            if (!goalSelect) return;
+
+            const goal = goalSelect.options[goalSelect.selectedIndex].text;
+            loadingDiv.style.display = 'block';
+            
+            buttonsDiv.innerHTML = '';
+            const cancelBtn = document.createElement('button');
+            cancelBtn.textContent = 'Cancel';
+            cancelBtn.className = 'timer-btn secondary';
+            cancelBtn.style.width = '100%';
+            cancelBtn.onclick = () => {
+                if (aiAbortController) aiAbortController.abort();
+                closeModal();
+            };
+            buttonsDiv.appendChild(cancelBtn);
+
+            aiAbortController = new AbortController();
+
+            const playerItems = document.querySelectorAll('.player-item');
+            const onField = [];
+            const offField = [];
+
+            playerItems.forEach(item => {
+                const name = `${item.querySelector('.player-number')?.textContent || ''} ${item.querySelector('.player-name')?.textContent || 'Unnamed'}`.trim();
+                const time = parseInt(item.dataset.totalTime);
+                const isOnField = item.dataset.isOnField === '1';
+
+                const playerData = `- ${name} (Time played: ${formatTime(time)})`;
+                if (isOnField) onField.push(playerData);
+                else offField.push(playerData);
+            });
+
+            const notes = document.getElementById('game-notes').value.trim();
+            const timeStr = formatTime(totalSeconds);
+
+            const prompt = `You are a coach assistant. We have ${onField.length} players on the field and ${offField.length} on the bench.
+Our players ranked from best to worst are: London, Indigo, Mila, Aria, Maddie, Ava, AK, Elektra.
+Goal for this substitution: ${goal}
+Current Game Time: ${timeStr} (Max time: 39:00)
+${notes ? `Game Notes (injuries, late players, etc): ${notes}\n` : ''}
+Current players on the field:
+${onField.length > 0 ? onField.join('\n') : 'None'}
+
+Current players on the bench:
+${offField.length > 0 ? offField.join('\n') : 'None'}
+
+Who should I sub OUT (from the field) and who should I sub IN (from the bench)?
+Preferably suggest subbing 2 players at once, but you can suggest more or fewer if the game situation requires it.
+Provide a short, direct suggestion (max 2 sentences). Explain why based on the goal.`;
+
+            try {
+                const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent", {
+                    method: 'POST',
+                    signal: aiAbortController.signal,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-goog-api-key': 'AIzaSyBKV0XQh-q53XKGfQTEgjRp5h0TQllIzkQ'
+                    },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }]
+                    })
+                });
+                const data = await response.json();
+
+                buttonsDiv.innerHTML = ''; // clear cancel button
+                
+                if (data.candidates && data.candidates.length > 0) {
+                    const suggestionText = data.candidates[0].content.parts[0].text;
+                    const formattedText = suggestionText.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                    showCustomModal('Smart Suggestions', `<div style="font-size: 1.1rem; line-height: 1.4; color: #E0E0E0; text-align: left;">${formattedText}</div>`, [
+                        { text: 'Close', action: closeModal }
+                    ]);
+                } else {
+                    throw new Error("No suggestion returned");
+                }
+            } catch (error) {
+                if (error.name === 'AbortError') return; // Do nothing if aborted by user
+                buttonsDiv.innerHTML = '';
+                showCustomModal('AI Error', 'Failed to get suggestion from AI.', [{ text: 'OK', action: closeModal }]);
+            }
+        }
+
         function suggestSubstitution() {
             const playerItems = document.querySelectorAll('.player-item');
-            if (playerItems.length < 2) { showConfirmation('Suggestion Unavailable', 'Please add at least two players.'); return; }
+            if (playerItems.length < 2) { showConfirmation('Guahh AI Unavailable', 'Please add at least two players.'); return; }
 
-            const players = Array.from(playerItems).map(item => ({
-                element: item, time: parseInt(item.dataset.totalTime), isOnField: item.dataset.isOnField === '1',
-                name: `${item.querySelector('.player-number')?.textContent || ''} ${item.querySelector('.player-name')?.textContent || 'Unnamed'}`.trim()
-            }));
+            const onFieldCount = document.querySelectorAll('.player-item[data-is-on-field="1"]').length;
+            const benchCount = playerItems.length - onFieldCount;
 
-            const onField = players.filter(p => p.isOnField).sort((a, b) => b.time - a.time);
-            const offField = players.filter(p => !p.isOnField).sort((a, b) => a.time - b.time);
-
-            let messageHtml = '';
-            const buttons = [];
-
-            if (onField.length > 0 && offField.length > 0) {
-                const [playerOff1, playerOn1] = [onField[0], offField[0]];
-                messageHtml += `<div class="suggestion-group"><strong>Suggestion 1</strong><p class="sub-off">▶ OFF: ${playerOff1.name} (${formatTime(playerOff1.time)})</p><p class="sub-on">◀ ON: ${playerOn1.name} (${formatTime(playerOn1.time)})</p></div>`;
-                buttons.push({ text: 'Make Sub Suggestion 1', action: (e) => performSub(playerOff1, playerOn1, e.target) });
-
-                if (onField.length > 1 && offField.length > 1) {
-                    const [playerOff2, playerOn2] = [onField[1], offField[1]];
-                    messageHtml += `<div class="suggestion-group"><strong>Suggestion 2</strong><p class="sub-off">▶ OFF: ${playerOff2.name} (${formatTime(playerOff2.time)})</p><p class="sub-on">◀ ON: ${playerOn2.name} (${formatTime(playerOn2.time)})</p></div>`;
-                    buttons.push({ text: 'Make Sub Suggestion 2', action: (e) => performSub(playerOff2, playerOn2, e.target) });
-                }
-                buttons.push({ text: 'Close', className: 'secondary suggestion-close-btn', action: closeModal });
-            } else {
-                messageHtml = `<p>Cannot make a suggestion. Reason: no players ${onField.length === 0 ? 'on the field' : 'on the bench'}.</p>`;
-                buttons.push({ text: 'OK', className: 'secondary', action: closeModal });
+            if (onFieldCount === 0 || benchCount === 0) {
+                showConfirmation('Guahh AI Unavailable', 'You need at least one player on the field and one on the bench.');
+                return;
             }
-            showCustomModal('Substitution Suggestions', messageHtml, buttons);
+
+            let messageHtml = `
+                <div style="margin-bottom: 15px; text-align: left;">
+                    <label for="ai-goal-select" style="display:block; margin-bottom: 8px; font-weight: bold; color: white;">Game Situation:</label>
+                    <select id="ai-goal-select" style="width: 100%; padding: 10px; border-radius: 8px; background-color: #2D2D2D; color: white; border: 1px solid #444; font-size: 15px;">
+                        <option value="win">We need to win (Play best players)</option>
+                        <option value="even">Even play time (Fairness)</option>
+                        <option value="any">Doesn't matter (Balanced)</option>
+                    </select>
+                </div>
+                <div id="ai-loading" style="display: none; text-align: center; margin-top: 20px; margin-bottom: 10px;">
+                    <span style="display: inline-block; animation: pulse 1.5s infinite; color: #b388ff; font-weight: bold; font-size: 16px;">Guahh AI is thinking...</span>
+                </div>
+            `;
+
+            showCustomModal('Smart Suggestions', messageHtml, [
+                {
+                    text: 'Ask Guahh AI', className: 'primary', action: (e) => {
+                        e.target.disabled = true;
+                        e.target.textContent = 'Thinking...';
+                        fetchAiSuggestion();
+                    }
+                },
+                { text: 'Cancel', className: 'secondary', action: closeModal }
+            ]);
         }
         suggestSubBtn.addEventListener('click', suggestSubstitution);
 
@@ -970,12 +1080,10 @@
             updateSubstitutionWarnings();
         }
         function adjustTime(s) { totalSeconds = Math.max(0, totalSeconds + s); timeDisplay.textContent = formatTime(totalSeconds); if (isCountdownMode && totalSeconds === 0 && isRunning) { clearInterval(countdownInterval); isRunning = false; startPauseBtn.textContent = 'Done!'; startPauseBtn.classList.add('countdown-ended'); } updateSubstitutionWarnings(); }
-        function toggleMode() { showConfirmation('Confirm Mode Switch', `Switch mode? This will reset the timer and all player times.`, (c) => { if (c) { isCountdownMode = !isCountdownMode; modeToggleBtn.textContent = isCountdownMode ? 'Stopwatch' : 'Countdown'; resetTimer(); } }); }
         startPauseBtn.addEventListener('click', () => isRunning ? pauseTimer() : startTimer());
         resetBtn.addEventListener('click', () => { showConfirmation('Confirm Timer Reset', 'Reset the main timer and all player times?', (c) => { if (c) resetTimer(); }); });
-        modeToggleBtn.addEventListener('click', toggleMode);
-        addMinuteBtn.addEventListener('click', () => adjustTime(60));
-        subtractMinuteBtn.addEventListener('click', () => adjustTime(-60));
+        addMinuteBtn.addEventListener('click', () => adjustTime(30));
+        subtractMinuteBtn.addEventListener('click', () => adjustTime(-30));
         timeDisplay.textContent = formatTime(INITIAL_STOPWATCH_SECONDS);
 
         // --- MINI TIMER LOGIC ---
@@ -1013,11 +1121,32 @@
             if (!gameData.teamName) { showConfirmation('Required Field Missing', 'Please select a Team Name before saving.'); return; }
             saveToSheetsBtn.disabled = true; saveToSheetsBtn.textContent = 'Saving...';
             fetch(SCRIPT_URL, { method: 'POST', mode: 'cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(gameData) })
-                .then(res => res.json()).then(data => { showConfirmation('Success!', `Game data saved for "${gameData.teamName}".`); })
+                .then(res => res.json()).then(data => { showConfirmation('Success!', `Game is saved for "${gameData.teamName}".`); })
                 .catch(error => { console.error('Error:', error); showConfirmation('Network Error', `A network error occurred. Details: ${error}`); })
                 .finally(() => { saveToSheetsBtn.disabled = false; saveToSheetsBtn.textContent = 'Finish Game'; });
         }
         saveToSheetsBtn.addEventListener('click', () => { showConfirmation('Finish and Save Game', 'End this session and save final times to Google Sheets?', (c) => { if (c) sendDataToSheets(); }); });
+
+        document.getElementById('update-app-btn').addEventListener('click', () => { location.reload(true); });
+
+        // --- SCREEN WAKE LOCK ---
+        let wakeLock = null;
+        async function requestWakeLock() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    console.log('Wake Lock is active');
+                }
+            } catch (err) {
+                console.error(`${err.name}, ${err.message}`);
+            }
+        }
+        document.addEventListener('visibilitychange', async () => {
+            if (wakeLock !== null && document.visibilityState === 'visible') {
+                await requestWakeLock();
+            }
+        });
+        requestWakeLock();
     </script>
 </body>
 
