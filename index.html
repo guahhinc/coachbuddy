@@ -1183,7 +1183,11 @@ Use ONLY the first names (or base names) of the players without numbers or times
         }
         saveToSheetsBtn.addEventListener('click', () => { showConfirmation('Finish and Save Game', 'End this session and save final times to Google Sheets?', (c) => { if (c) sendDataToSheets(); }); });
 
-        document.getElementById('update-app-btn').addEventListener('click', () => { location.reload(true); });
+        document.getElementById('update-app-btn').addEventListener('click', () => { 
+            showConfirmation('Update App', 'Are you sure you want to update the app? This will refresh the page.', (confirmed) => { 
+                if (confirmed) location.reload(true); 
+            }); 
+        });
 
         // --- SCREEN WAKE LOCK ---
         let wakeLock = null;
