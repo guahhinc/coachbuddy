@@ -39,7 +39,7 @@
         }
 
         button {
-            transition: all 0.25s ease;
+            transition: all 0.27s ease;
         }
 
         @keyframes btn-pop {
@@ -1212,7 +1212,7 @@ Use ONLY the first names (or base names) of the players without numbers or times
         saveToSheetsBtn.addEventListener('click', () => { showConfirmation('Finish and Save Game', 'End this session and save final times to Google Sheets?', (c) => { if (c) sendDataToSheets(); }); });
 
         document.getElementById('update-app-btn').addEventListener('click', () => {
-            showConfirmation('Update App', 'Are you sure you want to update the app? This will refresh the page. | Current Version: v2.2.1', (confirmed) => {
+            showConfirmation('Update App', 'Are you sure you want to update the app? This will refresh the page | Current Version: v2.2.1', (confirmed) => {
                 if (confirmed) location.reload(true);
             });
         });
