@@ -44,12 +44,12 @@
 
         @keyframes btn-pop {
             0% { transform: scale(1); filter: brightness(1); }
-            50% { transform: scale(1.05); filter: brightness(1.2); }
+            50% { transform: scale(1.05); filter: brightness(1.5); }
             100% { transform: scale(1); filter: brightness(1); }
         }
 
         .btn-pop {
-            animation: btn-pop 0.25s ease !important;
+            animation: btn-pop 0.35s ease !important;
         }
 
         html {
@@ -713,7 +713,11 @@
         const modalMessage = document.getElementById('modal-message');
         const modalButtons = document.getElementById('modal-buttons');
 
-        function closeModal() { customModal.style.display = 'none'; }
+        function closeModal() { 
+            setTimeout(() => {
+                customModal.style.display = 'none'; 
+            }, 150);
+        }
 
         function showCustomModal(title, messageHtml, buttons) {
             modalTitle.textContent = title;
@@ -1229,7 +1233,7 @@ Use ONLY the first names (or base names) of the players without numbers or times
                 btn.classList.remove('btn-pop');
                 void btn.offsetWidth; // trigger reflow
                 btn.classList.add('btn-pop');
-                setTimeout(() => btn.classList.remove('btn-pop'), 250);
+                setTimeout(() => btn.classList.remove('btn-pop'), 350);
             }
         });
     </script>
