@@ -622,6 +622,12 @@
                 <div id="roster"></div>
             </div>
 
+            <!-- RECENT SUBS SECTION -->
+            <div id="recent-subs-section" style="display: none; background-color: #1E1E1E; padding: 10px; border-radius: 12px; margin-bottom: 10px;">
+                <div style="font-size: 11px; font-weight: bold; color: #B0B0B0; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;">Last Subbed On</div>
+                <div id="recent-subs-list" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
+            </div>
+
             <!-- MODIFIED: MINI TIMER SECTION -->
             <div id="mini-timer-section">
                 <div id="mini-time-display">03:00</div>
@@ -683,6 +689,50 @@
         const DEFAULT_MINI_TIMER_SECONDS = 180; // 3 minutes
 
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwgs_s_G1AutKbrQ1SULj1cmw-5z091aN8YttPaOWnpSoit_qkj3NHewGYr9uQrUtE8aQ/exec';
+
+        // --- SUB TRACKING ---
+        let recentSubs = []; // List of { name, state }
+        let pendingSubChanges = [];
+        let subDebounceTimer = null;
+
+        function updateRecentSubsUI() {
+            const container = document.getElementById('recent-subs-section');
+            const list = document.getElementById('recent-subs-list');
+            const justOn = recentSubs.filter(sub => sub.state === 'on');
+            if (justOn.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+            container.style.display = 'block';
+            list.innerHTML = '';
+            justOn.forEach(sub => {
+                const badge = document.createElement('span');
+                badge.style.cssText = `
+                    padding: 4px 8px;
+                    border-radius: 6px;
+                    font-size: 11px;
+                    font-weight: 600;
+                    color: white;
+                    background-color: #4CAF50;
+                `;
+                badge.textContent = sub.name;
+                list.appendChild(badge);
+            });
+        }
+
+        function commitSubs() {
+            recentSubs = [...pendingSubChanges];
+            pendingSubChanges = [];
+            subDebounceTimer = null;
+            updateRecentSubsUI();
+        }
+
+        function recordSubChange(name, state) {
+            pendingSubChanges = pendingSubChanges.filter(p => p.name !== name);
+            pendingSubChanges.push({ name, state });
+            if (subDebounceTimer) clearTimeout(subDebounceTimer);
+            subDebounceTimer = setTimeout(commitSubs, 7000); // 7s debounce
+        }
 
         // --- STATE VARIABLES ---
         let countdownInterval = null, totalSeconds = INITIAL_STOPWATCH_SECONDS, isRunning = false, isCountdownMode = false;
@@ -809,6 +859,7 @@
                     playerItem.dataset.isOnField = '0';
                     toggleBtn.textContent = 'ON';
                     toggleBtn.classList.add('status-off'); toggleBtn.classList.remove('status-on');
+                    recordSubChange(name, 'off');
                 } else {
                     const currentOnCount = document.querySelectorAll('.player-item[data-is-on-field="1"]').length;
                     if (currentOnCount >= MAX_PLAYERS_ON_FIELD) {
@@ -820,6 +871,7 @@
                     toggleBtn.classList.remove('status-off'); toggleBtn.classList.add('status-on');
                     const lowIcon = playerItem.querySelector('[data-role="low-warning-icon"]');
                     if (lowIcon) lowIcon.style.display = 'none';
+                    recordSubChange(name, 'on');
                 }
                 updateSubstitutionWarnings();
             };
@@ -956,6 +1008,7 @@
                     notes,
                     goal,
                     timeStr,
+                    recentSubs,
                     aiAbortController.signal
                 );
 
