@@ -49,8 +49,8 @@
             }
 
             50% {
-                transform: scale(1.07);
-                filter: brightness(1.7);
+                transform: scale(1.06);
+                filter: brightness(1.8);
             }
 
             100% {
@@ -1212,7 +1212,7 @@ Use ONLY the first names (or base names) of the players without numbers or times
         saveToSheetsBtn.addEventListener('click', () => { showConfirmation('Finish and Save Game', 'End this session and save final times to Google Sheets?', (c) => { if (c) sendDataToSheets(); }); });
 
         document.getElementById('update-app-btn').addEventListener('click', () => {
-            showConfirmation('Update App', 'Are you sure you want to update the app? This will refresh the page. (Current Version: v2.2)', (confirmed) => {
+            showConfirmation('Update App', 'Are you sure you want to update the app? This will refresh the page. | Current Version: v2.2.1', (confirmed) => {
                 if (confirmed) location.reload(true);
             });
         });
