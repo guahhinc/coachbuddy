@@ -538,7 +538,7 @@
 
         /* Separator for close button */
         .modal-buttons .suggestion-close-btn {
-            margin-top: 15px;
+            margin-top: 0px;
         }
     </style>
 </head>
@@ -612,7 +612,7 @@
             </div>
             <div style="margin-top: 5px;">
                 <button id="suggest-sub-btn" class="timer-btn secondary"
-                    style="width: 100%; background-color: #673ab7; color: white; border: none; font-weight: bold;">Smart
+                    style="width: 100%; background-color: #673ab7; color: white; border: none;">Smart
                     Suggestions</button>
             </div>
             <div style="margin-top: 5px;">
@@ -620,8 +620,8 @@
                     Players</button>
             </div>
             <div style="margin-top: 5px;">
-                <button id="update-app-btn" class="timer-btn secondary" style="width: 100%;">Update App (Current:
-                    v2.1.1)</button>
+                <button id="update-app-btn" class="timer-btn secondary" style="width: 100%;">Update App | Current:
+                    v2.2</button>
             </div>
 
         </div>
@@ -650,7 +650,7 @@
         const LOCAL_STORAGE_KEY = 'coachbuddySelectedTeam';
         const DEFAULT_MINI_TIMER_SECONDS = 180; // 3 minutes
 
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxYojrRO-1bCWv_mUxsmatZgRDWiruGKYvxzvhQ4AdwZSd80aMsHzloHh3rUYThgyI0xA/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwgs_s_G1AutKbrQ1SULj1cmw-5z091aN8YttPaOWnpSoit_qkj3NHewGYr9uQrUtE8aQ/exec';
 
         // --- STATE VARIABLES ---
         let countdownInterval = null, totalSeconds = INITIAL_STOPWATCH_SECONDS, isRunning = false, isCountdownMode = false;
@@ -922,9 +922,16 @@ Current players on the bench:
 ${offField.length > 0 ? offField.join('\n') : 'None'}
 
 Who should I sub OUT (from the field) and who should I sub IN (from the bench)?
-Preferably suggest subbing 2 players at once. 
-Also, tell me how long I should wait until the NEXT substitution (e.g., "Sub again in 3 minutes").
-Provide a short, direct suggestion (max 3 sentences). Explain why based on the goal.`;
+Preferably suggest subbing 2 players at once but you can do more or less if needed and also there needs to be 5 players on the court at all times.
+Show player names in bold and also tell me how long I should wait until the NEXT substitution (e.g., "Sub again in 3 minutes")( Max: 4 minutes | Min: 2 Minutes).
+Provide a short, direct suggestion (max 3 sentences). Explain why based on the goal.
+Show a line that just has the names of the players that will be on after these suggestions are made (e.g., "Players that will be on: London, Indigo, Mila").
+
+
+At the very end of your response, provide exactly ONE line formatted exactly like this:
+[SUB_ACTION] {"out": ["Player Name 1"], "in": ["Player Name 2"]}
+Use ONLY the first names (or base names) of the players without numbers or times (e.g., "Ava" instead of "#6 Ava"). If no substitutions are suggested, return:
+[SUB_ACTION] {"out": [], "in": []}`;
 
             try {
                 const response = await fetch(SCRIPT_URL, {
@@ -942,15 +949,58 @@ Provide a short, direct suggestion (max 3 sentences). Explain why based on the g
                 buttonsDiv.innerHTML = ''; // clear cancel button
 
                 if (data.error) {
-                    throw new Error(data.error);
+                    const errorMsg = typeof data.error === 'object' ? JSON.stringify(data.error, null, 2) : data.error;
+                    throw new Error(errorMsg);
                 }
 
                 if (data.candidates && data.candidates.length > 0) {
-                    const suggestionText = data.candidates[0].content.parts[0].text;
-                    const formattedText = suggestionText.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-                    showCustomModal('Smart Suggestions', `<div style="font-size: 1.1rem; line-height: 1.4; color: #E0E0E0; text-align: left;">${formattedText}</div>`, [
-                        { text: 'Close', action: closeModal }
-                    ]);
+                    let suggestionText = data.candidates[0].content.parts[0].text;
+
+                    let subActions = null;
+                    const actionRegex = /\[SUB_ACTION\]\s*({.*})/;
+                    const match = suggestionText.match(actionRegex);
+                    if (match) {
+                        try {
+                            subActions = JSON.parse(match[1]);
+                        } catch (e) {
+                            console.error("Failed to parse sub actions JSON:", e);
+                        }
+                        suggestionText = suggestionText.replace(actionRegex, '').trim();
+                    }
+
+                    const formattedText = suggestionText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+                    const buttons = [];
+                    const hasSubs = subActions && (subActions.out.length > 0 || subActions.in.length > 0);
+
+                    if (hasSubs) {
+                        buttons.push({
+                            text: 'Make Substitutes',
+                            className: 'primary',
+                            action: (e) => {
+                                const allPlayers = Array.from(document.querySelectorAll('.player-item'));
+
+                                const togglePlayer = (name, targetState) => {
+                                    const p = allPlayers.find(item => {
+                                        const pName = item.querySelector('.player-name')?.textContent || '';
+                                        return pName.toLowerCase().includes(name.toLowerCase());
+                                    });
+                                    if (p && p.dataset.isOnField === targetState) {
+                                        p.querySelector('.toggle-btn')?.click();
+                                    }
+                                };
+
+                                subActions.out.forEach(name => togglePlayer(name, '1')); // '1' is ON field, clicking subs them OUT
+                                subActions.in.forEach(name => togglePlayer(name, '0'));  // '0' is OFF field, clicking subs them IN
+
+                                closeModal();
+                            }
+                        });
+                    }
+
+                    buttons.push({ text: 'Close', action: closeModal, className: hasSubs ? 'secondary suggestion-close-btn' : 'secondary' });
+
+                    showCustomModal('Smart Suggestions', `<div style="font-size: 1.1rem; line-height: 1.5; color: #E0E0E0; text-align: left; white-space: pre-wrap;">${formattedText}</div>`, buttons);
                 } else {
                     throw new Error("No suggestion returned");
                 }
