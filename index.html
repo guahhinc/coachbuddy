@@ -38,6 +38,20 @@
             font-family: inherit;
         }
 
+        button {
+            transition: all 0.25s ease;
+        }
+
+        @keyframes btn-pop {
+            0% { transform: scale(1); filter: brightness(1); }
+            50% { transform: scale(1.05); filter: brightness(1.2); }
+            100% { transform: scale(1); filter: brightness(1); }
+        }
+
+        .btn-pop {
+            animation: btn-pop 0.25s ease !important;
+        }
+
         html {
             height: 100%;
         }
@@ -157,7 +171,7 @@
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.2s ease;
+            transition: all 0.25s ease;
             font-size: 13px;
             line-height: 1.2;
             display: flex;
@@ -1207,6 +1221,17 @@ Use ONLY the first names (or base names) of the players without numbers or times
             }
         });
         requestWakeLock();
+
+        // --- BUTTON CLICK ANIMATION ---
+        document.addEventListener('pointerdown', (e) => {
+            const btn = e.target.closest('button');
+            if (btn && !btn.disabled) {
+                btn.classList.remove('btn-pop');
+                void btn.offsetWidth; // trigger reflow
+                btn.classList.add('btn-pop');
+                setTimeout(() => btn.classList.remove('btn-pop'), 250);
+            }
+        });
     </script>
 </body>
 
