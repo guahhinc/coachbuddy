@@ -645,8 +645,7 @@
                     Players</button>
             </div>
             <div style="margin-top: 5px;">
-                <button id="update-app-btn" class="timer-btn secondary" style="width: 100%;">Update App | Current:
-                    v2.2</button>
+                <button id="update-app-btn" class="timer-btn secondary" style="width: 100%;">Update App</button>
             </div>
 
         </div>
@@ -1213,7 +1212,7 @@ Use ONLY the first names (or base names) of the players without numbers or times
         saveToSheetsBtn.addEventListener('click', () => { showConfirmation('Finish and Save Game', 'End this session and save final times to Google Sheets?', (c) => { if (c) sendDataToSheets(); }); });
 
         document.getElementById('update-app-btn').addEventListener('click', () => {
-            showConfirmation('Update App', 'Are you sure you want to update the app? This will refresh the page.', (confirmed) => {
+            showConfirmation('Update App', 'Are you sure you want to update the app? This will refresh the page. (Current Version: v2.2)', (confirmed) => {
                 if (confirmed) location.reload(true);
             });
         });
