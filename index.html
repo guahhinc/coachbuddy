@@ -616,10 +616,12 @@
                     Suggestions</button>
             </div>
             <div style="margin-top: 5px;">
-                <button id="add-default-players-btn" class="timer-btn secondary" style="width: 100%;">Add Default Players</button>
+                <button id="add-default-players-btn" class="timer-btn secondary" style="width: 100%;">Add Default
+                    Players</button>
             </div>
             <div style="margin-top: 5px;">
-                <button id="update-app-btn" class="timer-btn secondary" style="width: 100%;">Update App</button>
+                <button id="update-app-btn" class="timer-btn secondary" style="width: 100%;">Update App (Current:
+                    v2.1.1)</button>
             </div>
 
         </div>
@@ -648,7 +650,7 @@
         const LOCAL_STORAGE_KEY = 'coachbuddySelectedTeam';
         const DEFAULT_MINI_TIMER_SECONDS = 180; // 3 minutes
 
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzOYayTMqPpYI5p1GTTcnbzQcAGUgJmukPkT1rZ8HiaCE86H9iJxP-hEaw-t23NnxuG6w/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxYojrRO-1bCWv_mUxsmatZgRDWiruGKYvxzvhQ4AdwZSd80aMsHzloHh3rUYThgyI0xA/exec';
 
         // --- STATE VARIABLES ---
         let countdownInterval = null, totalSeconds = INITIAL_STOPWATCH_SECONDS, isRunning = false, isCountdownMode = false;
@@ -877,7 +879,7 @@
 
             const goal = goalSelect.options[goalSelect.selectedIndex].text;
             loadingDiv.style.display = 'block';
-            
+
             buttonsDiv.innerHTML = '';
             const cancelBtn = document.createElement('button');
             cancelBtn.textContent = 'Cancel';
@@ -908,10 +910,10 @@
             const notes = document.getElementById('game-notes').value.trim();
             const timeStr = formatTime(totalSeconds);
 
-            const prompt = `You are a coach assistant. We have ${onField.length} players on the field and ${offField.length} on the bench.
+            const prompt = `You are a coach assistant for a U14 Girls Domestic Basketball team. We have ${onField.length} players on the field and ${offField.length} on the bench.
 Our players ranked from best to worst are: London, Indigo, Mila, Aria, Maddie, Ava, AK, Elektra.
 Goal for this substitution: ${goal}
-Current Game Time: ${timeStr} (Max time: 39:00)
+Current Game Time: ${timeStr} (Max time: 40:00 - two 20min halves)
 ${notes ? `Game Notes (injuries, late players, etc): ${notes}\n` : ''}
 Current players on the field:
 ${onField.length > 0 ? onField.join('\n') : 'None'}
@@ -920,25 +922,29 @@ Current players on the bench:
 ${offField.length > 0 ? offField.join('\n') : 'None'}
 
 Who should I sub OUT (from the field) and who should I sub IN (from the bench)?
-Preferably suggest subbing 2 players at once, but you can suggest more or fewer if the game situation requires it.
-Provide a short, direct suggestion (max 2 sentences). Explain why based on the goal.`;
+Preferably suggest subbing 2 players at once. 
+Also, tell me how long I should wait until the NEXT substitution (e.g., "Sub again in 3 minutes").
+Provide a short, direct suggestion (max 3 sentences). Explain why based on the goal.`;
 
             try {
-                const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent", {
+                const response = await fetch(SCRIPT_URL, {
                     method: 'POST',
+                    mode: 'cors',
                     signal: aiAbortController.signal,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-goog-api-key': 'AIzaSyBKV0XQh-q53XKGfQTEgjRp5h0TQllIzkQ'
-                    },
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: prompt }] }]
+                        action: 'get_ai_suggestion',
+                        prompt: prompt
                     })
                 });
                 const data = await response.json();
 
                 buttonsDiv.innerHTML = ''; // clear cancel button
-                
+
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
                 if (data.candidates && data.candidates.length > 0) {
                     const suggestionText = data.candidates[0].content.parts[0].text;
                     const formattedText = suggestionText.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
@@ -951,7 +957,7 @@ Provide a short, direct suggestion (max 2 sentences). Explain why based on the g
             } catch (error) {
                 if (error.name === 'AbortError') return; // Do nothing if aborted by user
                 buttonsDiv.innerHTML = '';
-                showCustomModal('AI Error', 'Failed to get suggestion from AI.', [{ text: 'OK', action: closeModal }]);
+                showCustomModal('AI Error', `Failed to get suggestion: ${error.message || error}`, [{ text: 'OK', action: closeModal }]);
             }
         }
 
