@@ -13,9 +13,9 @@
 
     <!-- FAVICON -->
     <link rel="icon"
-        href="https://raw.githubusercontent.com/guahhinc/coachbuddy/main/Icon-iOS-Default-1024x1024%401x.png">
+        href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCEsy3JshuCcp0rymJuhtf2MTszkAF88z_eQ&s">
     <link rel="apple-touch-icon"
-        href="https://raw.githubusercontent.com/guahhinc/coachbuddy/main/Icon-iOS-Default-1024x1024%401x.png">
+        href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCEsy3JshuCcp0rymJuhtf2MTszkAF88z_eQ&s">
 
     <!-- iOS WEB APP CAPABILITIES -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -725,13 +725,16 @@
             pendingSubChanges = [];
             subDebounceTimer = null;
             updateRecentSubsUI();
+            // Auto-reset and start the 3-minute sub timer
+            resetMiniTimer();
+            startMiniTimer();
         }
 
         function recordSubChange(name, state) {
             pendingSubChanges = pendingSubChanges.filter(p => p.name !== name);
             pendingSubChanges.push({ name, state });
             if (subDebounceTimer) clearTimeout(subDebounceTimer);
-            subDebounceTimer = setTimeout(commitSubs, 7000); // 7s debounce
+            subDebounceTimer = setTimeout(commitSubs, 2500); // 2.5s debounce — resets on each new click
         }
 
         // --- STATE VARIABLES ---
@@ -934,7 +937,7 @@
         const DEFAULT_ROSTERS = {
             'TLS Aces': [{ name: 'Ava', number: 6 }, { name: 'Maddie', number: 32 }, { name: 'AK', number: 52 },
             { name: 'Indigo', number: 50 }, { name: 'Aria', number: 7 }, { name: 'London', number: 8 },
-            { name: 'Elektra', number: null }, { name: 'Mila', number: null }],
+            { name: 'Elektra', number: 21 }, { name: 'Mila', number: 22 }],
             'Testing Team': [{ name: 'Tester 1', number: 1 }, { name: 'Tester 2', number: 2 }, { name: 'Tester 3', number: 3 }, { name: 'Tester 4', number: 4 }]
         };
 

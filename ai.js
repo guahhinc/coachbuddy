@@ -40,8 +40,8 @@ async function getBuiltInAiSuggestion(teamName, onField, offField, notes, goal, 
         const n = name.toLowerCase();
         if (!notesLower.includes(n)) return false;
         const nameIdx = notesLower.indexOf(n);
-        const surroundingText = notesLower.substring(Math.max(0, nameIdx - 30), nameIdx + 30);
-        return /(injure|hurt|sick|late|absent)/.test(surroundingText);
+        const surroundingText = notesLower.substring(Math.max(0, nameIdx - 40), nameIdx + 60);
+        return /(injure|hurt|sick|late|absent|unwell|sore|pain|limp|cramp|dizzy|nausea|vomit|ill\b|not\s+well|not\s+feeling\s+well|feeling\s+sick|feeling\s+unwell|feeling\s+ill|doesn'?t\s+want\s+(to\s+)?(go\s+on|play|continue)|don'?t\s+want\s+(to\s+)?(go\s+on|play|continue)|does\s+not\s+want\s+(to\s+)?(go\s+on|play|continue)|won'?t\s+play|refuses?\s+to\s+play|can'?t\s+go\s+on|not\s+playing|sitting\s+out|needs?\s+a\s+rest|needs?\s+to\s+come\s+off|has\s+to\s+come\s+off|pull\s+(her|him)\s+off|take\s+(her|him)\s+off)/.test(surroundingText);
     };
 
     const hasFoulTrouble = (name) => {
@@ -64,8 +64,8 @@ async function getBuiltInAiSuggestion(teamName, onField, offField, notes, goal, 
         const n = name.toLowerCase();
         if (!notesLower.includes(n)) return false;
         const nameIdx = notesLower.indexOf(n);
-        const surroundingText = notesLower.substring(Math.max(0, nameIdx - 30), nameIdx + 30);
-        return /(tired|exhausted|gassed|dead|breathing heavy)/.test(surroundingText);
+        const surroundingText = notesLower.substring(Math.max(0, nameIdx - 40), nameIdx + 60);
+        return /(tired|exhausted|gassed|dead|breathing\s+heavy|worn\s+out|running\s+out|no\s+energy|fatigued|flagging|struggling)/.test(surroundingText);
     };
 
     // Global situational parsing
