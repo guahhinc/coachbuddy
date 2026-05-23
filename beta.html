@@ -288,11 +288,27 @@
                     
                     <div id="manage-player-list"></div>
                     
-                    <div style="display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap;">
-                        <input type="text" id="new-player-name" placeholder="Name" style="flex: 2; min-width: 100px; padding: 9px; border-radius: 8px; background: #2D2D2D; color: #E0E0E0; border: 1px solid #333; font-size: 15px;">
-                        <input type="text" id="new-player-number" placeholder="No." style="flex: 1; min-width: 50px; padding: 9px; border-radius: 8px; background: #2D2D2D; color: #E0E0E0; border: 1px solid #333; font-size: 15px;">
-                        <input type="number" id="new-player-rank" placeholder="Rank(1-10)" style="flex: 1; min-width: 70px; padding: 9px; border-radius: 8px; background: #2D2D2D; color: #E0E0E0; border: 1px solid #333; font-size: 15px;">
-                        <button id="create-player-btn" class="timer-btn primary" style="width: 100%; margin-top: 5px;">Add Player</button>
+                    <div style="margin-top: 10px; background: #2D2D2D; padding: 10px; border-radius: 8px;">
+                        <div style="display: flex; gap: 6px; margin-bottom: 6px; flex-wrap: wrap;">
+                            <input type="text" id="new-player-name" placeholder="Name" style="flex: 2; min-width: 100px; padding: 9px; border-radius: 8px; background: #1E1E1E; color: #E0E0E0; border: 1px solid #333; font-size: 15px;">
+                            <input type="text" id="new-player-number" placeholder="No." style="flex: 1; min-width: 50px; padding: 9px; border-radius: 8px; background: #1E1E1E; color: #E0E0E0; border: 1px solid #333; font-size: 15px;">
+                            <input type="number" id="new-player-rank" placeholder="Rank (1-10)" style="flex: 1; min-width: 70px; padding: 9px; border-radius: 8px; background: #1E1E1E; color: #E0E0E0; border: 1px solid #333; font-size: 15px;">
+                        </div>
+                        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                            <input type="number" id="new-player-height" placeholder="Height (cm)" style="flex: 1; min-width: 80px; padding: 9px; border-radius: 8px; background: #1E1E1E; color: #E0E0E0; border: 1px solid #333; font-size: 15px;">
+                            <select id="new-player-skill" style="flex: 2; min-width: 120px; padding: 9px; border-radius: 8px; background: #1E1E1E; color: #E0E0E0; border: 1px solid #333; font-size: 15px;">
+                                <option value="">Main Skill (Optional)</option>
+                                <option value="Speed">Speed</option>
+                                <option value="Jump Height">Jump Height</option>
+                                <option value="Shot Accuracy">Shot Accuracy</option>
+                                <option value="Quick Thinking">Quick Thinking</option>
+                                <option value="3 Point Star">3 Point Star</option>
+                                <option value="Defence">Defence</option>
+                                <option value="Communication">Communication</option>
+                                <option value="Good At Everything">Good At Everything</option>
+                            </select>
+                        </div>
+                        <button id="create-player-btn" class="timer-btn primary" style="width: 100%; margin-top: 8px;">Add Player</button>
                     </div>
                 </div>
             </div>
@@ -359,7 +375,7 @@
 
     <script>
         // --- GLOBAL STATE & CONFIG ---
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw80YNOrUWcTm3VDzcBlr0u350g0LiplwbuIXqw04u10sFe4W5UNxp70cEquj5_f29AZQ/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxE_XqmbiIqWd-n1EmD-zJiPcQGWlxzf7yZZm_T9H8uPvif0thEOBlGzAo64ztECGKx/exec';
         let authToken = localStorage.getItem('coachbuddy_token');
         let currentUser = null;
         let subscriptionStatus = "NONE";
@@ -486,7 +502,6 @@
         // --- INIT & AUTH ---
         async function initApp() {
             const overlay = document.getElementById('loading-overlay');
-            // Ensure mini timer display matches settings on load
             resetMiniTimer(); 
 
             if (authToken) {
@@ -671,8 +686,8 @@
             try {
                 const res = await apiCall('create_team', { teamName: name });
                 const t = appData.teams.find(t => t.teamId === tempId);
-                if (t) t.teamId = res.teamId;
-                renderTeams(); 
+                if (t) { t.teamId = res.teamId; t.teamName = res.teamName; }
+                renderManageTeams(); renderTeams(); 
             } catch (e) {
                 appData.teams = appData.teams.filter(t => t.teamId !== tempId);
                 renderManageTeams(); renderTeams();
@@ -695,11 +710,18 @@
             teamPlayers.forEach(p => {
                 const div = document.createElement('div');
                 div.style.cssText = "display: flex; justify-content: space-between; padding: 10px; background: #2D2D2D; margin-bottom: 5px; border-radius: 8px; align-items: center;";
+                
+                let details = `(Rank: ${p.rank || '-'})`;
+                if(p.height) details += ` | ${p.height}cm`;
+                if(p.skill) details += ` | ${p.skill}`;
+
                 div.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 6px;">
-                    <span style="font-weight: 700; color: #64B5F6; font-size: 15px;">#${p.playerNumber || '-'}</span>
-                    <span style="font-weight: 500; font-size: 15px; color: #E0E0E0;">${p.playerName}</span>
-                    <span style="color: #B0B0B0; font-size: 12px; margin-left: 2px;">(Rank: ${p.rank || '-'})</span>
+                <div style="display: flex; flex-direction: column;">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span style="font-weight: 700; color: #64B5F6; font-size: 15px;">#${p.playerNumber || '-'}</span>
+                        <span style="font-weight: 500; font-size: 15px; color: #E0E0E0;">${p.playerName}</span>
+                    </div>
+                    <span style="color: #B0B0B0; font-size: 11px; margin-top: 3px;">${details}</span>
                 </div>
                 <div style="display: flex; gap: 5px;">
                     <button class="timer-btn secondary" style="padding: 5px 10px; font-size: 11px; min-height: 0;" onclick="editPlayerFromManage('${p.playerId}')">Edit</button>
@@ -716,6 +738,8 @@
             document.getElementById('new-player-name').value = p.playerName;
             document.getElementById('new-player-number').value = p.playerNumber || '';
             document.getElementById('new-player-rank').value = p.rank || '';
+            document.getElementById('new-player-height').value = p.height || '';
+            document.getElementById('new-player-skill').value = p.skill || '';
             editingPlayerId = playerId;
             
             const btn = document.getElementById('create-player-btn');
@@ -731,6 +755,8 @@
             document.getElementById('new-player-name').value = '';
             document.getElementById('new-player-number').value = '';
             document.getElementById('new-player-rank').value = '';
+            document.getElementById('new-player-height').value = '';
+            document.getElementById('new-player-skill').value = '';
             const btn = document.getElementById('create-player-btn');
             btn.textContent = 'Add Player';
             btn.style.backgroundColor = '';
@@ -753,33 +779,36 @@
             const name = document.getElementById('new-player-name').value.trim();
             const num = document.getElementById('new-player-number').value.trim();
             const rank = document.getElementById('new-player-rank').value.trim();
+            const height = document.getElementById('new-player-height').value.trim();
+            const skill = document.getElementById('new-player-skill').value.trim();
             
             if (!teamId || !name) return showConfirmation('Error', 'Team and Name are required.');
             
             if (editingPlayerId) {
                 const p = appData.players.find(p => p.playerId === editingPlayerId);
                 if (p) {
-                    p.playerName = name; p.playerNumber = num; p.rank = rank || "10";
+                    p.playerName = name; p.playerNumber = num; p.rank = rank || "10"; 
+                    p.height = height; p.skill = skill;
                     renderManagePlayers();
                     
                     const currentEditId = editingPlayerId;
                     resetPlayerForm();
                     
                     try {
-                        await apiCall('edit_player', { playerId: currentEditId, playerName: name, playerNumber: num, rank: rank || "10" });
+                        await apiCall('edit_player', { playerId: currentEditId, playerName: name, playerNumber: num, rank: rank || "10", height, skill });
                     } catch (e) {
                         showConfirmation('Error', 'Failed to update player: ' + e.message);
                     }
                 }
             } else {
                 const tempId = 'temp_' + Date.now();
-                const newPlayer = { playerId: tempId, teamId, playerName: name, playerNumber: num, rank: rank || "10" };
+                const newPlayer = { playerId: tempId, teamId, playerName: name, playerNumber: num, rank: rank || "10", height, skill };
                 appData.players.push(newPlayer);
                 renderManagePlayers();
                 resetPlayerForm();
                 
                 try {
-                    const res = await apiCall('add_player', { teamId, playerName: name, playerNumber: num, rank: rank || "10" });
+                    const res = await apiCall('add_player', { teamId, playerName: name, playerNumber: num, rank: rank || "10", height, skill });
                     const p = appData.players.find(p => p.playerId === tempId);
                     if (p) p.playerId = res.playerId;
                 } catch (e) {
@@ -844,6 +873,7 @@
                 const button = document.createElement('button');
                 button.textContent = btnInfo.text;
                 button.className = `timer-btn ${btnInfo.className || 'primary'}`;
+                if (btnInfo.id) button.id = btnInfo.id;
                 button.onclick = (e) => btnInfo.action(e);
                 btnContainer.appendChild(button);
             });
@@ -1099,18 +1129,27 @@
 
         // --- AI LOGIC ---
         function buildTeamDataForAi(teamId) {
-            if (!teamId) return { playersRanked: [] };
+            if (!teamId) return { players: {} };
             const teamPlayers = appData.players.filter(p => p.teamId === teamId);
-            teamPlayers.sort((a, b) => (parseInt(a.rank) || 999) - (parseInt(b.rank) || 999));
-            return { playersRanked: teamPlayers.map(p => p.playerName) };
+            let playersMap = {};
+            teamPlayers.forEach(p => {
+                playersMap[p.playerName.toLowerCase()] = {
+                    rank: parseInt(p.rank) || 999,
+                    height: parseInt(p.height) || 0,
+                    skill: p.skill || ""
+                };
+            });
+            return { players: playersMap };
         }
 
-        async function getBuiltInAiSuggestion(teamDataForAi, onField, offField, notes, goal, timeStr, recentSubs, abortSignal) {
+        async function getBuiltInAiSuggestion(teamDataForAi, onField, offField, notes, goal, secondaryGoal, timeStr, recentSubs, abortSignal) {
             await new Promise(resolve => setTimeout(resolve, 800));
-            const teamData = teamDataForAi || { playersRanked: [] };
-            const rankings = teamData.playersRanked.map(p => p.toLowerCase());
+            const teamData = teamDataForAi || { players: {} };
+            
+            const getRank = (name) => teamData.players[name.toLowerCase()]?.rank || 999;
+            const getSkill = (name) => teamData.players[name.toLowerCase()]?.skill || "";
+            const getHeight = (name) => teamData.players[name.toLowerCase()]?.height || 0;
 
-            const getRank = (name) => { const idx = rankings.indexOf(name.toLowerCase()); return idx !== -1 ? idx : 999; };
             const [minutes, seconds] = timeStr.split(':').map(Number);
             const timeLeftSec = Math.max(0, (40 * 60) - ((minutes * 60) + seconds));
             const isCrunchTime = timeLeftSec <= (5 * 60);
@@ -1174,13 +1213,57 @@
             });
             if (candidatesOut.length === 0) candidatesOut = onField.filter(p => !suggestedOut.some(outP => outP.name === p.name));
 
-            candidatesOut.sort((a, b) => (isWin && getRank(a.name) !== getRank(b.name)) ? getRank(b.name) - getRank(a.name) : b.time - a.time);
+            // Out Sorting: If Win, lowest rank leaves first. Else, highest time leaves first.
+            candidatesOut.sort((a, b) => {
+                if (isWin) {
+                    const rA = getRank(a.name), rB = getRank(b.name);
+                    if (rA !== rB) return rB - rA; // Higher number (worse rank) comes out first
+                }
+                return b.time - a.time;
+            });
+
+            // In Sorting: 
             candidatesIn.sort((a, b) => {
                 const hA = hotPlayers.includes(a.name) ? -1 : 0, hB = hotPlayers.includes(b.name) ? -1 : 0;
                 if (hA !== hB) return hA - hB;
-                if (isWin && getRank(a.name) !== getRank(b.name)) return getRank(a.name) - getRank(b.name);
+                
+                // Secondary Goal Boost
+                if (secondaryGoal) {
+                    let scoreA = 0, scoreB = 0;
+                    const skillA = getSkill(a.name), skillB = getSkill(b.name);
+                    const heightA = getHeight(a.name), heightB = getHeight(b.name);
+                    
+                    if (secondaryGoal === 'height') {
+                        if (skillA === 'Jump Height') scoreA += 10;
+                        if (skillB === 'Jump Height') scoreB += 10;
+                        scoreA += heightA / 100; 
+                        scoreB += heightB / 100;
+                    } else if (secondaryGoal === 'speed') {
+                        if (skillA === 'Speed') scoreA += 10;
+                        if (skillB === 'Speed') scoreB += 10;
+                    } else if (secondaryGoal === 'defense') {
+                        if (skillA === 'Defence') scoreA += 10;
+                        if (skillB === 'Defence') scoreB += 10;
+                    } else if (secondaryGoal === '3pt') {
+                        if (skillA === '3 Point Star') scoreA += 10;
+                        if (skillB === '3 Point Star') scoreB += 10;
+                    }
+                    if (skillA === 'Good At Everything') scoreA += 5;
+                    if (skillB === 'Good At Everything') scoreB += 5;
+
+                    if (scoreA !== scoreB) return scoreB - scoreA;
+                }
+
+                if (isWin) {
+                    const rA = getRank(a.name), rB = getRank(b.name);
+                    if (rA !== rB) return rA - rB; // Lower number (better rank) goes in first
+                }
                 return a.time - b.time;
             });
+
+            if (secondaryGoal && candidatesIn.length > 0) {
+                reasons.push(`🎯 **Tactical Focus:** Prioritizing players suited for ${secondaryGoal.toUpperCase()}.`);
+            }
 
             let numToSub = 2;
             if (candidatesOut.length > 0 && candidatesIn.length > 0) {
@@ -1220,12 +1303,22 @@
             if (onFieldCount === 0 || playerItems.length - onFieldCount === 0) return showConfirmation('Guahh AI Unavailable', 'You need at least one player on the field and one on the bench.');
 
             showCustomModal('Guahh AI Suggestions', `
-                <div style="margin-bottom: 15px; text-align: left;">
-                    <label for="ai-goal-select" style="display:block; margin-bottom: 8px; font-weight: bold; color: white;">Game Situation:</label>
+                <div style="margin-bottom: 10px; text-align: left;">
+                    <label for="ai-goal-select" style="display:block; margin-bottom: 5px; font-weight: bold; color: white;">Game Situation:</label>
                     <select id="ai-goal-select" style="width: 100%; padding: 10px; border-radius: 8px; background-color: #2D2D2D; color: white; border: 1px solid #444; font-size: 15px;">
                         <option value="win">We need to win (Play best players)</option>
                         <option value="even">Even play time (Fairness)</option>
                         <option value="any">Doesn't matter (Balanced)</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 15px; text-align: left;">
+                    <label for="ai-secondary-select" style="display:block; margin-bottom: 5px; font-weight: bold; color: white;">Secondary Focus (Optional):</label>
+                    <select id="ai-secondary-select" style="width: 100%; padding: 10px; border-radius: 8px; background-color: #2D2D2D; color: white; border: 1px solid #444; font-size: 15px;">
+                        <option value="">None</option>
+                        <option value="height">We need height</option>
+                        <option value="speed">We need speed</option>
+                        <option value="defense">We need defense</option>
+                        <option value="3pt">We need 3-pointers</option>
                     </select>
                 </div>
                 <div id="ai-loading" style="display: none; text-align: center; margin-top: 20px; margin-bottom: 10px;">
@@ -1245,7 +1338,10 @@
                     });
 
                     try {
-                        let suggestionText = await getBuiltInAiSuggestion(buildTeamDataForAi(teamSelect.value), onField, offField, document.getElementById('game-notes').value.trim(), document.getElementById('ai-goal-select').options[document.getElementById('ai-goal-select').selectedIndex].text, formatTime(totalSeconds), recentSubs, aiAbortController.signal);
+                        const primaryGoal = document.getElementById('ai-goal-select').options[document.getElementById('ai-goal-select').selectedIndex].text;
+                        const secondaryGoal = document.getElementById('ai-secondary-select').value;
+                        
+                        let suggestionText = await getBuiltInAiSuggestion(buildTeamDataForAi(teamSelect.value), onField, offField, document.getElementById('game-notes').value.trim(), primaryGoal, secondaryGoal, formatTime(totalSeconds), recentSubs, aiAbortController.signal);
                         let subActions = null; const match = suggestionText.match(/\[SUB_ACTION\]\s*({.*})/);
                         if (match) { subActions = JSON.parse(match[1]); suggestionText = suggestionText.replace(/\[SUB_ACTION\]\s*({.*})/, '').trim(); }
                         
@@ -1277,19 +1373,26 @@
             });
             if (!gameData.teamId) return showConfirmation('Required Field Missing', 'Please select a Team Name before saving.');
 
-            // Show confirmation before saving
-            showConfirmation('Finish and Save Game', 'End this game and save final times to Server?', (c) => { 
-                if (c) {
-                    // Show un-closable saving modal
-                    showCustomModal('Saving Game', '<div style="text-align:center; padding: 20px 0;"><span style="display: inline-block; animation: pulse 1.5s infinite; color: #4CAF50; font-weight: bold; font-size: 16px;">Saving to server...<br><br>Please do not close the app.</span></div>', []);
-                    
-                    apiCall('save', gameData).then(() => {
-                        showCustomModal('Success!', '<p>Game data successfully saved to the server.</p>', [{ text: 'OK', className: 'primary', action: closeModal }]);
-                    }).catch(e => {
-                        showCustomModal('Network Error', `<p>Details: ${e.message}</p>`, [{ text: 'OK', className: 'primary', action: closeModal }]);
-                    });
-                } 
-            }); 
+            showCustomModal('Finish and Save Game', '<p>End this game and save final times to Server?</p>', [
+                { 
+                    text: 'Confirm', 
+                    className: 'primary', 
+                    action: (e) => {
+                        const btn = e.target;
+                        const cancelBtn = btn.nextElementSibling;
+                        btn.textContent = 'Saving...';
+                        btn.disabled = true;
+                        if(cancelBtn) cancelBtn.disabled = true;
+                        
+                        apiCall('save', gameData).then(() => {
+                            showCustomModal('Success!', '<p>Game data successfully saved to the server.</p>', [{ text: 'OK', className: 'primary', action: closeModal }]);
+                        }).catch(err => {
+                            showCustomModal('Network Error', `<p>Details: ${err.message}</p>`, [{ text: 'OK', className: 'primary', action: closeModal }]);
+                        });
+                    }
+                },
+                { text: 'Cancel', className: 'secondary', action: closeModal }
+            ]);
         };
 
         document.getElementById('update-app-btn').onclick = () => location.reload(true);
