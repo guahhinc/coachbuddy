@@ -165,14 +165,31 @@
                 <button id="nav-settings-btn" class="timer-btn secondary" style="flex: 1; font-size: 11px;">Settings</button>
             </div>
 
-            <!-- AUTH VIEW -->
-            <div id="auth-view" style="display: none;">
+            <!-- LOGIN VIEW -->
+            <div id="login-view" style="display: none;">
                 <h2 style="text-align: center; margin-bottom: 30px; font-size: 2rem;">Coachbuddy</h2>
                 <div id="login-form">
-                    <input type="text" id="auth-username" placeholder="Username" style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 8px; background: #2D2D2D; color: #E0E0E0; border: 1px solid #333; font-size: 16px;">
-                    <input type="password" id="auth-password" placeholder="Password" style="width: 100%; margin-bottom: 15px; padding: 12px; border-radius: 8px; background: #2D2D2D; color: #E0E0E0; border: 1px solid #333; font-size: 16px;">
-                    <button id="login-btn" class="timer-btn primary" style="width: 100%; margin-bottom: 10px;">Login</button>
-                    <button id="signup-btn" class="timer-btn secondary" style="width: 100%;">Create Account</button>
+                    <input type="email" id="login-email" placeholder="Email Address" style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 8px; background: #2D2D2D; color: #E0E0E0; border: 1px solid #333; font-size: 16px;">
+                    <input type="password" id="login-password" placeholder="Password" style="width: 100%; margin-bottom: 15px; padding: 12px; border-radius: 8px; background: #2D2D2D; color: #E0E0E0; border: 1px solid #333; font-size: 16px;">
+                    <button id="login-btn" class="timer-btn primary" style="width: 100%; margin-bottom: 10px;">Log In</button>
+                    <div style="text-align: center; margin-top: 15px;">
+                        <a href="#" id="go-to-signup" style="color: #64B5F6; text-decoration: none; font-size: 14px;">Don't have an account? Sign up</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SIGN UP VIEW -->
+            <div id="signup-view" style="display: none;">
+                <h2 style="text-align: center; margin-bottom: 30px; font-size: 2rem;">Create Account</h2>
+                <div id="signup-form">
+                    <input type="text" id="signup-firstname" placeholder="First Name" style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 8px; background: #2D2D2D; color: #E0E0E0; border: 1px solid #333; font-size: 16px;">
+                    <input type="email" id="signup-email" placeholder="Email Address" style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 8px; background: #2D2D2D; color: #E0E0E0; border: 1px solid #333; font-size: 16px;">
+                    <input type="tel" id="signup-phone" placeholder="Phone Number (Optional)" style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 8px; background: #2D2D2D; color: #E0E0E0; border: 1px solid #333; font-size: 16px;">
+                    <input type="password" id="signup-password" placeholder="Create Password" style="width: 100%; margin-bottom: 15px; padding: 12px; border-radius: 8px; background: #2D2D2D; color: #E0E0E0; border: 1px solid #333; font-size: 16px;">
+                    <button id="signup-btn" class="timer-btn primary" style="width: 100%; margin-bottom: 10px;">Sign Up</button>
+                    <div style="text-align: center; margin-top: 15px;">
+                        <a href="#" id="go-to-login" style="color: #64B5F6; text-decoration: none; font-size: 14px;">Already have an account? Log in</a>
+                    </div>
                 </div>
             </div>
 
@@ -182,7 +199,7 @@
                 <p style="color: #B0B0B0; font-size: 15px; line-height: 1.5;">Your account currently does not have an active subscription to use Coachbuddy.</p>
                 <p style="color: #B0B0B0; font-size: 15px; line-height: 1.5;">Please contact support to activate your account.</p>
                 <button id="refresh-sub-btn" class="timer-btn primary" style="width: 100%; margin-top: 20px; margin-bottom: 10px;">Check Status Again</button>
-                <button id="logout-btn-sub" class="timer-btn secondary" style="width: 100%;">Logout</button>
+                <button id="logout-btn-sub" class="timer-btn secondary" style="width: 100%;">Log Out</button>
             </div>
 
             <!-- GAME APP VIEW -->
@@ -250,9 +267,6 @@
                 <div style="margin-top: 5px;">
                     <button id="add-default-players-btn" class="timer-btn secondary" style="width: 100%;">Add Default Players</button>
                 </div>
-                <div style="margin-top: 5px;">
-                    <button id="update-app-btn" class="timer-btn secondary" style="width: 100%;">Update App</button>
-                </div>
             </div>
 
             <!-- MANAGE TEAMS & PLAYERS VIEW -->
@@ -301,22 +315,33 @@
                     <h3 style="margin-top: 0; color: #E0E0E0;">Settings</h3>
                     
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #333;">
-                        <span style="font-size: 14px;">Auto-start 3 min timer after subs</span>
+                        <span style="font-size: 14px;">Auto-start substitute timer after subs</span>
                         <label class="switch">
                             <input type="checkbox" id="setting-autotimer" checked>
                             <span class="slider round"></span>
                         </label>
                     </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #333;">
+                        <span style="font-size: 14px;">Substitute timer duration (minutes)</span>
+                        <input type="number" id="setting-timer-amount" min="1" max="15" value="3" style="width: 60px; padding: 5px; border-radius: 6px; background: #2D2D2D; color: #E0E0E0; border: 1px solid #333; text-align: center; font-size: 14px;">
+                    </div>
     
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #333;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #333;">
                         <span style="font-size: 14px;">Auto-add default players on app open</span>
                         <label class="switch">
                             <input type="checkbox" id="setting-autoadd">
                             <span class="slider round"></span>
                         </label>
                     </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #333;">
+                        <span style="font-size: 14px;">Refresh the page to the latest version?</span>
+                        <button id="update-app-btn" class="timer-btn secondary" style="padding: 5px 10px; font-size: 11px;">Update App</button>
+                    </div>
     
-                    <button id="logout-btn-main" class="timer-btn secondary" style="width: 100%; background-color: #D32F2F; color: white;">Log Out</button>
+                    <button id="logout-btn-standard" class="timer-btn secondary" style="width: 100%; margin-bottom: 10px;">Log Out</button>
+                    <button id="logout-btn-main" class="timer-btn secondary" style="width: 100%; background-color: #D32F2F; color: white;">Log Out All Sessions</button>
                 </div>
             </div>
 
@@ -334,7 +359,7 @@
 
     <script>
         // --- GLOBAL STATE & CONFIG ---
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxxXAV4OsDc27_DLnqcDuOu3Iutcs3T0WDAffzPOXOhRb67dDLebFkWs3ASd3obLRzJ8w/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw80YNOrUWcTm3VDzcBlr0u350g0LiplwbuIXqw04u10sFe4W5UNxp70cEquj5_f29AZQ/exec';
         let authToken = localStorage.getItem('coachbuddy_token');
         let currentUser = null;
         let subscriptionStatus = "NONE";
@@ -348,13 +373,16 @@
         const INITIAL_STOPWATCH_SECONDS = 0;
         const DEFAULT_COUNTDOWN_SECONDS = 2400;
         const LOCAL_STORAGE_KEY = 'coachbuddySelectedTeam';
-        const DEFAULT_MINI_TIMER_SECONDS = 180;
 
         let recentSubs = [];
         let pendingSubChanges = [];
         let subDebounceTimer = null;
         let countdownInterval = null, totalSeconds = INITIAL_STOPWATCH_SECONDS, isRunning = false, isCountdownMode = false;
-        let miniTimerInterval = null, miniTotalSeconds = DEFAULT_MINI_TIMER_SECONDS, isMiniTimerRunning = false;
+        
+        function getMiniTimerSeconds() {
+            return parseInt(localStorage.getItem('cb_setting_timer_amount') || '3') * 60;
+        }
+        let miniTimerInterval = null, miniTotalSeconds = getMiniTimerSeconds(), isMiniTimerRunning = false;
 
         // --- DOM ELEMENTS ---
         const timeDisplay = document.getElementById('time-display');
@@ -368,12 +396,20 @@
         // --- SETTINGS INITIALIZATION ---
         const autoTimerCheckbox = document.getElementById('setting-autotimer');
         const autoAddCheckbox = document.getElementById('setting-autoadd');
+        const timerAmountInput = document.getElementById('setting-timer-amount');
         
         if (localStorage.getItem('cb_setting_autotimer') === 'false') autoTimerCheckbox.checked = false;
         if (localStorage.getItem('cb_setting_autoadd') === 'true') autoAddCheckbox.checked = true;
+        if (localStorage.getItem('cb_setting_timer_amount')) timerAmountInput.value = localStorage.getItem('cb_setting_timer_amount');
 
         autoTimerCheckbox.addEventListener('change', (e) => localStorage.setItem('cb_setting_autotimer', e.target.checked));
         autoAddCheckbox.addEventListener('change', (e) => localStorage.setItem('cb_setting_autoadd', e.target.checked));
+        timerAmountInput.addEventListener('change', (e) => {
+            let val = parseInt(e.target.value);
+            if (isNaN(val) || val < 1) { val = 3; e.target.value = 3; }
+            localStorage.setItem('cb_setting_timer_amount', val);
+            if (!isMiniTimerRunning) resetMiniTimer();
+        });
         
         // --- API HELPERS ---
         async function apiCall(action, payload = {}) {
@@ -391,14 +427,14 @@
         }
 
         // --- NAVIGATION & VIEWS ---
-        const views = ['auth-view', 'sub-block-view', 'app-view', 'manage-view', 'stats-view', 'settings-view'];
+        const views = ['login-view', 'signup-view', 'sub-block-view', 'app-view', 'manage-view', 'stats-view', 'settings-view'];
         
         function showView(viewId) {
             views.forEach(v => document.getElementById(v).style.display = 'none');
             document.getElementById(viewId).style.display = 'block';
             
             const nav = document.getElementById('app-nav');
-            if (viewId === 'auth-view' || viewId === 'sub-block-view') {
+            if (viewId === 'login-view' || viewId === 'signup-view' || viewId === 'sub-block-view') {
                 nav.style.display = 'none';
             } else {
                 nav.style.display = 'flex';
@@ -417,26 +453,46 @@
         document.getElementById('nav-manage-btn').onclick = () => { renderManageTeams(); resetPlayerForm(); renderManagePlayers(); showView('manage-view'); };
         document.getElementById('nav-stats-btn').onclick = () => showView('stats-view');
         document.getElementById('nav-settings-btn').onclick = () => showView('settings-view');
+
+        document.getElementById('go-to-signup').onclick = (e) => { e.preventDefault(); showView('signup-view'); };
+        document.getElementById('go-to-login').onclick = (e) => { e.preventDefault(); showView('login-view'); };
         
-        const promptLogout = () => {
+        const promptLogoutStandard = () => {
             showConfirmation('Log Out', 'Are you sure you want to log out?', (c) => {
                 if (c) {
+                    apiCall('logout').catch(e => console.error(e));
                     authToken = null; localStorage.removeItem('coachbuddy_token');
                     appData = { teams: [], players: [] };
-                    showView('auth-view');
+                    showView('login-view');
                 }
             });
         };
-        document.getElementById('logout-btn-main').onclick = promptLogout;
-        document.getElementById('logout-btn-sub').onclick = promptLogout;
+
+        const promptLogoutAll = () => {
+            showConfirmation('Log Out All Sessions', 'Are you sure you want to log out of all your devices? You will need to log in again.', (c) => {
+                if (c) {
+                    apiCall('logout_all').catch(e => console.error(e));
+                    authToken = null; localStorage.removeItem('coachbuddy_token');
+                    appData = { teams: [], players: [] };
+                    showView('login-view');
+                }
+            });
+        };
+
+        document.getElementById('logout-btn-standard').onclick = promptLogoutStandard;
+        document.getElementById('logout-btn-main').onclick = promptLogoutAll;
+        document.getElementById('logout-btn-sub').onclick = promptLogoutStandard;
 
         // --- INIT & AUTH ---
         async function initApp() {
             const overlay = document.getElementById('loading-overlay');
+            // Ensure mini timer display matches settings on load
+            resetMiniTimer(); 
+
             if (authToken) {
                 try {
                     const res = await apiCall('load_data');
-                    currentUser = res.username;
+                    currentUser = res.email;
                     subscriptionStatus = res.subscriptionStatus;
                     appData.teams = res.teams || [];
                     appData.players = res.players || [];
@@ -450,44 +506,47 @@
                 } catch (e) {
                     console.error(e);
                     authToken = null; localStorage.removeItem('coachbuddy_token');
-                    showView('auth-view');
+                    showView('login-view');
                 }
             } else {
-                showView('auth-view');
+                showView('login-view');
             }
             overlay.style.display = 'none';
         }
 
         document.getElementById('login-btn').onclick = async () => {
-            const u = document.getElementById('auth-username').value.trim();
-            const p = document.getElementById('auth-password').value.trim();
-            if (!u || !p) return showConfirmation('Error', 'Please enter username and password');
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+            if (!email || !password) return showConfirmation('Error', 'Please enter your email and password');
             
             const btn = document.getElementById('login-btn');
             btn.textContent = 'Logging in...'; btn.disabled = true;
             try {
-                const res = await apiCall('login', { username: u, password: p });
+                const res = await apiCall('login', { email, password });
                 authToken = res.token; localStorage.setItem('coachbuddy_token', authToken);
                 document.getElementById('loading-overlay').style.display = 'flex';
                 await initApp();
             } catch (e) { showConfirmation('Error', e.message); } 
-            finally { btn.textContent = 'Login'; btn.disabled = false; }
+            finally { btn.textContent = 'Log In'; btn.disabled = false; }
         };
 
         document.getElementById('signup-btn').onclick = async () => {
-            const u = document.getElementById('auth-username').value.trim();
-            const p = document.getElementById('auth-password').value.trim();
-            if (!u || !p) return showConfirmation('Error', 'Please enter username and password');
+            const firstName = document.getElementById('signup-firstname').value.trim();
+            const email = document.getElementById('signup-email').value.trim();
+            const phone = document.getElementById('signup-phone').value.trim();
+            const password = document.getElementById('signup-password').value.trim();
+            
+            if (!firstName || !email || !password) return showConfirmation('Error', 'First Name, Email, and Password are required.');
             
             const btn = document.getElementById('signup-btn');
             btn.textContent = 'Signing up...'; btn.disabled = true;
             try {
-                const res = await apiCall('signup', { username: u, password: p });
+                const res = await apiCall('signup', { firstName, email, phone, password });
                 authToken = res.token; localStorage.setItem('coachbuddy_token', authToken);
                 document.getElementById('loading-overlay').style.display = 'flex';
                 await initApp();
             } catch (e) { showConfirmation('Error', e.message); } 
-            finally { btn.textContent = 'Create Account'; btn.disabled = false; }
+            finally { btn.textContent = 'Sign Up'; btn.disabled = false; }
         };
 
         document.getElementById('refresh-sub-btn').onclick = async () => {
@@ -833,7 +892,7 @@
             pendingSubChanges = pendingSubChanges.filter(p => p.name !== name);
             pendingSubChanges.push({ name, state });
             if (subDebounceTimer) clearTimeout(subDebounceTimer);
-            subDebounceTimer = setTimeout(commitSubs, 4000); // Changed to 4 seconds
+            subDebounceTimer = setTimeout(commitSubs, 4000); 
         }
 
         // --- PLAYER ROSTER LOGIC ---
@@ -1033,7 +1092,7 @@
         function pauseMiniTimer() { clearInterval(miniTimerInterval); isMiniTimerRunning = false; miniStartPauseBtn.textContent = 'Resume'; miniStartPauseBtn.classList.remove('pause'); }
         function resetMiniTimer() {
             clearInterval(miniTimerInterval); isMiniTimerRunning = false; miniStartPauseBtn.textContent = 'Start'; miniStartPauseBtn.classList.remove('pause');
-            miniTotalSeconds = DEFAULT_MINI_TIMER_SECONDS; miniTimeDisplay.textContent = formatTime(miniTotalSeconds); miniTimeDisplay.classList.remove('countdown-ended');
+            miniTotalSeconds = getMiniTimerSeconds(); miniTimeDisplay.textContent = formatTime(miniTotalSeconds); miniTimeDisplay.classList.remove('countdown-ended');
         }
         miniStartPauseBtn.onclick = () => isMiniTimerRunning ? pauseMiniTimer() : startMiniTimer();
         document.getElementById('mini-reset-btn').onclick = resetMiniTimer;
@@ -1212,24 +1271,28 @@
 
         // --- GAME SAVING ---
         document.getElementById('save-to-sheets-btn').onclick = () => {
+            const gameData = { teamId: teamSelect.value, mainTime: timeDisplay.textContent, notes: document.getElementById('game-notes').value, players: [] };
+            document.querySelectorAll('.player-item').forEach(item => {
+                gameData.players.push({ number: item.querySelector('.player-number')?.textContent.replace('#', '') || 'N/A', name: item.querySelector('.player-name')?.textContent || 'Unnamed', time: item.querySelector('.player-time')?.textContent || '00:00' });
+            });
+            if (!gameData.teamId) return showConfirmation('Required Field Missing', 'Please select a Team Name before saving.');
+
+            // Show confirmation before saving
             showConfirmation('Finish and Save Game', 'End this game and save final times to Server?', (c) => { 
                 if (c) {
-                    const gameData = { teamId: teamSelect.value, mainTime: timeDisplay.textContent, notes: document.getElementById('game-notes').value, players: [] };
-                    document.querySelectorAll('.player-item').forEach(item => {
-                        gameData.players.push({ number: item.querySelector('.player-number')?.textContent.replace('#', '') || 'N/A', name: item.querySelector('.player-name')?.textContent || 'Unnamed', time: item.querySelector('.player-time')?.textContent || '00:00' });
-                    });
-                    if (!gameData.teamId) return showConfirmation('Required Field Missing', 'Please select a Team Name before saving.');
+                    // Show un-closable saving modal
+                    showCustomModal('Saving Game', '<div style="text-align:center; padding: 20px 0;"><span style="display: inline-block; animation: pulse 1.5s infinite; color: #4CAF50; font-weight: bold; font-size: 16px;">Saving to server...<br><br>Please do not close the app.</span></div>', []);
                     
-                    const btn = document.getElementById('save-to-sheets-btn');
-                    btn.disabled = true; btn.textContent = 'Saving...';
-                    apiCall('save', gameData).then(() => showConfirmation('Success!', `Game is saved.`))
-                    .catch(e => showConfirmation('Network Error', `Details: ${e.message}`))
-                    .finally(() => { btn.disabled = false; btn.textContent = 'Finish Game'; });
+                    apiCall('save', gameData).then(() => {
+                        showCustomModal('Success!', '<p>Game data successfully saved to the server.</p>', [{ text: 'OK', className: 'primary', action: closeModal }]);
+                    }).catch(e => {
+                        showCustomModal('Network Error', `<p>Details: ${e.message}</p>`, [{ text: 'OK', className: 'primary', action: closeModal }]);
+                    });
                 } 
             }); 
         };
 
-        document.getElementById('update-app-btn').onclick = () => showConfirmation('Update App', 'Refresh the page to the latest version?', (c) => { if (c) location.reload(true); });
+        document.getElementById('update-app-btn').onclick = () => location.reload(true);
 
         // --- VISUALS & WAKE LOCK ---
         document.addEventListener('pointerdown', (e) => {
