@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Coachbuddy</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- FAVICON -->
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCEsy3JshuCcp0rymJuhtf2MTszkAF88z_eQ&s">
+    <link rel="apple-touch-icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCEsy3JshuCcp0rymJuhtf2MTszkAF88z_eQ&s">
+
+    <!-- iOS WEB APP CAPABILITIES -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Coachbuddy">
+    <meta name="theme-color" content="#121212">
+
+    <style>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        button, input, select, textarea { font-family: inherit; }
+        button {
+            transition: all 0.27s ease; touch-action: manipulation; -webkit-user-select: none;
+            user-select: none; -webkit-backface-visibility: hidden; backface-visibility: hidden;
+            transform: translateZ(0); will-change: transform, filter;
+        }
+
+        @keyframes btn-pop {
+            0% { transform: scale(1); filter: brightness(1); }
+            50% { transform: scale(1.06); filter: brightness(1.8); }
+            100% { transform: scale(1); filter: brightness(1); }
+        }
+        .btn-pop { animation: btn-pop 0.35s ease !important; }
+
+        html { height: 100%; }
+        body {
+            font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0; padding: 0; background-color: #121212; color: #E0E0E0;
+            height: 100%; overflow-x: hidden; overflow-y: auto; font-size: 13px;
+            padding-top: 50vh;
+        }
+
+        .app-wrapper {
+            display: flex; flex-direction: column; align-items: center;
+            width: 100%; height: auto; margin-top: -50vh;
+        }
+
+        .app-container {
+            width: 100%; max-width: 480px; padding: 8px 6px; padding-bottom: 40px;
+        }
+
+        #timer-section, #input-section, #roster-container, #notes-section, #team-name-section, #mini-timer-section {
+            background-color: #1E1E1E; padding: 8px; border-radius: 12px; margin-bottom: 10px;
+        }
+
+        #notes-section, #team-name-section { width: 100%; padding: 8px; border-radius: 12px; margin-top: 0; margin-bottom: 10px; }
+        #game-notes, #team-select {
+            padding: 7px; border: 1px solid #333; border-radius: 8px; font-size: 16px;
+            background-color: #2D2D2D; color: #E0E0E0; width: 100%; box-sizing: border-box;
+        }
+        #game-notes { min-height: 80px; resize: vertical; }
+
+        #timer-section { text-align: center; }
+        #time-display { font-size: 2.7rem; font-weight: 700; color: #4CAF50; margin-bottom: 5px; font-variant-numeric: tabular-nums; }
+        #time-display.countdown-ended { color: #D32F2F; }
+        .timer-controls { display: flex; gap: 8px; justify-content: center; margin-top: 8px; width: 100%; }
+        .timer-controls.adjust-controls { margin-top: 6px; }
+
+        .timer-btn {
+            padding: 9px 12px; border: none; border-radius: 8px; cursor: pointer;
+            font-weight: 600; transition: all 0.25s ease; font-size: 13px;
+            line-height: 1.2; display: flex; align-items: center; justify-content: center; min-height: 36px;
+        }
+        .timer-controls .timer-btn { flex: 1; }
+        .timer-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .timer-btn.primary { background-color: #007bff; color: white; }
+        .timer-btn.primary.pause { background-color: #FF9800; }
+        .timer-btn.secondary, .timer-btn.mode-btn { background-color: #424242; color: #E0E0E0; }
+        .timer-btn.secondary:hover, .timer-btn.mode-btn:hover { background-color: #555; }
+
+        #input-section { display: flex; gap: 6px; align-items: center; }
+        #player-number-input, #player-name {
+            padding: 7px; border: 1px solid #333; border-radius: 8px; font-size: 16px;
+            background-color: #2D2D2D; color: #E0E0E0;
+        }
+        #player-number-input { width: 45px; flex-shrink: 0; text-align: center; }
+        #player-name { flex-grow: 1; }
+        .add-icon-btn {
+            background-color: #4CAF50; color: white; width: 32px; height: 32px; font-size: 19px;
+            line-height: 32px; padding: 0; border-radius: 8px; flex-shrink: 0; border: none; cursor: pointer;
+        }
+
+        .roster-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid #333; }
+        .roster-title { font-weight: bold; font-size: 14px; color: #B0B0B0; }
+        .sort-buttons-group { display: flex; gap: 6px; }
+        .sort-btn { background-color: #333; color: #E0E0E0; border: 1px solid #444; padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .sort-btn:active { background-color: #555; }
+
+        #roster { overflow: hidden; }
+        .player-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #333; }
+        .player-info-group { display: flex; align-items: center; gap: 6px; flex-grow: 1; padding-right: 8px; }
+
+        .player-rank {
+            font-weight: 700; color: white; background-color: #424242; font-size: 14px; width: 28px; height: 28px;
+            line-height: 28px; text-align: center; border-radius: 8px; flex-shrink: 0; margin-right: 4px; transition: background-color 0.3s, color 0.3s;
+        }
+        .player-rank.rank-color-1 { background-color: #D32F2F; color: white; }
+        .player-rank.rank-color-2 { background-color: #FFC107; color: #121212; }
+        .player-rank.rank-color-3 { background-color: #4CAF50; color: white; }
+        .player-rank.rank-color-4 { background-color: #007bff; color: white; }
+
+        .player-number { font-weight: 700; color: #64B5F6; font-size: 15px; flex-shrink: 0; white-space: nowrap; }
+        .player-name { font-weight: 500; font-size: 15px; word-break: break-word; }
+        .warning-icon { font-size: 16px; margin-left: 5px; display: none; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+        .warning-icon.low { color: #FFC107; }
+
+        .player-time { font-weight: bold; color: #64B5F6; font-size: 15px; min-width: 50px; text-align: right; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+        .player-controls-group { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .toggle-btn { padding: 5px 8px; width: 60px; font-size: 13px; border-radius: 8px; flex-shrink: 0; border: none; cursor: pointer; }
+        .toggle-btn.status-on { background-color: #4CAF50; color: white; }
+        .toggle-btn.status-off { background-color: #D32F2F; color: white; }
+        .delete-btn { width: 24px; height: 24px; font-size: 13px; line-height: 1; border-radius: 8px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; background-color: #424242; color: white; }
+
+        #mini-timer-section { display: flex; justify-content: space-between; align-items: center; padding: 6px 8px; }
+        #mini-time-display { font-size: 1.8rem; font-weight: 700; color: #E0E0E0; font-variant-numeric: tabular-nums; }
+        #mini-time-display.countdown-ended { color: #D32F2F; }
+        .mini-timer-controls { display: flex; gap: 8px; }
+        .mini-timer-controls .timer-btn { min-width: 70px; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background-color: #1E1E1E; padding: 20px; border-radius: 16px; width: 90%; max-width: 400px; text-align: left; }
+        #modal-title { font-size: 1.4rem; margin-top: 0; color: #E0E0E0; text-align: center; }
+        #modal-message { margin-bottom: 20px; color: #B0B0B0; font-size: 16px; white-space: pre-line; }
+        .modal-buttons { display: flex; flex-direction: column; gap: 10px; justify-content: center; text-align: center; }
+        .modal-buttons .timer-btn { flex-basis: auto; padding: 10px 15px; font-size: 14px; }
+    </style>
+</head>
+
+<body>
+    <div id="loading-overlay" style="position: fixed; top:0; left:0; width:100%; height:100%; background: #121212; z-index: 9999; display: flex; justify-content: center; align-items: center;">
+        <h2 style="color: #E0E0E0; animation: pulse 1.5s infinite;">Loading Coachbuddy...</h2>
+    </div>
+
+    <div class="app-wrapper">
+        <div class="app-container">
+
+            <!-- MAIN NAVIGATION -->
+            <div id="app-nav" style="display: none; gap: 5px; margin-bottom: 10px;">
+                <button id="nav-app-btn" class="timer-btn primary" style="flex: 1; font-size: 11px;">Game</button>
+                <button id="nav-manage-btn" class="timer-btn secondary" style="flex: 1; font-size: 11px;">Manage</button>
+                <button id="nav-stats-btn" class="timer-btn secondary" style="flex: 1; font-size: 11px;">Stats</button>
+                <button id="nav-logout-btn" class="timer-btn secondary" style="flex: 1; background-color: #D32F2F; font-size: 11px;">Logout</button>
+            </div>
+
+            <!-- AUTH VIEW -->
+            <div id="auth-view" style="display: none;">
+                <h2 style="text-align: center; margin-bottom: 30px; font-size: 2rem;">Coachbuddy</h2>
+                <div id="login-form">
+                    <input type="text" id="auth-username" placeholder="Username" style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 8px; background: #2D2D2D; color: #E0E0E0; border: 1px solid #333; font-size: 16px;">
+                    <input type="password" id="auth-password" placeholder="Password" style="width: 100%; margin-bottom: 15px; padding: 12px; border-radius: 8px; background: #2D2D2D; color: #E0E0E0; border: 1px solid #333; font-size: 16px;">
+                    <button id="login-btn" class="timer-btn primary" style="width: 100%; margin-bottom: 10px;">Login</button>
+                    <button id="signup-btn" class="timer-btn secondary" style="width: 100%;">Create Account</button>
+                </div>
+            </div>
+
+            <!-- SUBSCRIPTION BLOCK VIEW -->
+            <div id="sub-block-view" style="display: none; text-align: center; background-color: #1E1E1E; padding: 20px; border-radius: 12px;">
+                <h2 style="color: #FF9800;">Subscription Required</h2>
+                <p style="color: #B0B0B0; font-size: 15px; line-height: 1.5;">Your account currently does not have an active subscription to use Coachbuddy.</p>
+                <p style="color: #B0B0B0; font-size: 15px; line-height: 1.5;">Please contact support to activate your account.</p>
+                <button id="refresh-sub-btn" class="timer-btn primary" style="width: 100%; margin-top: 20px; margin-bottom: 10px;">Check Status Again</button>
+                <button id="logout-btn-sub" class="timer-btn secondary" style="width: 100%;">Logout</button>
+            </div>
+
+            <!-- GAME APP VIEW -->
+            <div id="app-view" style="display: none;">
+                <div id="team-name-section">
+                    <label for="team-select" style="display:block; margin-bottom: 5px; font-weight: bold;">Team Name:</label>
+                    <select id="team-select">
+                        <option value="" disabled selected>Select a Team...</option>
+                    </select>
+                </div>
+
+                <div id="timer-section">
+                    <div id="time-display">00:00</div>
+                    <div class="timer-controls mode-main-controls">
+                        <button id="start-pause-btn" class="timer-btn primary">Start</button>
+                        <button id="reset-btn" class="timer-btn secondary">Reset</button>
+                    </div>
+                    <div class="timer-controls adjust-controls">
+                        <button id="add-minute-btn" class="timer-btn secondary">+30 Sec</button>
+                        <button id="subtract-minute-btn" class="timer-btn secondary">–30 Sec</button>
+                    </div>
+                </div>
+
+                <div id="input-section">
+                    <input type="text" id="player-number-input" placeholder="No." inputmode="numeric">
+                    <input type="text" id="player-name" placeholder="Enter player's name">
+                    <button id="add-player-btn" class="add-icon-btn">+</button>
+                </div>
+
+                <div id="roster-container">
+                    <div class="roster-header">
+                        <span class="roster-title">Current Roster</span>
+                        <div class="sort-buttons-group">
+                            <button id="sort-desc-btn" class="sort-btn">Most Sort</button>
+                            <button id="sort-asc-btn" class="sort-btn">Least Sort</button>
+                        </div>
+                    </div>
+                    <div id="roster"></div>
+                </div>
+
+                <div id="recent-subs-section" style="display: none; background-color: #1E1E1E; padding: 10px; border-radius: 12px; margin-bottom: 10px;">
+                    <div style="font-size: 11px; font-weight: bold; color: #B0B0B0; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;">Last Subbed On</div>
+                    <div id="recent-subs-list" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
+                </div>
+
+                <div id="mini-timer-section">
+                    <div id="mini-time-display">03:00</div>
+                    <div class="mini-timer-controls">
+                        <button id="mini-start-pause-btn" class="timer-btn primary">Start</button>
+                        <button id="mini-reset-btn" class="timer-btn secondary">Reset</button>
+                    </div>
+                </div>
+
+                <div id="notes-section">
+                    <label for="game-notes" style="display:block; margin-bottom: 5px; font-weight: bold;">Notes:</label>
+                    <textarea id="game-notes" placeholder="Add game notes here..."></textarea>
+                </div>
+
+                <div style="margin-top: 10px;">
+                    <button id="save-to-sheets-btn" class="timer-btn primary" style="width: 100%; background-color: #1a73e8;">Finish Game</button>
+                </div>
+                <div style="margin-top: 5px;">
+                    <button id="suggest-sub-btn" class="timer-btn secondary" style="width: 100%; background-color: #673ab7; color: white; border: none;">Smart Suggestions</button>
+                </div>
+                <div style="margin-top: 5px;">
+                    <button id="add-default-players-btn" class="timer-btn secondary" style="width: 100%;">Add Default Players</button>
+                </div>
+                <div style="margin-top: 5px;">
+                    <button id="update-app-btn" class="timer-btn secondary" style="width: 100%;">Update App</button>
+                </div>
+            </div>
+
+            <!-- MANAGE TEAMS & PLAYERS VIEW -->
+            <div id="manage-view" style="display: none;">
+                <div style="background-color: #1E1E1E; padding: 12px; border-radius: 12px; margin-bottom: 10px;">
+                    <h3 style="margin-top: 0; color: #E0E0E0;">My Teams</h3>
+                    <div id="manage-team-list" style="margin-bottom: 10px;"></div>
+                    <div style="display: flex; gap: 6px;">
+                        <input type="text" id="new-team-name" placeholder="New Team Name" style="flex-grow: 1; padding: 9px; border-radius: 8px; background: #2D2D2D; color: #E0E0E0; border: 1px solid #333; font-size: 15px;">
+                        <button id="create-team-btn" class="timer-btn primary">Create</button>
+                    </div>
+                </div>
+
+                <div style="background-color: #1E1E1E; padding: 12px; border-radius: 12px;">
+                    <h3 style="margin-top: 0; color: #E0E0E0;">Manage Players</h3>
+                    <select id="manage-team-select" style="width: 100%; padding: 9px; border-radius: 8px; background: #2D2D2D; color: #E0E0E0; border: 1px solid #333; margin-bottom: 10px; font-size: 15px;">
+                        <option value="" disabled selected>Select a Team...</option>
+                    </select>
+                    
+                    <div id="manage-player-list"></div>
+                    
+                    <div style="display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap;">
+                        <input type="text" id="new-player-name" placeholder="Name" style="flex: 2; min-width: 100px; padding: 9px; border-radius: 8px; background: #2D2D2D; color: #E0E0E0; border: 1px solid #333; font-size: 15px;">
+                        <input type="text" id="new-player-number" placeholder="No." style="flex: 1; min-width: 50px; padding: 9px; border-radius: 8px; background: #2D2D2D; color: #E0E0E0; border: 1px solid #333; font-size: 15px;">
+                        <input type="number" id="new-player-rank" placeholder="Rank(1-10)" style="flex: 1; min-width: 70px; padding: 9px; border-radius: 8px; background: #2D2D2D; color: #E0E0E0; border: 1px solid #333; font-size: 15px;">
+                        <button id="create-player-btn" class="timer-btn primary" style="width: 100%; margin-top: 5px;">Add Player</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STATS VIEW -->
+            <div id="stats-view" style="display: none;">
+                <div style="background-color: #1E1E1E; padding: 12px; border-radius: 12px;">
+                    <h3 style="margin-top: 0; color: #E0E0E0;">Game Stats</h3>
+                    <select id="stats-team-select" style="width: 100%; padding: 9px; border-radius: 8px; background: #2D2D2D; color: #E0E0E0; border: 1px solid #333; margin-bottom: 10px; font-size: 15px;">
+                        <option value="" disabled selected>Select a Team...</option>
+                    </select>
+                    <button id="load-stats-btn" class="timer-btn primary" style="width: 100%; margin-bottom: 10px;">Load Stats</button>
+                    <div id="stats-content"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Custom Confirmation Modal -->
+    <div id="custom-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="modal-title"></h3>
+            <div id="modal-message"></div>
+            <div id="modal-buttons" class="modal-buttons"></div>
+        </div>
+    </div>
+
+    <script>
+        // --- GLOBAL STATE & CONFIG ---
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwM6W6gDv1E_-boexKn4mqdjRAY8Ssatj3ZPMK9ew15ukkX3okeIFHngRjt0VJyQpFBvA/exec';
+        let authToken = localStorage.getItem('coachbuddy_token');
+        let currentUser = null;
+        let subscriptionStatus = "NONE";
+        let appData = { teams: [], players: [] };
+        let editingPlayerId = null;
+
+        const MAX_PLAYERS_ON_FIELD = 5;
+        const MIN_GAME_TIME_FOR_WARNINGS = 240;
+        const LOW_TIME_RATIO = 0.65;
+        const SIGNIFICANT_TIME_GAP = 240;
+        const INITIAL_STOPWATCH_SECONDS = 0;
+        const DEFAULT_COUNTDOWN_SECONDS = 2400;
+        const LOCAL_STORAGE_KEY = 'coachbuddySelectedTeam';
+        const DEFAULT_MINI_TIMER_SECONDS = 180;
+
+        let recentSubs = [];
+        let pendingSubChanges = [];
+        let subDebounceTimer = null;
+        let countdownInterval = null, totalSeconds = INITIAL_STOPWATCH_SECONDS, isRunning = false, isCountdownMode = false;
+        let miniTimerInterval = null, miniTotalSeconds = DEFAULT_MINI_TIMER_SECONDS, isMiniTimerRunning = false;
+
+        // --- DOM ELEMENTS ---
+        const timeDisplay = document.getElementById('time-display');
+        const startPauseBtn = document.getElementById('start-pause-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const rosterDiv = document.getElementById('roster');
+        const teamSelect = document.getElementById('team-select');
+        const miniTimeDisplay = document.getElementById('mini-time-display');
+        const miniStartPauseBtn = document.getElementById('mini-start-pause-btn');
+        
+        // --- API HELPERS ---
+        async function apiCall(action, payload = {}) {
+            payload.action = action;
+            if (authToken) payload.token = authToken;
+            const res = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'cors',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (data.result === 'error') throw new Error(data.error);
+            return data;
+        }
+
+        // --- NAVIGATION & VIEWS ---
+        const views = ['auth-view', 'sub-block-view', 'app-view', 'manage-view', 'stats-view'];
+        
+        function showView(viewId) {
+            views.forEach(v => document.getElementById(v).style.display = 'none');
+            document.getElementById(viewId).style.display = 'block';
+            
+            const nav = document.getElementById('app-nav');
+            if (viewId === 'auth-view' || viewId === 'sub-block-view') {
+                nav.style.display = 'none';
+            } else {
+                nav.style.display = 'flex';
+            }
+
+            ['app-view', 'manage-view', 'stats-view'].forEach(v => {
+                const btn = document.getElementById('nav-' + v.split('-')[0] + '-btn');
+                if (btn) {
+                    btn.className = v === viewId ? 'timer-btn primary' : 'timer-btn secondary';
+                    if (v === 'app-view') btn.style.flex = '1'; 
+                }
+            });
+        }
+
+        document.getElementById('nav-app-btn').onclick = () => showView('app-view');
+        document.getElementById('nav-manage-btn').onclick = () => { renderManageTeams(); renderManagePlayers(); showView('manage-view'); };
+        document.getElementById('nav-stats-btn').onclick = () => showView('stats-view');
+        
+        const promptLogout = () => {
+            showConfirmation('Log Out', 'Are you sure you want to log out?', (c) => {
+                if (c) {
+                    authToken = null; localStorage.removeItem('coachbuddy_token');
+                    appData = { teams: [], players: [] };
+                    showView('auth-view');
+                }
+            });
+        };
+        document.getElementById('nav-logout-btn').onclick = promptLogout;
+        document.getElementById('logout-btn-sub').onclick = promptLogout;
+
+        // --- INIT & AUTH ---
+        async function initApp() {
+            const overlay = document.getElementById('loading-overlay');
+            if (authToken) {
+                try {
+                    const res = await apiCall('load_data');
+                    currentUser = res.username;
+                    subscriptionStatus = res.subscriptionStatus;
+                    appData.teams = res.teams || [];
+                    appData.players = res.players || [];
+                    
+                    if (subscriptionStatus !== 'ACTIVE') {
+                        showView('sub-block-view');
+                    } else {
+                        renderTeams();
+                        showView('app-view');
+                    }
+                } catch (e) {
+                    console.error(e);
+                    authToken = null; localStorage.removeItem('coachbuddy_token');
+                    showView('auth-view');
+                }
+            } else {
+                showView('auth-view');
+            }
+            overlay.style.display = 'none';
+        }
+
+        document.getElementById('login-btn').onclick = async () => {
+            const u = document.getElementById('auth-username').value.trim();
+            const p = document.getElementById('auth-password').value.trim();
+            if (!u || !p) return showConfirmation('Error', 'Please enter username and password');
+            
+            const btn = document.getElementById('login-btn');
+            btn.textContent = 'Logging in...'; btn.disabled = true;
+            try {
+                const res = await apiCall('login', { username: u, password: p });
+                authToken = res.token; localStorage.setItem('coachbuddy_token', authToken);
+                document.getElementById('loading-overlay').style.display = 'flex';
+                await initApp();
+            } catch (e) { showConfirmation('Error', e.message); } 
+            finally { btn.textContent = 'Login'; btn.disabled = false; }
+        };
+
+        document.getElementById('signup-btn').onclick = async () => {
+            const u = document.getElementById('auth-username').value.trim();
+            const p = document.getElementById('auth-password').value.trim();
+            if (!u || !p) return showConfirmation('Error', 'Please enter username and password');
+            
+            const btn = document.getElementById('signup-btn');
+            btn.textContent = 'Signing up...'; btn.disabled = true;
+            try {
+                const res = await apiCall('signup', { username: u, password: p });
+                authToken = res.token; localStorage.setItem('coachbuddy_token', authToken);
+                document.getElementById('loading-overlay').style.display = 'flex';
+                await initApp();
+            } catch (e) { showConfirmation('Error', e.message); } 
+            finally { btn.textContent = 'Create Account'; btn.disabled = false; }
+        };
+
+        document.getElementById('refresh-sub-btn').onclick = async () => {
+            const btn = document.getElementById('refresh-sub-btn');
+            btn.textContent = 'Checking...'; btn.disabled = true;
+            document.getElementById('loading-overlay').style.display = 'flex';
+            await initApp();
+            btn.textContent = 'Check Status Again'; btn.disabled = false;
+        };
+
+        // --- CORE APP DATA RENDERING ---
+        function renderTeams() {
+            const selects = [teamSelect, document.getElementById('manage-team-select'), document.getElementById('stats-team-select')];
+            selects.forEach(s => s.innerHTML = '<option value="" disabled selected>Select a Team...</option>');
+            
+            appData.teams.forEach(t => {
+                const opt = `<option value="${t.teamId}">${t.teamName}</option>`;
+                selects.forEach(s => s.innerHTML += opt);
+            });
+            
+            const savedTeam = localStorage.getItem(LOCAL_STORAGE_KEY);
+            if (savedTeam && appData.teams.some(t => t.teamId === savedTeam)) {
+                teamSelect.value = savedTeam;
+                document.getElementById('manage-team-select').value = savedTeam;
+                document.getElementById('stats-team-select').value = savedTeam;
+            } else if (appData.teams.length > 0) {
+                teamSelect.value = appData.teams[0].teamId;
+                localStorage.setItem(LOCAL_STORAGE_KEY, appData.teams[0].teamId);
+            }
+        }
+
+        teamSelect.addEventListener('change', () => {
+            const teamId = teamSelect.value;
+            if (totalSeconds > 0) {
+                showConfirmation('Change Team?', 'Changing teams will reset the current game timer and clear the roster. Proceed?', (confirmed) => {
+                    if (confirmed) {
+                        resetTimer(); resetMiniTimer();
+                        localStorage.setItem(LOCAL_STORAGE_KEY, teamId);
+                        rosterDiv.innerHTML = ''; // Clear roster when team changes
+                    } else {
+                        teamSelect.value = localStorage.getItem(LOCAL_STORAGE_KEY) || "";
+                    }
+                });
+            } else {
+                localStorage.setItem(LOCAL_STORAGE_KEY, teamId);
+                rosterDiv.innerHTML = ''; // Clear roster when team changes
+            }
+        });
+
+        // Add Default Players to the current game
+        document.getElementById('add-default-players-btn').onclick = () => {
+            const teamId = teamSelect.value;
+            if (!teamId) return showConfirmation('Error', 'Please select a team first.');
+            
+            showConfirmation('Add Default Roster', 'Add the saved players for this team to the game?', (c) => {
+                if (c) {
+                    const teamPlayers = appData.players.filter(p => p.teamId === teamId);
+                    teamPlayers.sort((a, b) => (parseInt(a.rank) || 999) - (parseInt(b.rank) || 999));
+                    teamPlayers.forEach(p => {
+                        // Prevent duplicates
+                        const existing = Array.from(document.querySelectorAll('.player-item')).find(item => item.dataset.playerId === p.playerId);
+                        if (!existing) addPlayerByName(p.playerName, p.playerNumber, p.playerId);
+                    });
+                    updateSubstitutionWarnings();
+                }
+            });
+        };
+
+        // --- MANAGEMENT VIEWS (Optimistic UI) ---
+        function renderManageTeams() {
+            const list = document.getElementById('manage-team-list');
+            list.innerHTML = '';
+            appData.teams.forEach(t => {
+                list.innerHTML += `<div style="padding: 10px; background: #2D2D2D; margin-bottom: 5px; border-radius: 8px;">${t.teamName}</div>`;
+            });
+        }
+
+        document.getElementById('create-team-btn').onclick = async () => {
+            const nameInput = document.getElementById('new-team-name');
+            const name = nameInput.value.trim();
+            if (!name) return;
+            
+            const tempId = 'temp_team_' + Date.now();
+            appData.teams.push({ teamId: tempId, teamName: name });
+            renderManageTeams(); renderTeams(); 
+            nameInput.value = '';
+            
+            try {
+                const res = await apiCall('create_team', { teamName: name });
+                const t = appData.teams.find(t => t.teamId === tempId);
+                if (t) t.teamId = res.teamId;
+                renderTeams(); 
+            } catch (e) {
+                appData.teams = appData.teams.filter(t => t.teamId !== tempId);
+                renderManageTeams(); renderTeams();
+                showConfirmation('Error', 'Failed to create team: ' + e.message);
+            }
+        };
+
+        document.getElementById('manage-team-select').onchange = () => {
+            resetPlayerForm();
+            renderManagePlayers();
+        };
+
+        function renderManagePlayers() {
+            const list = document.getElementById('manage-player-list');
+            list.innerHTML = '';
+            const teamId = document.getElementById('manage-team-select').value;
+            if (!teamId) return;
+            
+            const teamPlayers = appData.players.filter(p => p.teamId === teamId);
+            teamPlayers.forEach(p => {
+                const div = document.createElement('div');
+                div.style.cssText = "display: flex; justify-content: space-between; padding: 10px; background: #2D2D2D; margin-bottom: 5px; border-radius: 8px; align-items: center;";
+                div.innerHTML = `
+                <div><strong style="color:white;">${p.playerName}</strong> #${p.playerNumber || '-'} <span style="color:#B0B0B0; font-size:11px; margin-left:5px;">(Rank: ${p.rank || '-'})</span></div>
+                <div style="display: flex; gap: 5px;">
+                    <button class="timer-btn secondary" style="padding: 5px 10px; font-size: 11px; min-height: 0;" onclick="editPlayerFromManage('${p.playerId}')">Edit</button>
+                    <button class="timer-btn secondary" style="padding: 5px 10px; font-size: 11px; min-height: 0; background-color: #D32F2F;" onclick="removePlayerFromManage('${p.playerId}')">Remove</button>
+                </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        window.editPlayerFromManage = (playerId) => {
+            const p = appData.players.find(p => p.playerId === playerId);
+            if (!p) return;
+            document.getElementById('new-player-name').value = p.playerName;
+            document.getElementById('new-player-number').value = p.playerNumber || '';
+            document.getElementById('new-player-rank').value = p.rank || '';
+            editingPlayerId = playerId;
+            
+            const btn = document.getElementById('create-player-btn');
+            btn.textContent = 'Save Changes';
+            btn.classList.replace('primary', 'secondary');
+            btn.style.backgroundColor = '#4CAF50';
+            btn.style.color = 'white';
+            
+            // Scroll to form slightly
+            document.getElementById('new-player-name').focus();
+        };
+
+        function resetPlayerForm() {
+            document.getElementById('new-player-name').value = '';
+            document.getElementById('new-player-number').value = '';
+            document.getElementById('new-player-rank').value = '';
+            const btn = document.getElementById('create-player-btn');
+            btn.textContent = 'Add Player';
+            btn.style.backgroundColor = '';
+            btn.classList.replace('secondary', 'primary');
+            editingPlayerId = null;
+        }
+
+        function removePlayerFromManage(playerId) {
+            showConfirmation('Remove Player', `Are you sure you want to delete this player from the database?`, (confirmed) => {
+                if (confirmed) {
+                    appData.players = appData.players.filter(p => p.playerId !== playerId);
+                    renderManagePlayers();
+                    if (!playerId.startsWith('temp_')) apiCall('remove_player', { playerId }).catch(e => console.error(e));
+                }
+            });
+        }
+
+        document.getElementById('create-player-btn').onclick = async () => {
+            const teamId = document.getElementById('manage-team-select').value;
+            const name = document.getElementById('new-player-name').value.trim();
+            const num = document.getElementById('new-player-number').value.trim();
+            const rank = document.getElementById('new-player-rank').value.trim();
+            
+            if (!teamId || !name) return showConfirmation('Error', 'Team and Name are required.');
+            
+            if (editingPlayerId) {
+                // Update Existing
+                const p = appData.players.find(p => p.playerId === editingPlayerId);
+                if (p) {
+                    p.playerName = name; p.playerNumber = num; p.rank = rank || "10";
+                    renderManagePlayers();
+                    
+                    const currentEditId = editingPlayerId;
+                    resetPlayerForm();
+                    
+                    try {
+                        await apiCall('edit_player', { playerId: currentEditId, playerName: name, playerNumber: num, rank: rank || "10" });
+                    } catch (e) {
+                        showConfirmation('Error', 'Failed to update player: ' + e.message);
+                    }
+                }
+            } else {
+                // Add New
+                const tempId = 'temp_' + Date.now();
+                const newPlayer = { playerId: tempId, teamId, playerName: name, playerNumber: num, rank: rank || "10" };
+                appData.players.push(newPlayer);
+                renderManagePlayers();
+                resetPlayerForm();
+                
+                try {
+                    const res = await apiCall('add_player', { teamId, playerName: name, playerNumber: num, rank: rank || "10" });
+                    const p = appData.players.find(p => p.playerId === tempId);
+                    if (p) p.playerId = res.playerId;
+                } catch (e) {
+                    appData.players = appData.players.filter(p => p.playerId !== tempId);
+                    renderManagePlayers();
+                    showConfirmation('Error', 'Failed to add player: ' + e.message);
+                }
+            }
+        };
+
+        // --- STATS VIEW ---
+        document.getElementById('load-stats-btn').onclick = async () => {
+            const teamId = document.getElementById('stats-team-select').value;
+            if (!teamId) return;
+            
+            const btn = document.getElementById('load-stats-btn');
+            btn.textContent = 'Loading...'; btn.disabled = true;
+            
+            try {
+                const res = await apiCall('get_stats', { teamId });
+                const content = document.getElementById('stats-content');
+                content.innerHTML = '';
+                
+                if (!res.stats || res.stats.length === 0) {
+                    content.innerHTML = '<p style="color:#B0B0B0; text-align:center; margin-top:20px;">No games recorded yet.</p>';
+                    return;
+                }
+                
+                res.stats.reverse().forEach(game => {
+                    let html = `<div style="background: #2D2D2D; padding: 12px; border-radius: 8px; margin-bottom: 10px;">
+                        <div style="font-weight: bold; margin-bottom: 5px; color: #4CAF50; font-size: 14px;">${game.date}</div>
+                        <div style="font-size: 12px; color: #B0B0B0; margin-bottom: 8px;">Duration: <span style="color:white;">${game.duration}</span> | Notes: <span style="color:white;">${game.notes}</span></div>
+                        <table style="width: 100%; font-size: 13px; border-collapse: collapse;">
+                        <tr style="border-bottom: 1px solid #444; color: #E0E0E0;">
+                            <th style="text-align: left; padding: 6px 4px;">Player</th>
+                            <th style="text-align: center; padding: 6px 4px;">No.</th>
+                            <th style="text-align: right; padding: 6px 4px;">Time</th>
+                        </tr>`;
+                    game.players.forEach(p => {
+                        html += `<tr style="border-bottom: 1px solid #333;">
+                        <td style="padding: 6px 4px;">${p.name}</td>
+                        <td style="text-align: center; padding: 6px 4px;">${p.number}</td>
+                        <td style="text-align: right; padding: 6px 4px; color:#64B5F6; font-weight:bold;">${p.time}</td>
+                        </tr>`;
+                    });
+                    html += `</table></div>`;
+                    content.innerHTML += html;
+                });
+            } catch (e) { showConfirmation('Error', 'Failed to load stats: ' + e.message); } 
+            finally { btn.textContent = 'Load Stats'; btn.disabled = false; }
+        };
+
+        // --- MODALS ---
+        const customModal = document.getElementById('custom-modal');
+        function closeModal() { setTimeout(() => { customModal.style.display = 'none'; }, 100); }
+        function showCustomModal(title, messageHtml, buttons) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-message').innerHTML = messageHtml;
+            const btnContainer = document.getElementById('modal-buttons');
+            btnContainer.innerHTML = '';
+            buttons.forEach(btnInfo => {
+                const button = document.createElement('button');
+                button.textContent = btnInfo.text;
+                button.className = `timer-btn ${btnInfo.className || 'primary'}`;
+                button.onclick = (e) => btnInfo.action(e);
+                btnContainer.appendChild(button);
+            });
+            customModal.style.display = 'flex';
+        }
+        function showConfirmation(title, message, callback) {
+            let buttons = [];
+            if (callback) {
+                buttons.push({ text: 'Confirm', className: 'primary', action: () => { callback(true); closeModal(); } });
+                buttons.push({ text: 'Cancel', className: 'secondary', action: () => { callback(false); closeModal(); } });
+            } else {
+                buttons.push({ text: 'OK', className: 'primary', action: closeModal });
+            }
+            showCustomModal(title, `<p>${message}</p>`, buttons);
+        }
+
+        // --- UTILS & TIMERS ---
+        function formatTime(seconds) {
+            if (seconds < 0) seconds = 0;
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+        }
+
+        function updateRecentSubsUI() {
+            const container = document.getElementById('recent-subs-section');
+            const list = document.getElementById('recent-subs-list');
+            const justOn = recentSubs.filter(sub => sub.state === 'on');
+            if (justOn.length === 0) { container.style.display = 'none'; return; }
+            container.style.display = 'block'; list.innerHTML = '';
+            justOn.forEach(sub => {
+                const badge = document.createElement('span');
+                badge.style.cssText = `padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; color: white; background-color: #4CAF50;`;
+                badge.textContent = sub.name; list.appendChild(badge);
+            });
+        }
+
+        function commitSubs() {
+            recentSubs = [...pendingSubChanges]; pendingSubChanges = []; subDebounceTimer = null;
+            updateRecentSubsUI(); resetMiniTimer(); startMiniTimer();
+        }
+
+        function recordSubChange(name, state) {
+            pendingSubChanges = pendingSubChanges.filter(p => p.name !== name);
+            pendingSubChanges.push({ name, state });
+            if (subDebounceTimer) clearTimeout(subDebounceTimer);
+            subDebounceTimer = setTimeout(commitSubs, 2500);
+        }
+
+        // --- PLAYER ROSTER LOGIC ---
+        function createPlayerItem(name, number = null, playerId = '') {
+            const playerItem = document.createElement('div');
+            playerItem.className = 'player-item';
+            playerItem.dataset.totalTime = 0; playerItem.dataset.isOnField = '0'; playerItem.dataset.rank = '0';
+            playerItem.dataset.playerId = playerId;
+
+            const playerInfoGroup = document.createElement('div');
+            playerInfoGroup.className = 'player-info-group';
+
+            const playerRankDisplay = document.createElement('span');
+            playerRankDisplay.className = 'player-rank'; playerRankDisplay.textContent = '-';
+            playerRankDisplay.dataset.role = 'player-rank-display';
+            playerInfoGroup.appendChild(playerRankDisplay);
+
+            if (number !== null) {
+                const playerNumber = document.createElement('span');
+                playerNumber.className = 'player-number'; playerNumber.textContent = `#${number}`;
+                playerInfoGroup.appendChild(playerNumber);
+            }
+
+            const playerName = document.createElement('span');
+            playerName.className = 'player-name'; playerName.textContent = name;
+            playerInfoGroup.appendChild(playerName);
+
+            const lowWarningIcon = document.createElement('span');
+            lowWarningIcon.className = 'warning-icon low'; lowWarningIcon.textContent = '⚠️';
+            lowWarningIcon.title = 'Low play time - Consider subbing on';
+            lowWarningIcon.dataset.role = 'low-warning-icon';
+            playerInfoGroup.appendChild(lowWarningIcon);
+
+            const playerControlsGroup = document.createElement('div');
+            playerControlsGroup.className = 'player-controls-group';
+            const timeOnFieldDisplay = document.createElement('span');
+            timeOnFieldDisplay.className = 'player-time'; timeOnFieldDisplay.textContent = formatTime(0);
+
+            const toggleBtn = document.createElement('button');
+            toggleBtn.className = 'toggle-btn status-off'; toggleBtn.textContent = 'ON';
+
+            toggleBtn.onclick = () => {
+                const isOn = playerItem.dataset.isOnField === '1';
+                if (isOn) {
+                    playerItem.dataset.isOnField = '0';
+                    toggleBtn.textContent = 'ON';
+                    toggleBtn.classList.add('status-off'); toggleBtn.classList.remove('status-on');
+                    recordSubChange(name, 'off');
+                } else {
+                    const currentOnCount = document.querySelectorAll('.player-item[data-is-on-field="1"]').length;
+                    if (currentOnCount >= MAX_PLAYERS_ON_FIELD) {
+                        showConfirmation('Substitution Limit Reached', `Maximum ${MAX_PLAYERS_ON_FIELD} players allowed on field.`);
+                        return;
+                    }
+                    playerItem.dataset.isOnField = '1';
+                    toggleBtn.textContent = 'OFF';
+                    toggleBtn.classList.remove('status-off'); toggleBtn.classList.add('status-on');
+                    if (lowWarningIcon) lowWarningIcon.style.display = 'none';
+                    recordSubChange(name, 'on');
+                }
+                updateSubstitutionWarnings();
+            };
+            
+            // Delete button just removes from the UI sandbox now
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-btn'; deleteBtn.textContent = '×';
+            deleteBtn.onclick = () => {
+                showConfirmation('Remove Player', `Remove ${name} from this game?`, (confirmed) => {
+                    if (confirmed) { 
+                        rosterDiv.removeChild(playerItem); 
+                        updateSubstitutionWarnings(); 
+                    }
+                });
+            };
+
+            playerControlsGroup.appendChild(timeOnFieldDisplay);
+            playerControlsGroup.appendChild(toggleBtn);
+            playerControlsGroup.appendChild(deleteBtn);
+            playerItem.appendChild(playerInfoGroup);
+            playerItem.appendChild(playerControlsGroup);
+            return playerItem;
+        }
+
+        function addPlayerByName(name, number = null, playerId = '') {
+            const effectiveName = name || (number !== null ? `Player #${number}` : 'Unnamed');
+            rosterDiv.appendChild(createPlayerItem(effectiveName, number, playerId));
+            updateSubstitutionWarnings();
+        }
+
+        // Add player locally to the game sandbox (doesn't hit database)
+        document.getElementById('add-player-btn').addEventListener('click', () => {
+            const name = document.getElementById('player-name').value.trim();
+            const number = document.getElementById('player-number-input').value.trim();
+            
+            if (name || number) {
+                const tempId = 'local_' + Date.now();
+                addPlayerByName(name, number, tempId);
+                
+                document.getElementById('player-name').value = ''; 
+                document.getElementById('player-number-input').value = '';
+                setTimeout(() => { window.scrollTo(0, 0); }, 200);
+            }
+        });
+
+        function sortRoster(direction) {
+            const items = Array.from(rosterDiv.children);
+            items.sort((a, b) => {
+                const timeA = parseInt(a.dataset.totalTime); const timeB = parseInt(b.dataset.totalTime);
+                return direction === 'desc' ? timeB - timeA : timeA - timeB;
+            });
+            items.forEach(item => rosterDiv.appendChild(item));
+        }
+        document.getElementById('sort-desc-btn').onclick = () => sortRoster('desc');
+        document.getElementById('sort-asc-btn').onclick = () => sortRoster('asc');
+
+        function updateSubstitutionWarnings() {
+            const items = document.querySelectorAll('.player-item'); if (items.length === 0) return;
+            let totalTime = 0, onFieldTime = 0, onFieldCount = 0;
+            const players = Array.from(items).map(item => {
+                const time = parseInt(item.dataset.totalTime); totalTime += time;
+                if (item.dataset.isOnField === '1') { onFieldTime += time; onFieldCount++; }
+                return { element: item, time };
+            });
+
+            players.sort((a, b) => b.time - a.time);
+            let rank = 0, prevTime = -1;
+            players.forEach(p => {
+                const rankDisplay = p.element.querySelector('[data-role="player-rank-display"]');
+                if (p.time !== prevTime) rank++; prevTime = p.time; p.element.dataset.rank = rank;
+                if (rankDisplay) {
+                    rankDisplay.textContent = rank; rankDisplay.className = 'player-rank';
+                    if (rank === 1) rankDisplay.classList.add('rank-color-1');
+                    else if (rank === 2) rankDisplay.classList.add('rank-color-2');
+                    else if (rank === 3) rankDisplay.classList.add('rank-color-3');
+                    else if (rank === 4) rankDisplay.classList.add('rank-color-4');
+                }
+            });
+
+            if (players.length < 2 || totalSeconds < MIN_GAME_TIME_FOR_WARNINGS || totalTime === 0) {
+                items.forEach(i => i.querySelector('[data-role="low-warning-icon"]').style.display = 'none'); return;
+            }
+
+            const avgTime = onFieldCount > 0 ? onFieldTime / onFieldCount : 0;
+            items.forEach(item => {
+                const icon = item.querySelector('[data-role="low-warning-icon"]');
+                const time = parseInt(item.dataset.totalTime);
+                const isOn = item.dataset.isOnField === '1';
+                if (!isOn && avgTime > 0 && (time < (avgTime * LOW_TIME_RATIO) || (avgTime - time) > SIGNIFICANT_TIME_GAP)) {
+                    icon.style.display = 'inline';
+                } else { icon.style.display = 'none'; }
+            });
+        }
+
+        // --- TIMER CONTROLS ---
+        function startTimer() {
+            if (isRunning || (isCountdownMode && totalSeconds <= 0)) return;
+            isRunning = true; startPauseBtn.textContent = 'Pause'; startPauseBtn.classList.add('pause');
+            countdownInterval = setInterval(() => {
+                if (isCountdownMode) {
+                    if (totalSeconds > 0) totalSeconds--;
+                    else { clearInterval(countdownInterval); isRunning = false; startPauseBtn.textContent = 'Done!'; startPauseBtn.classList.remove('pause'); timeDisplay.classList.add('countdown-ended'); }
+                } else totalSeconds++;
+                timeDisplay.textContent = formatTime(totalSeconds);
+                timeDisplay.classList.toggle('countdown-ended', isCountdownMode && totalSeconds <= 60 && totalSeconds > 0);
+                document.querySelectorAll('.player-item[data-is-on-field="1"]').forEach(item => {
+                    let time = parseInt(item.dataset.totalTime) + 1;
+                    item.dataset.totalTime = time; item.querySelector('.player-time').textContent = formatTime(time);
+                });
+                updateSubstitutionWarnings();
+            }, 1000);
+        }
+        function pauseTimer() { clearInterval(countdownInterval); isRunning = false; startPauseBtn.textContent = 'Resume'; startPauseBtn.classList.remove('pause'); }
+        function resetTimer() {
+            clearInterval(countdownInterval); isRunning = false; startPauseBtn.textContent = 'Start'; startPauseBtn.classList.remove('pause');
+            timeDisplay.classList.remove('countdown-ended'); totalSeconds = isCountdownMode ? DEFAULT_COUNTDOWN_SECONDS : INITIAL_STOPWATCH_SECONDS;
+            timeDisplay.textContent = formatTime(totalSeconds);
+            document.querySelectorAll('.player-item').forEach(item => {
+                item.dataset.totalTime = 0; item.querySelector('.player-time').textContent = formatTime(0); item.dataset.isOnField = '0';
+                const btn = item.querySelector('.toggle-btn');
+                if (btn) { btn.textContent = 'ON'; btn.classList.add('status-off'); btn.classList.remove('status-on'); }
+            });
+            updateSubstitutionWarnings();
+        }
+        function adjustTime(s) { totalSeconds = Math.max(0, totalSeconds + s); timeDisplay.textContent = formatTime(totalSeconds); updateSubstitutionWarnings(); }
+        
+        startPauseBtn.onclick = () => isRunning ? pauseTimer() : startTimer();
+        resetBtn.onclick = () => showConfirmation('Confirm', 'Reset timer and all player times?', (c) => { if (c) resetTimer(); });
+        document.getElementById('add-minute-btn').onclick = () => adjustTime(30);
+        document.getElementById('subtract-minute-btn').onclick = () => adjustTime(-30);
+
+        function startMiniTimer() {
+            if (isMiniTimerRunning || miniTotalSeconds <= 0) return;
+            isMiniTimerRunning = true; miniStartPauseBtn.textContent = 'Pause'; miniStartPauseBtn.classList.add('pause');
+            miniTimerInterval = setInterval(() => {
+                if (miniTotalSeconds > 0) { miniTotalSeconds--; miniTimeDisplay.textContent = formatTime(miniTotalSeconds); }
+                else { clearInterval(miniTimerInterval); isMiniTimerRunning = false; miniStartPauseBtn.textContent = 'Done!'; miniStartPauseBtn.classList.remove('pause'); miniTimeDisplay.classList.add('countdown-ended'); }
+            }, 1000);
+        }
+        function pauseMiniTimer() { clearInterval(miniTimerInterval); isMiniTimerRunning = false; miniStartPauseBtn.textContent = 'Resume'; miniStartPauseBtn.classList.remove('pause'); }
+        function resetMiniTimer() {
+            clearInterval(miniTimerInterval); isMiniTimerRunning = false; miniStartPauseBtn.textContent = 'Start'; miniStartPauseBtn.classList.remove('pause');
+            miniTotalSeconds = DEFAULT_MINI_TIMER_SECONDS; miniTimeDisplay.textContent = formatTime(miniTotalSeconds); miniTimeDisplay.classList.remove('countdown-ended');
+        }
+        miniStartPauseBtn.onclick = () => isMiniTimerRunning ? pauseMiniTimer() : startMiniTimer();
+        document.getElementById('mini-reset-btn').onclick = resetMiniTimer;
+
+        // --- AI LOGIC ---
+        function buildTeamDataForAi(teamId) {
+            if (!teamId) return { playersRanked: [] };
+            const teamPlayers = appData.players.filter(p => p.teamId === teamId);
+            teamPlayers.sort((a, b) => (parseInt(a.rank) || 999) - (parseInt(b.rank) || 999));
+            return { playersRanked: teamPlayers.map(p => p.playerName) };
+        }
+
+        async function getBuiltInAiSuggestion(teamDataForAi, onField, offField, notes, goal, timeStr, recentSubs, abortSignal) {
+            await new Promise(resolve => setTimeout(resolve, 800));
+            const teamData = teamDataForAi || { playersRanked: [] };
+            const rankings = teamData.playersRanked.map(p => p.toLowerCase());
+
+            const getRank = (name) => { const idx = rankings.indexOf(name.toLowerCase()); return idx !== -1 ? idx : 999; };
+            const [minutes, seconds] = timeStr.split(':').map(Number);
+            const timeLeftSec = Math.max(0, (40 * 60) - ((minutes * 60) + seconds));
+            const isCrunchTime = timeLeftSec <= (5 * 60);
+            const notesLower = notes.toLowerCase();
+
+            const isUnavailable = (name) => {
+                const n = name.toLowerCase(); if (!notesLower.includes(n)) return false;
+                return /(injure|hurt|sick|late|absent|unwell|sore|pain|limp|cramp|dizzy|nausea|vomit|ill\b|not\s+well|not\s+feeling\s+well|feeling\s+sick|feeling\s+unwell|feeling\s+ill|doesn'?t\s+want\s+(to\s+)?(go\s+on|play|continue)|don'?t\s+want\s+(to\s+)?(go\s+on|play|continue)|does\s+not\s+want\s+(to\s+)?(go\s+on|play|continue)|won'?t\s+play|refuses?\s+to\s+play|can'?t\s+go\s+on|not\s+playing|sitting\s+out|needs?\s+a\s+rest|needs?\s+to\s+come\s+off|has\s+to\s+come\s+off|pull\s+(her|him)\s+off|take\s+(her|him)\s+off)/.test(notesLower.substring(Math.max(0, notesLower.indexOf(n) - 40), notesLower.indexOf(n) + 60));
+            };
+            const hasFoulTrouble = (name) => {
+                const n = name.toLowerCase(); if (!notesLower.includes(n)) return false;
+                return /(3|4|three|four)\s*foul/.test(notesLower.substring(Math.max(0, notesLower.indexOf(n) - 30), notesLower.indexOf(n) + 30)) || notesLower.substring(Math.max(0, notesLower.indexOf(n) - 30), notesLower.indexOf(n) + 30).includes('foul trouble');
+            };
+            const hasHotHand = (name) => {
+                const n = name.toLowerCase(); if (!notesLower.includes(n)) return false;
+                return /(on fire|hot|playing great|killing it|unstoppable)/.test(notesLower.substring(Math.max(0, notesLower.indexOf(n) - 30), notesLower.indexOf(n) + 30));
+            };
+            const isExhausted = (name) => {
+                const n = name.toLowerCase(); if (!notesLower.includes(n)) return false;
+                return /(tired|exhausted|gassed|dead|breathing\s+heavy|worn\s+out|running\s+out|no\s+energy|fatigued|flagging|struggling)/.test(notesLower.substring(Math.max(0, notesLower.indexOf(n) - 40), notesLower.indexOf(n) + 60));
+            };
+
+            const isLosing = /(we are|we're|team is)\s*losing/i.test(notesLower) || /losing badly/i.test(notesLower) || /behind/i.test(notesLower);
+            const isWinning = /(we are|we're|team is)\s*winning/i.test(notesLower) || /winning comfortably/i.test(notesLower) || /up by/i.test(notesLower);
+
+            let unavailablePlayers = [], foulTroublePlayers = [], hotPlayers = [], exhaustedPlayers = [];
+            [...onField, ...offField].forEach(p => {
+                if (isUnavailable(p.name)) unavailablePlayers.push(p.name); else if (hasFoulTrouble(p.name)) foulTroublePlayers.push(p.name);
+                if (hasHotHand(p.name)) hotPlayers.push(p.name); if (isExhausted(p.name)) exhaustedPlayers.push(p.name);
+            });
+
+            let suggestedOut = [], suggestedIn = [], reasons = [], candidatesOut = [...onField], candidatesIn = [...offField];
+            let isWin = goal.toLowerCase().includes("win") || goal.toLowerCase().includes("best");
+            let isEven = goal.toLowerCase().includes("even") || goal.toLowerCase().includes("fair");
+            let isAny = !isWin && !isEven;
+
+            if (isLosing) { isWin = true; isEven = false; isAny = false; reasons.push("🚨 **Score Alert:** We are behind! Activating aggressive 'Win' mode."); } 
+            else if (isWinning && isWin) reasons.push("📈 **Game Flow:** We are winning! Starters can rest more.");
+            else if (isWinning && isEven) reasons.push("📈 **Game Flow:** Winning comfortably. Perfect time for bench development.");
+            else if (isWinning && isAny) reasons.push("📈 **Game Flow:** Solid lead. Balancing freshness with momentum.");
+
+            candidatesIn = candidatesIn.filter(p => !unavailablePlayers.includes(p.name) && !exhaustedPlayers.includes(p.name));
+            candidatesOut.forEach(p => {
+                if (unavailablePlayers.includes(p.name)) { suggestedOut.push(p); reasons.push(`❌ **Emergency:** ${p.name} subbed out.`); }
+                else if (exhaustedPlayers.includes(p.name)) { suggestedOut.push(p); reasons.push(`🥵 **Exhausted:** ${p.name} needs recovery.`); }
+                else if (foulTroublePlayers.includes(p.name) && !isCrunchTime) { suggestedOut.push(p); reasons.push(`⚠️ **Foul Trouble:** Protecting ${p.name}.`); }
+            });
+
+            if (!isCrunchTime) {
+                let safeCandidatesIn = candidatesIn.filter(p => !foulTroublePlayers.includes(p.name));
+                if (safeCandidatesIn.length > 0) candidatesIn = safeCandidatesIn;
+            }
+
+            candidatesOut = candidatesOut.filter(p => !suggestedOut.some(outP => outP.name === p.name));
+            candidatesOut = candidatesOut.filter(p => !recentSubs.some(s => s.name === p.name && s.state === 'on'));
+            if (candidatesOut.length === 0) candidatesOut = onField.filter(p => !suggestedOut.some(outP => outP.name === p.name));
+
+            candidatesOut = candidatesOut.filter(p => {
+                if (hotPlayers.includes(p.name)) { reasons.push(`🔥 **Hot Hand:** Keeping ${p.name} on the floor.`); return false; }
+                return true;
+            });
+            if (candidatesOut.length === 0) candidatesOut = onField.filter(p => !suggestedOut.some(outP => outP.name === p.name));
+
+            candidatesOut.sort((a, b) => (isWin && getRank(a.name) !== getRank(b.name)) ? getRank(b.name) - getRank(a.name) : b.time - a.time);
+            candidatesIn.sort((a, b) => {
+                const hA = hotPlayers.includes(a.name) ? -1 : 0, hB = hotPlayers.includes(b.name) ? -1 : 0;
+                if (hA !== hB) return hA - hB;
+                if (isWin && getRank(a.name) !== getRank(b.name)) return getRank(a.name) - getRank(b.name);
+                return a.time - b.time;
+            });
+
+            let numToSub = 2;
+            if (candidatesOut.length > 0 && candidatesIn.length > 0) {
+                let maxOut = Math.max(...candidatesOut.map(p => p.time)), minIn = Math.min(...candidatesIn.map(p => p.time));
+                if (maxOut - minIn > 300 && candidatesIn.length >= 3) numToSub = 3;
+            }
+            if (suggestedOut.length > numToSub) numToSub = suggestedOut.length;
+            numToSub = Math.min(numToSub, candidatesOut.length + suggestedOut.length, candidatesIn.length + suggestedIn.length);
+
+            while (suggestedOut.length < numToSub && candidatesOut.length > 0) suggestedOut.push(candidatesOut.shift());
+            while (suggestedIn.length < suggestedOut.length && candidatesIn.length > 0) suggestedIn.push(candidatesIn.shift());
+            while (suggestedOut.length > suggestedIn.length) suggestedOut.pop();
+            while (suggestedIn.length > suggestedOut.length) suggestedIn.pop();
+
+            if (suggestedOut.length === 0) return `No balanced substitutions recommended.\n\n[SUB_ACTION] {"out": [], "in": []}`;
+
+            const outNames = suggestedOut.map(p => p.name), inNames = suggestedIn.map(p => p.name);
+            const variantIndex = Math.floor(Math.random() * 3);
+            if (isWin && !isLosing) reasons.push(...[["🏆 **Strategy:** Dominant lineup.", "⚡ **Focus:** Firepower."], ["🏆 **Strategy:** Leaning on top performers.", "⚡ **Focus:** Scoring & defense."], ["🏆 **Strategy:** Aggressive push.", "🔄 **Rotation:** Cycling stars."]][variantIndex]);
+            else if (isEven && !isWinning) reasons.push(...[["⚖️ **Strategy:** Playtime strictly.", "🔋 **Focus:** Equal opportunity."], ["⚖️ **Strategy:** Keeping minutes balanced.", "🔋 **Focus:** Team morale."], ["⚖️ **Strategy:** Fair share of time.", "🔄 **Rotation:** Resting highs."]][variantIndex]);
+            else reasons.push(...[["⚖️ **Strategy:** Sweet spot.", "🔋 **Focus:** Steady rhythm."], ["⚖️ **Strategy:** Keep team fresh.", "🔄 **Rotation:** Swapping tired legs."], ["⚖️ **Strategy:** Top talent + bench.", "🔋 **Focus:** Avoiding exhaustion."]][variantIndex]);
+
+            let waitTimeMins = Math.max(2, Math.min(4, (isCrunchTime ? 2 : (offField.length >= 4 ? 2 : (offField.length === 3 ? 3 : 4))) + (isWin ? 1 : 0) - (isLosing ? 1 : 0)));
+            const futureOnField = [...onField.map(p => p.name).filter(n => !outNames.includes(n)), ...inNames];
+            
+            let textResponse = `**Suggestion:** Sub **${outNames.join(' & ')}** OUT, and bring **${inNames.join(' & ')}** IN.\n\n**Reasoning:**\n`;
+            reasons.forEach(r => textResponse += `- ${r}\n`);
+            textResponse += `\n⏱️ **Timing:** Wait about ${waitTimeMins} minutes.\n🏀 **Lineup:** ${futureOnField.join(', ')}\n\n[SUB_ACTION] {"out": ${JSON.stringify(outNames)}, "in": ${JSON.stringify(inNames)}}`;
+            return textResponse;
+        }
+
+        let aiAbortController = null;
+        document.getElementById('suggest-sub-btn').onclick = () => {
+            const playerItems = document.querySelectorAll('.player-item');
+            if (playerItems.length < 2) return showConfirmation('Guahh AI Unavailable', 'Please add at least two players.');
+            const onFieldCount = document.querySelectorAll('.player-item[data-is-on-field="1"]').length;
+            if (onFieldCount === 0 || playerItems.length - onFieldCount === 0) return showConfirmation('Guahh AI Unavailable', 'You need at least one player on the field and one on the bench.');
+
+            showCustomModal('Guahh AI Suggestions', `
+                <div style="margin-bottom: 15px; text-align: left;">
+                    <label for="ai-goal-select" style="display:block; margin-bottom: 8px; font-weight: bold; color: white;">Game Situation:</label>
+                    <select id="ai-goal-select" style="width: 100%; padding: 10px; border-radius: 8px; background-color: #2D2D2D; color: white; border: 1px solid #444; font-size: 15px;">
+                        <option value="win">We need to win (Play best players)</option>
+                        <option value="even">Even play time (Fairness)</option>
+                        <option value="any">Doesn't matter (Balanced)</option>
+                    </select>
+                </div>
+                <div id="ai-loading" style="display: none; text-align: center; margin-top: 20px; margin-bottom: 10px;">
+                    <span style="display: inline-block; animation: pulse 1.5s infinite; color: #b388ff; font-weight: bold; font-size: 16px;">Guahh AI is thinking...</span>
+                </div>
+            `, [
+                { text: 'Ask Guahh AI', className: 'primary', action: async (e) => {
+                    e.target.disabled = true; e.target.textContent = 'Thinking...';
+                    document.getElementById('ai-loading').style.display = 'block';
+                    aiAbortController = new AbortController();
+                    
+                    const onField = [], offField = [];
+                    document.querySelectorAll('.player-item').forEach(item => {
+                        const baseName = item.querySelector('.player-name')?.textContent || 'Unnamed';
+                        const playerObj = { name: baseName, fullName: `${item.querySelector('.player-number')?.textContent || ''} ${baseName}`.trim(), time: parseInt(item.dataset.totalTime), isOnField: item.dataset.isOnField === '1' };
+                        (playerObj.isOnField ? onField : offField).push(playerObj);
+                    });
+
+                    try {
+                        let suggestionText = await getBuiltInAiSuggestion(buildTeamDataForAi(teamSelect.value), onField, offField, document.getElementById('game-notes').value.trim(), document.getElementById('ai-goal-select').options[document.getElementById('ai-goal-select').selectedIndex].text, formatTime(totalSeconds), recentSubs, aiAbortController.signal);
+                        let subActions = null; const match = suggestionText.match(/\[SUB_ACTION\]\s*({.*})/);
+                        if (match) { subActions = JSON.parse(match[1]); suggestionText = suggestionText.replace(/\[SUB_ACTION\]\s*({.*})/, '').trim(); }
+                        
+                        const buttons = [];
+                        if (subActions && (subActions.out.length > 0 || subActions.in.length > 0)) {
+                            buttons.push({ text: 'Make Substitutes', className: 'primary', action: () => {
+                                const allPlayers = Array.from(document.querySelectorAll('.player-item'));
+                                const togglePlayer = (name, targetState) => {
+                                    const p = allPlayers.find(item => (item.querySelector('.player-name')?.textContent || '').toLowerCase().includes(name.toLowerCase()));
+                                    if (p && p.dataset.isOnField === targetState) p.querySelector('.toggle-btn')?.click();
+                                };
+                                subActions.out.forEach(name => togglePlayer(name, '1'));
+                                subActions.in.forEach(name => togglePlayer(name, '0'));
+                                closeModal();
+                            }});
+                        }
+                        buttons.push({ text: 'Close', action: closeModal, className: 'secondary' });
+                        showCustomModal('Guahh AI Suggestions', `<div style="font-size: 1.1rem; line-height: 1.5; color: #E0E0E0; text-align: left; white-space: pre-wrap;">${suggestionText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</div>`, buttons);
+                    } catch (error) { if (error.name !== 'AbortError') showConfirmation('AI Error', `Failed: ${error.message || error}`); }
+                }}, { text: 'Cancel', className: 'secondary', action: closeModal }
+            ]);
+        };
+
+        // --- GAME SAVING ---
+        document.getElementById('save-to-sheets-btn').onclick = () => {
+            showConfirmation('Finish and Save Game', 'End this game and save final times to Server?', (c) => { 
+                if (c) {
+                    const gameData = { teamId: teamSelect.value, mainTime: timeDisplay.textContent, notes: document.getElementById('game-notes').value, players: [] };
+                    document.querySelectorAll('.player-item').forEach(item => {
+                        gameData.players.push({ number: item.querySelector('.player-number')?.textContent.replace('#', '') || 'N/A', name: item.querySelector('.player-name')?.textContent || 'Unnamed', time: item.querySelector('.player-time')?.textContent || '00:00' });
+                    });
+                    if (!gameData.teamId) return showConfirmation('Required Field Missing', 'Please select a Team Name before saving.');
+                    
+                    const btn = document.getElementById('save-to-sheets-btn');
+                    btn.disabled = true; btn.textContent = 'Saving...';
+                    apiCall('save', gameData).then(() => showConfirmation('Success!', `Game is saved.`))
+                    .catch(e => showConfirmation('Network Error', `Details: ${e.message}`))
+                    .finally(() => { btn.disabled = false; btn.textContent = 'Finish Game'; });
+                } 
+            }); 
+        };
+
+        document.getElementById('update-app-btn').onclick = () => showConfirmation('Update App', 'Refresh the page?', (c) => { if (c) location.reload(true); });
+
+        // --- VISUALS & WAKE LOCK ---
+        document.addEventListener('pointerdown', (e) => {
+            const btn = e.target.closest('button');
+            if (btn && !btn.disabled) {
+                btn.classList.remove('btn-pop'); void btn.offsetWidth; btn.classList.add('btn-pop');
+                setTimeout(() => btn.classList.remove('btn-pop'), 350);
+            }
+        });
+
+        let wakeLock = null;
+        async function requestWakeLock() { try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {} }
+        document.addEventListener('visibilitychange', async () => { if (wakeLock !== null && document.visibilityState === 'visible') await requestWakeLock(); });
+        requestWakeLock();
+
+        // RUN INIT
+        initApp();
+    </script>
+</body>
+</html>
