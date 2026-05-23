@@ -138,12 +138,20 @@
         #modal-message { margin-bottom: 20px; color: #B0B0B0; font-size: 16px; white-space: pre-line; }
         .modal-buttons { display: flex; flex-direction: column; gap: 10px; justify-content: center; text-align: center; }
         .modal-buttons .timer-btn { flex-basis: auto; padding: 10px 15px; font-size: 14px; }
+
+        /* Toggle Switch CSS for Settings */
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #424242; transition: .4s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #4CAF50; }
+        input:checked + .slider:before { transform: translateX(20px); }
     </style>
 </head>
 
 <body>
     <div id="loading-overlay" style="position: fixed; top:0; left:0; width:100%; height:100%; background: #121212; z-index: 9999; display: flex; justify-content: center; align-items: center;">
-        <h2 style="color: #E0E0E0; animation: pulse 1.5s infinite;">Loading Coachbuddy...</h2>
+        <h2 style="color: #E0E0E0; animation: pulse 1.5s infinite;">Connecting to Coachbuddy...</h2>
     </div>
 
     <div class="app-wrapper">
@@ -154,7 +162,7 @@
                 <button id="nav-app-btn" class="timer-btn primary" style="flex: 1; font-size: 11px;">Game</button>
                 <button id="nav-manage-btn" class="timer-btn secondary" style="flex: 1; font-size: 11px;">Manage</button>
                 <button id="nav-stats-btn" class="timer-btn secondary" style="flex: 1; font-size: 11px;">Stats</button>
-                <button id="nav-logout-btn" class="timer-btn secondary" style="flex: 1; background-color: #D32F2F; font-size: 11px;">Logout</button>
+                <button id="nav-settings-btn" class="timer-btn secondary" style="flex: 1; font-size: 11px;">Settings</button>
             </div>
 
             <!-- AUTH VIEW -->
@@ -287,6 +295,31 @@
                 </div>
             </div>
 
+            <!-- SETTINGS VIEW -->
+            <div id="settings-view" style="display: none;">
+                <div style="background-color: #1E1E1E; padding: 12px; border-radius: 12px; margin-bottom: 10px;">
+                    <h3 style="margin-top: 0; color: #E0E0E0;">Settings</h3>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #333;">
+                        <span style="font-size: 14px;">Auto-start 3 min timer after subs</span>
+                        <label class="switch">
+                            <input type="checkbox" id="setting-autotimer" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #333;">
+                        <span style="font-size: 14px;">Auto-add default players on app open</span>
+                        <label class="switch">
+                            <input type="checkbox" id="setting-autoadd">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+    
+                    <button id="logout-btn-main" class="timer-btn secondary" style="width: 100%; background-color: #D32F2F; color: white;">Log Out</button>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -301,7 +334,7 @@
 
     <script>
         // --- GLOBAL STATE & CONFIG ---
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwM6W6gDv1E_-boexKn4mqdjRAY8Ssatj3ZPMK9ew15ukkX3okeIFHngRjt0VJyQpFBvA/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxxXAV4OsDc27_DLnqcDuOu3Iutcs3T0WDAffzPOXOhRb67dDLebFkWs3ASd3obLRzJ8w/exec';
         let authToken = localStorage.getItem('coachbuddy_token');
         let currentUser = null;
         let subscriptionStatus = "NONE";
@@ -332,6 +365,16 @@
         const miniTimeDisplay = document.getElementById('mini-time-display');
         const miniStartPauseBtn = document.getElementById('mini-start-pause-btn');
         
+        // --- SETTINGS INITIALIZATION ---
+        const autoTimerCheckbox = document.getElementById('setting-autotimer');
+        const autoAddCheckbox = document.getElementById('setting-autoadd');
+        
+        if (localStorage.getItem('cb_setting_autotimer') === 'false') autoTimerCheckbox.checked = false;
+        if (localStorage.getItem('cb_setting_autoadd') === 'true') autoAddCheckbox.checked = true;
+
+        autoTimerCheckbox.addEventListener('change', (e) => localStorage.setItem('cb_setting_autotimer', e.target.checked));
+        autoAddCheckbox.addEventListener('change', (e) => localStorage.setItem('cb_setting_autoadd', e.target.checked));
+        
         // --- API HELPERS ---
         async function apiCall(action, payload = {}) {
             payload.action = action;
@@ -348,7 +391,7 @@
         }
 
         // --- NAVIGATION & VIEWS ---
-        const views = ['auth-view', 'sub-block-view', 'app-view', 'manage-view', 'stats-view'];
+        const views = ['auth-view', 'sub-block-view', 'app-view', 'manage-view', 'stats-view', 'settings-view'];
         
         function showView(viewId) {
             views.forEach(v => document.getElementById(v).style.display = 'none');
@@ -361,7 +404,7 @@
                 nav.style.display = 'flex';
             }
 
-            ['app-view', 'manage-view', 'stats-view'].forEach(v => {
+            ['app-view', 'manage-view', 'stats-view', 'settings-view'].forEach(v => {
                 const btn = document.getElementById('nav-' + v.split('-')[0] + '-btn');
                 if (btn) {
                     btn.className = v === viewId ? 'timer-btn primary' : 'timer-btn secondary';
@@ -371,8 +414,9 @@
         }
 
         document.getElementById('nav-app-btn').onclick = () => showView('app-view');
-        document.getElementById('nav-manage-btn').onclick = () => { renderManageTeams(); renderManagePlayers(); showView('manage-view'); };
+        document.getElementById('nav-manage-btn').onclick = () => { renderManageTeams(); resetPlayerForm(); renderManagePlayers(); showView('manage-view'); };
         document.getElementById('nav-stats-btn').onclick = () => showView('stats-view');
+        document.getElementById('nav-settings-btn').onclick = () => showView('settings-view');
         
         const promptLogout = () => {
             showConfirmation('Log Out', 'Are you sure you want to log out?', (c) => {
@@ -383,7 +427,7 @@
                 }
             });
         };
-        document.getElementById('nav-logout-btn').onclick = promptLogout;
+        document.getElementById('logout-btn-main').onclick = promptLogout;
         document.getElementById('logout-btn-sub').onclick = promptLogout;
 
         // --- INIT & AUTH ---
@@ -455,6 +499,16 @@
         };
 
         // --- CORE APP DATA RENDERING ---
+        function autoAddDefaultPlayers(teamId) {
+            const teamPlayers = appData.players.filter(p => p.teamId === teamId);
+            teamPlayers.sort((a, b) => (parseInt(a.rank) || 999) - (parseInt(b.rank) || 999));
+            teamPlayers.forEach(p => {
+                const existing = Array.from(document.querySelectorAll('.player-item')).find(item => item.dataset.playerId === p.playerId);
+                if (!existing) addPlayerByName(p.playerName, p.playerNumber, p.playerId);
+            });
+            updateSubstitutionWarnings();
+        }
+
         function renderTeams() {
             const selects = [teamSelect, document.getElementById('manage-team-select'), document.getElementById('stats-team-select')];
             selects.forEach(s => s.innerHTML = '<option value="" disabled selected>Select a Team...</option>');
@@ -465,13 +519,22 @@
             });
             
             const savedTeam = localStorage.getItem(LOCAL_STORAGE_KEY);
+            let selectedId = null;
             if (savedTeam && appData.teams.some(t => t.teamId === savedTeam)) {
-                teamSelect.value = savedTeam;
-                document.getElementById('manage-team-select').value = savedTeam;
-                document.getElementById('stats-team-select').value = savedTeam;
+                selectedId = savedTeam;
             } else if (appData.teams.length > 0) {
-                teamSelect.value = appData.teams[0].teamId;
-                localStorage.setItem(LOCAL_STORAGE_KEY, appData.teams[0].teamId);
+                selectedId = appData.teams[0].teamId;
+            }
+
+            if (selectedId) {
+                teamSelect.value = selectedId;
+                document.getElementById('manage-team-select').value = selectedId;
+                document.getElementById('stats-team-select').value = selectedId;
+                localStorage.setItem(LOCAL_STORAGE_KEY, selectedId);
+                
+                if (autoAddCheckbox.checked && document.querySelectorAll('.player-item').length === 0) {
+                    autoAddDefaultPlayers(selectedId);
+                }
             }
         }
 
@@ -482,33 +545,25 @@
                     if (confirmed) {
                         resetTimer(); resetMiniTimer();
                         localStorage.setItem(LOCAL_STORAGE_KEY, teamId);
-                        rosterDiv.innerHTML = ''; // Clear roster when team changes
+                        rosterDiv.innerHTML = ''; 
+                        if (autoAddCheckbox.checked) autoAddDefaultPlayers(teamId);
                     } else {
                         teamSelect.value = localStorage.getItem(LOCAL_STORAGE_KEY) || "";
                     }
                 });
             } else {
                 localStorage.setItem(LOCAL_STORAGE_KEY, teamId);
-                rosterDiv.innerHTML = ''; // Clear roster when team changes
+                rosterDiv.innerHTML = ''; 
+                if (autoAddCheckbox.checked) autoAddDefaultPlayers(teamId);
             }
         });
 
-        // Add Default Players to the current game
         document.getElementById('add-default-players-btn').onclick = () => {
             const teamId = teamSelect.value;
             if (!teamId) return showConfirmation('Error', 'Please select a team first.');
             
             showConfirmation('Add Default Roster', 'Add the saved players for this team to the game?', (c) => {
-                if (c) {
-                    const teamPlayers = appData.players.filter(p => p.teamId === teamId);
-                    teamPlayers.sort((a, b) => (parseInt(a.rank) || 999) - (parseInt(b.rank) || 999));
-                    teamPlayers.forEach(p => {
-                        // Prevent duplicates
-                        const existing = Array.from(document.querySelectorAll('.player-item')).find(item => item.dataset.playerId === p.playerId);
-                        if (!existing) addPlayerByName(p.playerName, p.playerNumber, p.playerId);
-                    });
-                    updateSubstitutionWarnings();
-                }
+                if (c) autoAddDefaultPlayers(teamId);
             });
         };
 
@@ -517,9 +572,32 @@
             const list = document.getElementById('manage-team-list');
             list.innerHTML = '';
             appData.teams.forEach(t => {
-                list.innerHTML += `<div style="padding: 10px; background: #2D2D2D; margin-bottom: 5px; border-radius: 8px;">${t.teamName}</div>`;
+                list.innerHTML += `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #2D2D2D; margin-bottom: 5px; border-radius: 8px;">
+                    <span style="font-weight: 500; font-size: 15px; color: #E0E0E0;">${t.teamName}</span>
+                    <button class="timer-btn secondary" style="padding: 5px 10px; font-size: 11px; min-height: 0; background-color: #D32F2F; color: white;" onclick="deleteTeam('${t.teamId}')">Delete</button>
+                </div>`;
             });
         }
+
+        window.deleteTeam = (teamId) => {
+            showConfirmation('Delete Team', 'Are you sure you want to completely delete this team? This action cannot be undone.', async (c) => {
+                if (c) {
+                    try {
+                        await apiCall('delete_team', { teamId });
+                        appData.teams = appData.teams.filter(t => t.teamId !== teamId);
+                        appData.players = appData.players.filter(p => p.teamId !== teamId);
+                        
+                        if (teamSelect.value === teamId) rosterDiv.innerHTML = '';
+                        renderManageTeams();
+                        renderTeams();
+                        showConfirmation('Success', 'Team deleted successfully.');
+                    } catch (e) {
+                        showConfirmation('Cannot Delete', e.message);
+                    }
+                }
+            });
+        };
 
         document.getElementById('create-team-btn').onclick = async () => {
             const nameInput = document.getElementById('new-team-name');
@@ -559,10 +637,14 @@
                 const div = document.createElement('div');
                 div.style.cssText = "display: flex; justify-content: space-between; padding: 10px; background: #2D2D2D; margin-bottom: 5px; border-radius: 8px; align-items: center;";
                 div.innerHTML = `
-                <div><strong style="color:white;">${p.playerName}</strong> #${p.playerNumber || '-'} <span style="color:#B0B0B0; font-size:11px; margin-left:5px;">(Rank: ${p.rank || '-'})</span></div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="font-weight: 700; color: #64B5F6; font-size: 15px;">#${p.playerNumber || '-'}</span>
+                    <span style="font-weight: 500; font-size: 15px; color: #E0E0E0;">${p.playerName}</span>
+                    <span style="color: #B0B0B0; font-size: 12px; margin-left: 2px;">(Rank: ${p.rank || '-'})</span>
+                </div>
                 <div style="display: flex; gap: 5px;">
                     <button class="timer-btn secondary" style="padding: 5px 10px; font-size: 11px; min-height: 0;" onclick="editPlayerFromManage('${p.playerId}')">Edit</button>
-                    <button class="timer-btn secondary" style="padding: 5px 10px; font-size: 11px; min-height: 0; background-color: #D32F2F;" onclick="removePlayerFromManage('${p.playerId}')">Remove</button>
+                    <button class="timer-btn secondary" style="padding: 5px 10px; font-size: 11px; min-height: 0; background-color: #D32F2F; color: white;" onclick="removePlayerFromManage('${p.playerId}')">Remove</button>
                 </div>
                 `;
                 list.appendChild(div);
@@ -583,7 +665,6 @@
             btn.style.backgroundColor = '#4CAF50';
             btn.style.color = 'white';
             
-            // Scroll to form slightly
             document.getElementById('new-player-name').focus();
         };
 
@@ -617,7 +698,6 @@
             if (!teamId || !name) return showConfirmation('Error', 'Team and Name are required.');
             
             if (editingPlayerId) {
-                // Update Existing
                 const p = appData.players.find(p => p.playerId === editingPlayerId);
                 if (p) {
                     p.playerName = name; p.playerNumber = num; p.rank = rank || "10";
@@ -633,7 +713,6 @@
                     }
                 }
             } else {
-                // Add New
                 const tempId = 'temp_' + Date.now();
                 const newPlayer = { playerId: tempId, teamId, playerName: name, playerNumber: num, rank: rank || "10" };
                 appData.players.push(newPlayer);
@@ -745,14 +824,16 @@
 
         function commitSubs() {
             recentSubs = [...pendingSubChanges]; pendingSubChanges = []; subDebounceTimer = null;
-            updateRecentSubsUI(); resetMiniTimer(); startMiniTimer();
+            updateRecentSubsUI(); 
+            resetMiniTimer(); 
+            if (autoTimerCheckbox.checked) startMiniTimer();
         }
 
         function recordSubChange(name, state) {
             pendingSubChanges = pendingSubChanges.filter(p => p.name !== name);
             pendingSubChanges.push({ name, state });
             if (subDebounceTimer) clearTimeout(subDebounceTimer);
-            subDebounceTimer = setTimeout(commitSubs, 2500);
+            subDebounceTimer = setTimeout(commitSubs, 4000); // Changed to 4 seconds
         }
 
         // --- PLAYER ROSTER LOGIC ---
@@ -816,7 +897,6 @@
                 updateSubstitutionWarnings();
             };
             
-            // Delete button just removes from the UI sandbox now
             const deleteBtn = document.createElement('button');
             deleteBtn.className = 'delete-btn'; deleteBtn.textContent = '×';
             deleteBtn.onclick = () => {
@@ -842,7 +922,6 @@
             updateSubstitutionWarnings();
         }
 
-        // Add player locally to the game sandbox (doesn't hit database)
         document.getElementById('add-player-btn').addEventListener('click', () => {
             const name = document.getElementById('player-name').value.trim();
             const number = document.getElementById('player-number-input').value.trim();
@@ -1150,7 +1229,7 @@
             }); 
         };
 
-        document.getElementById('update-app-btn').onclick = () => showConfirmation('Update App', 'Refresh the page?', (c) => { if (c) location.reload(true); });
+        document.getElementById('update-app-btn').onclick = () => showConfirmation('Update App', 'Refresh the page to the latest version?', (c) => { if (c) location.reload(true); });
 
         // --- VISUALS & WAKE LOCK ---
         document.addEventListener('pointerdown', (e) => {
