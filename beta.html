@@ -146,6 +146,14 @@
         .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: #4CAF50; }
         input:checked + .slider:before { transform: translateX(20px); }
+
+        /* Multi-select Pills for Skills */
+        .skill-pill {
+            background-color: #1E1E1E; color: #B0B0B0; border: 1px solid #333; border-radius: 12px;
+            padding: 6px 10px; font-size: 12px; cursor: pointer; transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent; user-select: none;
+        }
+        .skill-pill.active { background-color: #4CAF50; color: white; border-color: #4CAF50; font-weight: 600; }
     </style>
 </head>
 
@@ -185,7 +193,7 @@
                     <input type="text" id="signup-firstname" placeholder="First Name" style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 8px; background: #2D2D2D; color: #E0E0E0; border: 1px solid #333; font-size: 16px;">
                     <input type="email" id="signup-email" placeholder="Email Address" style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 8px; background: #2D2D2D; color: #E0E0E0; border: 1px solid #333; font-size: 16px;">
                     <input type="tel" id="signup-phone" placeholder="Phone Number (Optional)" style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 8px; background: #2D2D2D; color: #E0E0E0; border: 1px solid #333; font-size: 16px;">
-                    <input type="password" id="signup-password" placeholder="Create Password" style="width: 100%; margin-bottom: 15px; padding: 12px; border-radius: 8px; background: #2D2D2D; color: #E0E0E0; border: 1px solid #333; font-size: 16px;">
+                    <input type="password" id="signup-password" placeholder="Create Password (Min 6 chars)" style="width: 100%; margin-bottom: 15px; padding: 12px; border-radius: 8px; background: #2D2D2D; color: #E0E0E0; border: 1px solid #333; font-size: 16px;">
                     <button id="signup-btn" class="timer-btn primary" style="width: 100%; margin-bottom: 10px;">Sign Up</button>
                     <div style="text-align: center; margin-top: 15px;">
                         <a href="#" id="go-to-login" style="color: #64B5F6; text-decoration: none; font-size: 14px;">Already have an account? Log in</a>
@@ -292,23 +300,23 @@
                         <div style="display: flex; gap: 6px; margin-bottom: 6px; flex-wrap: wrap;">
                             <input type="text" id="new-player-name" placeholder="Name" style="flex: 2; min-width: 100px; padding: 9px; border-radius: 8px; background: #1E1E1E; color: #E0E0E0; border: 1px solid #333; font-size: 15px;">
                             <input type="text" id="new-player-number" placeholder="No." style="flex: 1; min-width: 50px; padding: 9px; border-radius: 8px; background: #1E1E1E; color: #E0E0E0; border: 1px solid #333; font-size: 15px;">
-                            <input type="number" id="new-player-rank" placeholder="Rank (1-10)" style="flex: 1; min-width: 70px; padding: 9px; border-radius: 8px; background: #1E1E1E; color: #E0E0E0; border: 1px solid #333; font-size: 15px;">
+                            <input type="number" id="new-player-rank" placeholder="Rating (10=Best)" style="flex: 1; min-width: 110px; padding: 9px; border-radius: 8px; background: #1E1E1E; color: #E0E0E0; border: 1px solid #333; font-size: 15px;" min="1" max="10">
                         </div>
-                        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                        <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px;">
                             <input type="number" id="new-player-height" placeholder="Height (cm)" style="flex: 1; min-width: 80px; padding: 9px; border-radius: 8px; background: #1E1E1E; color: #E0E0E0; border: 1px solid #333; font-size: 15px;">
-                            <select id="new-player-skill" style="flex: 2; min-width: 120px; padding: 9px; border-radius: 8px; background: #1E1E1E; color: #E0E0E0; border: 1px solid #333; font-size: 15px;">
-                                <option value="">Main Skill (Optional)</option>
-                                <option value="Speed">Speed</option>
-                                <option value="Jump Height">Jump Height</option>
-                                <option value="Shot Accuracy">Shot Accuracy</option>
-                                <option value="Quick Thinking">Quick Thinking</option>
-                                <option value="3 Point Star">3 Point Star</option>
-                                <option value="Defence">Defence</option>
-                                <option value="Communication">Communication</option>
-                                <option value="Good At Everything">Good At Everything</option>
-                            </select>
                         </div>
-                        <button id="create-player-btn" class="timer-btn primary" style="width: 100%; margin-top: 8px;">Add Player</button>
+                        <div style="color: #B0B0B0; font-size: 12px; font-weight: 600; margin-bottom: 4px;">Best Skills (Optional):</div>
+                        <div id="skill-pills" style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px;">
+                            <button type="button" class="skill-pill" data-skill="Speed">Speed</button>
+                            <button type="button" class="skill-pill" data-skill="Jump Height">Jump Height</button>
+                            <button type="button" class="skill-pill" data-skill="Shot Accuracy">Shot Accuracy</button>
+                            <button type="button" class="skill-pill" data-skill="Quick Thinking">Quick Thinking</button>
+                            <button type="button" class="skill-pill" data-skill="3 Point Star">3 Point Star</button>
+                            <button type="button" class="skill-pill" data-skill="Defence">Defence</button>
+                            <button type="button" class="skill-pill" data-skill="Communication">Communication</button>
+                            <button type="button" class="skill-pill" data-skill="Good At Everything">Good At Everything</button>
+                        </div>
+                        <button id="create-player-btn" class="timer-btn primary" style="width: 100%;">Add Player</button>
                     </div>
                 </div>
             </div>
@@ -339,16 +347,16 @@
                     </div>
 
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #333;">
-                        <span style="font-size: 14px;">Substitute timer duration (minutes)</span>
-                        <input type="number" id="setting-timer-amount" min="1" max="15" value="3" style="width: 60px; padding: 5px; border-radius: 6px; background: #2D2D2D; color: #E0E0E0; border: 1px solid #333; text-align: center; font-size: 14px;">
-                    </div>
-    
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #333;">
                         <span style="font-size: 14px;">Auto-add default players on app open</span>
                         <label class="switch">
                             <input type="checkbox" id="setting-autoadd">
                             <span class="slider round"></span>
                         </label>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #333;">
+                        <span style="font-size: 14px;">Substitute timer duration (minutes)</span>
+                        <input type="number" id="setting-timer-amount" min="1" max="15" value="3" style="width: 60px; padding: 5px; border-radius: 6px; background: #2D2D2D; color: #E0E0E0; border: 1px solid #333; text-align: center; font-size: 14px;">
                     </div>
 
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #333;">
@@ -374,8 +382,11 @@
     </div>
 
     <script>
-        // --- GLOBAL STATE & CONFIG ---
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxE_XqmbiIqWd-n1EmD-zJiPcQGWlxzf7yZZm_T9H8uPvif0thEOBlGzAo64ztECGKx/exec';
+        // Appscript
+        const APP_VERSION = "0.1";
+        // Its hashed go away hackers
+        const SCRIPT_URL = atob('aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J5U1lZSUhycnl6Y1h4bHlCZGlkaWtCR1JfRkRyQVdhUmxMOGVzVHNWWmU0cE53aUVlOTloZklrWHc1emZ5RndjNEZmZy9leGVj');
+        
         let authToken = localStorage.getItem('coachbuddy_token');
         let currentUser = null;
         let subscriptionStatus = "NONE";
@@ -426,11 +437,36 @@
             localStorage.setItem('cb_setting_timer_amount', val);
             if (!isMiniTimerRunning) resetMiniTimer();
         });
+
+        // --- MULTI-SELECT SKILL PILLS ---
+        document.querySelectorAll('.skill-pill').forEach(pill => {
+            pill.addEventListener('click', (e) => {
+                e.preventDefault();
+                pill.classList.toggle('active');
+            });
+        });
+        function getSelectedSkills() {
+            return Array.from(document.querySelectorAll('.skill-pill.active')).map(p => p.dataset.skill).join(', ');
+        }
+        function setSelectedSkills(skillString) {
+            const skills = (skillString || '').split(',').map(s => s.trim());
+            document.querySelectorAll('.skill-pill').forEach(pill => {
+                if (skills.includes(pill.dataset.skill)) pill.classList.add('active');
+                else pill.classList.remove('active');
+            });
+        }
         
         // --- API HELPERS ---
         async function apiCall(action, payload = {}) {
             payload.action = action;
-            if (authToken) payload.token = authToken;
+            payload.version = APP_VERSION;
+            
+            if (authToken) {
+                payload.token = authToken;
+                payload.email = localStorage.getItem('coachbuddy_email');
+                payload.password = localStorage.getItem('coachbuddy_password');
+            }
+            
             const res = await fetch(SCRIPT_URL, {
                 method: 'POST',
                 mode: 'cors',
@@ -473,12 +509,19 @@
         document.getElementById('go-to-signup').onclick = (e) => { e.preventDefault(); showView('signup-view'); };
         document.getElementById('go-to-login').onclick = (e) => { e.preventDefault(); showView('login-view'); };
         
+        const clearLocalAuth = () => {
+            authToken = null; 
+            localStorage.removeItem('coachbuddy_token');
+            localStorage.removeItem('coachbuddy_email');
+            localStorage.removeItem('coachbuddy_password');
+            appData = { teams: [], players: [] };
+        };
+
         const promptLogoutStandard = () => {
             showConfirmation('Log Out', 'Are you sure you want to log out?', (c) => {
                 if (c) {
                     apiCall('logout').catch(e => console.error(e));
-                    authToken = null; localStorage.removeItem('coachbuddy_token');
-                    appData = { teams: [], players: [] };
+                    clearLocalAuth();
                     showView('login-view');
                 }
             });
@@ -488,8 +531,7 @@
             showConfirmation('Log Out All Sessions', 'Are you sure you want to log out of all your devices? You will need to log in again.', (c) => {
                 if (c) {
                     apiCall('logout_all').catch(e => console.error(e));
-                    authToken = null; localStorage.removeItem('coachbuddy_token');
-                    appData = { teams: [], players: [] };
+                    clearLocalAuth();
                     showView('login-view');
                 }
             });
@@ -520,7 +562,10 @@
                     }
                 } catch (e) {
                     console.error(e);
-                    authToken = null; localStorage.removeItem('coachbuddy_token');
+                    clearLocalAuth();
+                    if(e.message && e.message.includes("version out of date")) {
+                        showConfirmation('Update Required', e.message);
+                    }
                     showView('login-view');
                 }
             } else {
@@ -538,7 +583,11 @@
             btn.textContent = 'Logging in...'; btn.disabled = true;
             try {
                 const res = await apiCall('login', { email, password });
-                authToken = res.token; localStorage.setItem('coachbuddy_token', authToken);
+                authToken = res.token; 
+                localStorage.setItem('coachbuddy_token', authToken);
+                localStorage.setItem('coachbuddy_email', email);
+                localStorage.setItem('coachbuddy_password', password);
+                
                 document.getElementById('loading-overlay').style.display = 'flex';
                 await initApp();
             } catch (e) { showConfirmation('Error', e.message); } 
@@ -553,11 +602,19 @@
             
             if (!firstName || !email || !password) return showConfirmation('Error', 'First Name, Email, and Password are required.');
             
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) return showConfirmation('Error', 'Please enter a valid email address.');
+            if (password.length < 6) return showConfirmation('Error', 'Password must be at least 6 characters.');
+            
             const btn = document.getElementById('signup-btn');
             btn.textContent = 'Signing up...'; btn.disabled = true;
             try {
                 const res = await apiCall('signup', { firstName, email, phone, password });
-                authToken = res.token; localStorage.setItem('coachbuddy_token', authToken);
+                authToken = res.token; 
+                localStorage.setItem('coachbuddy_token', authToken);
+                localStorage.setItem('coachbuddy_email', email);
+                localStorage.setItem('coachbuddy_password', password);
+                
                 document.getElementById('loading-overlay').style.display = 'flex';
                 await initApp();
             } catch (e) { showConfirmation('Error', e.message); } 
@@ -575,7 +632,7 @@
         // --- CORE APP DATA RENDERING ---
         function autoAddDefaultPlayers(teamId) {
             const teamPlayers = appData.players.filter(p => p.teamId === teamId);
-            teamPlayers.sort((a, b) => (parseInt(a.rank) || 999) - (parseInt(b.rank) || 999));
+            teamPlayers.sort((a, b) => (parseInt(b.rank) || 0) - (parseInt(a.rank) || 0)); // Descending rating
             teamPlayers.forEach(p => {
                 const existing = Array.from(document.querySelectorAll('.player-item')).find(item => item.dataset.playerId === p.playerId);
                 if (!existing) addPlayerByName(p.playerName, p.playerNumber, p.playerId);
@@ -707,11 +764,13 @@
             if (!teamId) return;
             
             const teamPlayers = appData.players.filter(p => p.teamId === teamId);
+            teamPlayers.sort((a, b) => (parseInt(b.rank) || 0) - (parseInt(a.rank) || 0)); // Sort UI descending by rating
+            
             teamPlayers.forEach(p => {
                 const div = document.createElement('div');
                 div.style.cssText = "display: flex; justify-content: space-between; padding: 10px; background: #2D2D2D; margin-bottom: 5px; border-radius: 8px; align-items: center;";
                 
-                let details = `(Rank: ${p.rank || '-'})`;
+                let details = `(Rating: ${p.rank || '-'})`;
                 if(p.height) details += ` | ${p.height}cm`;
                 if(p.skill) details += ` | ${p.skill}`;
 
@@ -739,7 +798,7 @@
             document.getElementById('new-player-number').value = p.playerNumber || '';
             document.getElementById('new-player-rank').value = p.rank || '';
             document.getElementById('new-player-height').value = p.height || '';
-            document.getElementById('new-player-skill').value = p.skill || '';
+            setSelectedSkills(p.skill);
             editingPlayerId = playerId;
             
             const btn = document.getElementById('create-player-btn');
@@ -756,7 +815,7 @@
             document.getElementById('new-player-number').value = '';
             document.getElementById('new-player-rank').value = '';
             document.getElementById('new-player-height').value = '';
-            document.getElementById('new-player-skill').value = '';
+            setSelectedSkills('');
             const btn = document.getElementById('create-player-btn');
             btn.textContent = 'Add Player';
             btn.style.backgroundColor = '';
@@ -780,14 +839,14 @@
             const num = document.getElementById('new-player-number').value.trim();
             const rank = document.getElementById('new-player-rank').value.trim();
             const height = document.getElementById('new-player-height').value.trim();
-            const skill = document.getElementById('new-player-skill').value.trim();
+            const skill = getSelectedSkills();
             
             if (!teamId || !name) return showConfirmation('Error', 'Team and Name are required.');
             
             if (editingPlayerId) {
                 const p = appData.players.find(p => p.playerId === editingPlayerId);
                 if (p) {
-                    p.playerName = name; p.playerNumber = num; p.rank = rank || "10"; 
+                    p.playerName = name; p.playerNumber = num; p.rank = rank || "5"; 
                     p.height = height; p.skill = skill;
                     renderManagePlayers();
                     
@@ -795,20 +854,20 @@
                     resetPlayerForm();
                     
                     try {
-                        await apiCall('edit_player', { playerId: currentEditId, playerName: name, playerNumber: num, rank: rank || "10", height, skill });
+                        await apiCall('edit_player', { playerId: currentEditId, playerName: name, playerNumber: num, rank: rank || "5", height, skill });
                     } catch (e) {
                         showConfirmation('Error', 'Failed to update player: ' + e.message);
                     }
                 }
             } else {
                 const tempId = 'temp_' + Date.now();
-                const newPlayer = { playerId: tempId, teamId, playerName: name, playerNumber: num, rank: rank || "10", height, skill };
+                const newPlayer = { playerId: tempId, teamId, playerName: name, playerNumber: num, rank: rank || "5", height, skill };
                 appData.players.push(newPlayer);
                 renderManagePlayers();
                 resetPlayerForm();
                 
                 try {
-                    const res = await apiCall('add_player', { teamId, playerName: name, playerNumber: num, rank: rank || "10", height, skill });
+                    const res = await apiCall('add_player', { teamId, playerName: name, playerNumber: num, rank: rank || "5", height, skill });
                     const p = appData.players.find(p => p.playerId === tempId);
                     if (p) p.playerId = res.playerId;
                 } catch (e) {
@@ -1134,7 +1193,7 @@
             let playersMap = {};
             teamPlayers.forEach(p => {
                 playersMap[p.playerName.toLowerCase()] = {
-                    rank: parseInt(p.rank) || 999,
+                    rank: parseInt(p.rank) || 5, // Default to 5/10 rating if not set
                     height: parseInt(p.height) || 0,
                     skill: p.skill || ""
                 };
@@ -1146,7 +1205,7 @@
             await new Promise(resolve => setTimeout(resolve, 800));
             const teamData = teamDataForAi || { players: {} };
             
-            const getRank = (name) => teamData.players[name.toLowerCase()]?.rank || 999;
+            const getRank = (name) => teamData.players[name.toLowerCase()]?.rank || 5;
             const getSkill = (name) => teamData.players[name.toLowerCase()]?.skill || "";
             const getHeight = (name) => teamData.players[name.toLowerCase()]?.height || 0;
 
@@ -1213,50 +1272,47 @@
             });
             if (candidatesOut.length === 0) candidatesOut = onField.filter(p => !suggestedOut.some(outP => outP.name === p.name));
 
-            // Out Sorting: If Win, lowest rank leaves first. Else, highest time leaves first.
             candidatesOut.sort((a, b) => {
                 if (isWin) {
                     const rA = getRank(a.name), rB = getRank(b.name);
-                    if (rA !== rB) return rB - rA; // Higher number (worse rank) comes out first
+                    if (rA !== rB) return rA - rB; // Sub out lower ratings first
                 }
                 return b.time - a.time;
             });
 
-            // In Sorting: 
             candidatesIn.sort((a, b) => {
                 const hA = hotPlayers.includes(a.name) ? -1 : 0, hB = hotPlayers.includes(b.name) ? -1 : 0;
                 if (hA !== hB) return hA - hB;
                 
-                // Secondary Goal Boost
                 if (secondaryGoal) {
                     let scoreA = 0, scoreB = 0;
                     const skillA = getSkill(a.name), skillB = getSkill(b.name);
                     const heightA = getHeight(a.name), heightB = getHeight(b.name);
                     
                     if (secondaryGoal === 'height') {
-                        if (skillA === 'Jump Height') scoreA += 10;
-                        if (skillB === 'Jump Height') scoreB += 10;
+                        if (skillA.includes('Jump Height')) scoreA += 10;
+                        if (skillB.includes('Jump Height')) scoreB += 10;
                         scoreA += heightA / 100; 
                         scoreB += heightB / 100;
                     } else if (secondaryGoal === 'speed') {
-                        if (skillA === 'Speed') scoreA += 10;
-                        if (skillB === 'Speed') scoreB += 10;
+                        if (skillA.includes('Speed')) scoreA += 10;
+                        if (skillB.includes('Speed')) scoreB += 10;
                     } else if (secondaryGoal === 'defense') {
-                        if (skillA === 'Defence') scoreA += 10;
-                        if (skillB === 'Defence') scoreB += 10;
+                        if (skillA.includes('Defence')) scoreA += 10;
+                        if (skillB.includes('Defence')) scoreB += 10;
                     } else if (secondaryGoal === '3pt') {
-                        if (skillA === '3 Point Star') scoreA += 10;
-                        if (skillB === '3 Point Star') scoreB += 10;
+                        if (skillA.includes('3 Point Star')) scoreA += 10;
+                        if (skillB.includes('3 Point Star')) scoreB += 10;
                     }
-                    if (skillA === 'Good At Everything') scoreA += 5;
-                    if (skillB === 'Good At Everything') scoreB += 5;
+                    if (skillA.includes('Good At Everything')) scoreA += 5;
+                    if (skillB.includes('Good At Everything')) scoreB += 5;
 
                     if (scoreA !== scoreB) return scoreB - scoreA;
                 }
 
                 if (isWin) {
                     const rA = getRank(a.name), rB = getRank(b.name);
-                    if (rA !== rB) return rA - rB; // Lower number (better rank) goes in first
+                    if (rA !== rB) return rB - rA; // Sub in higher ratings first
                 }
                 return a.time - b.time;
             });
