@@ -10,9 +10,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+    <!-- FAVICON -->
     <link rel="icon" href="https://raw.githubusercontent.com/guahhinc/coachbuddy/main/Icon-iOS-Default-1024x1024%401x.png">
     <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/guahhinc/coachbuddy/main/Icon-iOS-Default-1024x1024%401x.png">
 
+    <!-- iOS WEB APP CAPABILITIES -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Coachbuddy">
@@ -34,6 +36,7 @@
         }
         .btn-pop { animation: btn-pop 0.35s ease !important; }
 
+        /* Material Design Style Spinner */
         .spinner {
             width: 64px;
             height: 64px;
@@ -160,6 +163,7 @@
         .modal-buttons { display: flex; flex-direction: column; gap: 10px; justify-content: center; text-align: center; }
         .modal-buttons .timer-btn { flex-basis: auto; padding: 10px 15px; font-size: 14px; }
 
+        /* Toggle Switch CSS for Settings */
         .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #424242; transition: .4s; border-radius: 24px; }
@@ -167,6 +171,7 @@
         input:checked + .slider { background-color: #4CAF50; }
         input:checked + .slider:before { transform: translateX(20px); }
 
+        /* Multi-select Pills for Skills */
         .skill-pill {
             background-color: #1E1E1E; color: #B0B0B0; border: 1px solid #333; border-radius: 12px;
             padding: 6px 10px; font-size: 12px; cursor: pointer; transition: all 0.2s;
@@ -177,6 +182,7 @@
 </head>
 
 <body>
+    <!-- Full Screen Loading Overlay -->
     <div id="loading-overlay" style="position: fixed; top:0; left:0; width:100%; height:100%; background: #121212; z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column;">
         <svg class="spinner" viewBox="25 25 50 50" style="margin-bottom: 20px;">
             <circle cx="50" cy="50" r="20"></circle>
@@ -184,7 +190,8 @@
         <h2 style="color: #E0E0E0; animation: pulse 1.5s infinite; margin: 0;">Connecting to Coachbuddy...</h2>
     </div>
 
-    <div id="action-loading-overlay" style="position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(18, 18, 18, 0.5); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); z-index: 10000; display: none; justify-content: center; align-items: center;">
+    <!-- Background Blur Action Overlay -->
+    <div id="action-loading-overlay" style="position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(18, 18, 18, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 10000; display: none; justify-content: center; align-items: center;">
         <svg class="spinner" viewBox="25 25 50 50">
             <circle cx="50" cy="50" r="20"></circle>
         </svg>
@@ -193,6 +200,7 @@
     <div class="app-wrapper">
         <div class="app-container">
 
+            <!-- MAIN NAVIGATION -->
             <div id="app-nav" style="display: none; gap: 5px; margin-bottom: 10px;">
                 <button id="nav-app-btn" class="timer-btn primary" style="flex: 1; font-size: 11px;">Game</button>
                 <button id="nav-manage-btn" class="timer-btn secondary" style="flex: 1; font-size: 11px;">Manage</button>
@@ -200,6 +208,7 @@
                 <button id="nav-settings-btn" class="timer-btn secondary" style="flex: 1; font-size: 11px;">Settings</button>
             </div>
 
+            <!-- LOGIN VIEW -->
             <div id="login-view" style="display: none;">
                 <h2 style="text-align: center; margin-bottom: 30px; font-size: 2rem;">Coachbuddy</h2>
                 <div id="login-form">
@@ -212,6 +221,7 @@
                 </div>
             </div>
 
+            <!-- SIGN UP VIEW -->
             <div id="signup-view" style="display: none;">
                 <h2 style="text-align: center; margin-bottom: 30px; font-size: 2rem;">Create Account</h2>
                 <div id="signup-form">
@@ -226,6 +236,7 @@
                 </div>
             </div>
 
+            <!-- SUBSCRIPTION BLOCK VIEW -->
             <div id="sub-block-view" style="display: none; text-align: center; background-color: #1E1E1E; padding: 20px; border-radius: 12px;">
                 <h2 style="color: #FF9800;">Subscription Required</h2>
                 <p style="color: #B0B0B0; font-size: 15px; line-height: 1.5;">Your account currently does not have an active subscription to use Coachbuddy.</p>
@@ -234,6 +245,7 @@
                 <button id="logout-btn-sub" class="timer-btn secondary" style="width: 100%;">Log Out</button>
             </div>
 
+            <!-- GAME APP VIEW -->
             <div id="app-view" style="display: none;">
                 <div id="team-name-section">
                     <label for="team-select" style="display:block; margin-bottom: 5px; font-weight: bold;">Team Name:</label>
@@ -300,6 +312,7 @@
                 </div>
             </div>
 
+            <!-- MANAGE TEAMS & PLAYERS VIEW -->
             <div id="manage-view" style="display: none;">
                 <div style="background-color: #1E1E1E; padding: 12px; border-radius: 12px; margin-bottom: 10px;">
                     <h3 style="margin-top: 0; color: #E0E0E0;">My Teams</h3>
@@ -343,6 +356,7 @@
                 </div>
             </div>
 
+            <!-- STATS VIEW -->
             <div id="stats-view" style="display: none;">
                 <div style="background-color: #1E1E1E; padding: 12px; border-radius: 12px;">
                     <h3 style="margin-top: 0; color: #E0E0E0;">Game Stats</h3>
@@ -354,6 +368,7 @@
                 </div>
             </div>
 
+            <!-- SETTINGS VIEW -->
             <div id="settings-view" style="display: none;">
                 <div style="background-color: #1E1E1E; padding: 12px; border-radius: 12px; margin-bottom: 10px;">
                     <h3 style="margin-top: 0; color: #E0E0E0;">Settings</h3>
@@ -397,6 +412,7 @@
         </div>
     </div>
 
+    <!-- Custom Confirmation Modal -->
     <div id="custom-modal" class="modal-overlay">
         <div class="modal-content">
             <h3 id="modal-title"></h3>
@@ -406,19 +422,24 @@
     </div>
 
     <script>
+    // --- SECURITY: IIFE AND OBFUSCATION ---
+    // Wrap entire logic to prevent global variable leakage
     (() => {
+        // Suppress console to deter casual inspection
         console.log = console.warn = console.error = console.info = console.debug = function() {};
+        //Appscript
         const _U = "\x68\x74\x74\x70\x73\x3a\x2f\x2f\x73\x63\x72\x69\x70\x74\x2e\x67\x6f\x6f\x67\x6c\x65\x2e\x63\x6f\x6d\x2f\x6d\x61\x63\x72\x6f\x73\x2f\x73\x2f\x41\x4b\x66\x79\x63\x62\x77\x72\x58\x50\x4c\x4f\x77\x73\x41\x38\x70\x6d\x57\x30\x76\x63\x50\x55\x72\x6b\x62\x52\x38\x4c\x33\x68\x67\x65\x76\x5a\x75\x71\x58\x75\x5f\x6e\x65\x32\x47\x33\x53\x67\x6c\x4e\x32\x50\x59\x48\x43\x2d\x63\x79\x49\x63\x41\x49\x55\x6a\x46\x70\x30\x55\x59\x5a\x5f\x6a\x44\x67\x2f\x65\x78\x65\x63";
         const _V = "\x30\x2e\x31";
 
-        const _TK = "\x5f\x63\x62\x5f\x74\x6b";
-        const _EM = "\x5f\x63\x62\x5f\x65\x6d";
-        const _PW = "\x5f\x63\x62\x5f\x70\x77";
-        const _ST = "\x5f\x63\x62\x5f\x73\x74";
-        const _S1 = "\x5f\x63\x62\x5f\x73\x31";
-        const _S2 = "\x5f\x63\x62\x5f\x73\x32";
-        const _S3 = "\x5f\x63\x62\x5f\x73\x33";
-        const _S4 = "\x5f\x63\x62\x5f\x73\x34";
+        // Obfuscated Local Storage Keys
+        const _TK = "\x5f\x63\x62\x5f\x74\x6b"; // token
+        const _EM = "\x5f\x63\x62\x5f\x65\x6d"; // email
+        const _PW = "\x5f\x63\x62\x5f\x70\x77"; // password
+        const _ST = "\x5f\x63\x62\x5f\x73\x74"; // selected team
+        const _S1 = "\x5f\x63\x62\x5f\x73\x31"; // setting autotimer
+        const _S2 = "\x5f\x63\x62\x5f\x73\x32"; // setting autoadd
+        const _S3 = "\x5f\x63\x62\x5f\x73\x33"; // setting timer amount
+        const _S4 = "\x5f\x63\x62\x5f\x73\x34"; // setting max players
 
         let authToken = localStorage.getItem(_TK);
         let currentUser = null;
@@ -443,6 +464,7 @@
         }
         let miniTimerInterval = null, miniTotalSeconds = getMiniTimerSeconds(), isMiniTimerRunning = false;
 
+        // --- DOM ELEMENTS ---
         const timeDisplay = document.getElementById('time-display');
         const startPauseBtn = document.getElementById('start-pause-btn');
         const resetBtn = document.getElementById('reset-btn');
@@ -451,6 +473,7 @@
         const miniTimeDisplay = document.getElementById('mini-time-display');
         const miniStartPauseBtn = document.getElementById('mini-start-pause-btn');
         
+        // --- SETTINGS INITIALIZATION ---
         const autoTimerCheckbox = document.getElementById('setting-autotimer');
         const autoAddCheckbox = document.getElementById('setting-autoadd');
         const timerAmountInput = document.getElementById('setting-timer-amount');
@@ -475,6 +498,7 @@
             localStorage.setItem(_S4, val);
         });
 
+        // --- MULTI-SELECT SKILL PILLS ---
         document.querySelectorAll('.skill-pill').forEach(pill => {
             pill.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -492,7 +516,21 @@
             });
         }
         
+        // --- SECURE API REQUESTS ---
         async function apiCall(action, payload = {}) {
+            // Anti-devtools check
+            let _devtoolsOpen = false;
+            const _cStart = performance.now();
+            debugger;
+            if (performance.now() - _cStart > 100) {
+                _devtoolsOpen = true;
+            }
+            const _cWidthDiff = window.outerWidth > 0 && (window.outerWidth - window.innerWidth > 200);
+            const _cHeightDiff = window.outerHeight > 0 && (window.outerHeight - window.innerHeight > 200);
+            if (_devtoolsOpen || _cWidthDiff || _cHeightDiff) {
+                throw new Error("Security Error: Developer tools detected. Requests blocked.");
+            }
+
             payload.action = action;
             payload.version = _V;
             
@@ -502,6 +540,7 @@
                 payload.password = localStorage.getItem(_PW);
             }
             
+            // Base64 encode the payload to hide structure from simple network inspection
             const encPayload = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
 
             const res = await fetch(_U, {
@@ -511,6 +550,7 @@
                 body: encPayload
             });
             
+            // Response is Base64 encoded to hide it
             const raw = await res.text();
             let data;
             try {
@@ -522,6 +562,7 @@
             return data;
         }
 
+        // --- NAVIGATION & VIEWS ---
         const views = ['login-view', 'signup-view', 'sub-block-view', 'app-view', 'manage-view', 'stats-view', 'settings-view'];
         
         function showView(viewId) {
@@ -584,6 +625,7 @@
         document.getElementById('logout-btn-main').onclick = promptLogoutAll;
         document.getElementById('logout-btn-sub').onclick = promptLogoutStandard;
 
+        // --- INIT & AUTH ---
         async function initApp() {
             const overlay = document.getElementById('loading-overlay');
             resetMiniTimer(); 
@@ -670,9 +712,10 @@
             btn.textContent = 'Check Status Again'; btn.disabled = false;
         };
 
+        // --- CORE APP DATA RENDERING ---
         function autoAddDefaultPlayers(teamId) {
             const teamPlayers = appData.players.filter(p => p.teamId === teamId);
-            teamPlayers.sort((a, b) => (parseInt(b.rank) || 0) - (parseInt(a.rank) || 0));
+            teamPlayers.sort((a, b) => (parseInt(b.rank) || 0) - (parseInt(a.rank) || 0)); // Descending rating
             teamPlayers.forEach(p => {
                 const existing = Array.from(document.querySelectorAll('.player-item')).find(item => item.dataset.playerId === p.playerId);
                 if (!existing) addPlayerByName(p.playerName, p.playerNumber, p.playerId);
@@ -684,6 +727,7 @@
             const manageSelect = document.getElementById('manage-team-select');
             const statsSelect = document.getElementById('stats-team-select');
 
+            // Preserve existing selections before wiping innerHTML
             const currentManageId = manageSelect.value;
             const currentStatsId = statsSelect.value;
 
@@ -707,6 +751,7 @@
                 teamSelect.value = selectedId;
                 localStorage.setItem(_ST, selectedId);
                 
+                // Re-apply preserved values if they still exist, otherwise fallback to selectedId
                 if (currentManageId && appData.teams.some(t => t.teamId === currentManageId)) {
                     manageSelect.value = currentManageId;
                 } else {
@@ -754,6 +799,7 @@
             });
         };
 
+        // --- MANAGEMENT VIEWS ---
         window._dt = (teamId) => {
             showConfirmation('Delete Team', 'Are you sure you want to completely delete this team? This action cannot be undone.', async (c) => {
                 if (c) {
@@ -835,6 +881,7 @@
                 renderManageTeams(); 
                 renderTeams(); 
                 
+                // Select the new team in the manage view immediately
                 const mSelect = document.getElementById('manage-team-select');
                 mSelect.value = res.teamId;
                 mSelect.dispatchEvent(new Event('change'));
@@ -859,7 +906,7 @@
             if (!teamId) return;
             
             const teamPlayers = appData.players.filter(p => p.teamId === teamId);
-            teamPlayers.sort((a, b) => (parseInt(b.rank) || 0) - (parseInt(a.rank) || 0));
+            teamPlayers.sort((a, b) => (parseInt(b.rank) || 0) - (parseInt(a.rank) || 0)); // Sort UI descending by rating
             
             teamPlayers.forEach(p => {
                 const div = document.createElement('div');
@@ -944,6 +991,7 @@
             }
         };
 
+        // --- STATS VIEW ---
         document.getElementById('load-stats-btn').onclick = async () => {
             const teamId = document.getElementById('stats-team-select').value;
             if (!teamId) return;
@@ -985,6 +1033,7 @@
             finally { btn.textContent = 'Load Stats'; btn.disabled = false; }
         };
 
+        // --- MODALS ---
         const customModal = document.getElementById('custom-modal');
         function closeModal() { setTimeout(() => { customModal.style.display = 'none'; }, 100); }
         function showCustomModal(title, messageHtml, buttons) {
@@ -1013,6 +1062,7 @@
             showCustomModal(title, `<p>${message}</p>`, buttons);
         }
 
+        // --- UTILS & TIMERS ---
         function formatTime(seconds) {
             if (seconds < 0) seconds = 0;
             const minutes = Math.floor(seconds / 60);
@@ -1047,6 +1097,7 @@
             subDebounceTimer = setTimeout(commitSubs, 4000); 
         }
 
+        // --- PLAYER ROSTER LOGIC ---
         function createPlayerItem(name, number = null, playerId = '') {
             const playerItem = document.createElement('div');
             playerItem.className = 'player-item';
@@ -1196,6 +1247,7 @@
             });
         }
 
+        // --- TIMER CONTROLS ---
         function startTimer() {
             if (isRunning || (isCountdownMode && totalSeconds <= 0)) return;
             isRunning = true; startPauseBtn.textContent = 'Pause'; startPauseBtn.classList.add('pause');
@@ -1248,13 +1300,14 @@
         miniStartPauseBtn.onclick = () => isMiniTimerRunning ? pauseMiniTimer() : startMiniTimer();
         document.getElementById('mini-reset-btn').onclick = resetMiniTimer;
 
+        // --- AI LOGIC ---
         function buildTeamDataForAi(teamId) {
             if (!teamId) return { players: {} };
             const teamPlayers = appData.players.filter(p => p.teamId === teamId);
             let playersMap = {};
             teamPlayers.forEach(p => {
                 playersMap[p.playerName.toLowerCase()] = {
-                    rank: parseInt(p.rank) || 5,
+                    rank: parseInt(p.rank) || 5, // Default to 5/10 rating if not set
                     height: parseInt(p.height) || 0,
                     skill: p.skill || ""
                 };
@@ -1336,7 +1389,7 @@
             candidatesOut.sort((a, b) => {
                 if (isWin) {
                     const rA = getRank(a.name), rB = getRank(b.name);
-                    if (rA !== rB) return rA - rB;
+                    if (rA !== rB) return rA - rB; // Sub out lower ratings first
                 }
                 return b.time - a.time;
             });
@@ -1373,7 +1426,7 @@
 
                 if (isWin) {
                     const rA = getRank(a.name), rB = getRank(b.name);
-                    if (rA !== rB) return rB - rA;
+                    if (rA !== rB) return rB - rA; // Sub in higher ratings first
                 }
                 return a.time - b.time;
             });
@@ -1482,6 +1535,7 @@
             ]);
         };
 
+        // --- GAME SAVING ---
         document.getElementById('save-to-sheets-btn').onclick = () => {
             const gameData = { teamId: teamSelect.value, mainTime: timeDisplay.textContent, notes: document.getElementById('game-notes').value, players: [] };
             document.querySelectorAll('.player-item').forEach(item => {
@@ -1513,6 +1567,7 @@
 
         document.getElementById('update-app-btn').onclick = () => location.reload(true);
 
+        // --- VISUALS & WAKE LOCK ---
         document.addEventListener('pointerdown', (e) => {
             const btn = e.target.closest('button');
             if (btn && !btn.disabled) {
@@ -1526,8 +1581,9 @@
         document.addEventListener('visibilitychange', async () => { if (wakeLock !== null && document.visibilityState === 'visible') await requestWakeLock(); });
         requestWakeLock();
 
+        // RUN INIT
         initApp();
-    })();
+    })(); // End of IIFE wrapper
     </script>
 </body>
 </html>
