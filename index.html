@@ -167,10 +167,10 @@
         display: none !important;
     }
 
-    .toggle-btn { padding: 5px 8px; width: 60px; font-size: 13px; border-radius: 9px; flex-shrink: 0; border: none; cursor: pointer; }
+    .toggle-btn { height: 28px; width: 60px; font-size: 13px; border-radius: 9px; flex-shrink: 0; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 600; line-height: 1; }
     .toggle-btn.status-on { background-color: #4CAF50; color: white; }
     .toggle-btn.status-off { background-color: #D32F2F; color: white; }
-    .delete-btn { width: 24px; height: 24px; font-size: 13px; line-height: 1; border-radius: 9px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; background-color: #424242; color: white; }
+    .delete-btn { width: 28px; height: 28px; font-size: 14px; border-radius: 9px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; background-color: #424242; color: white; padding: 0; line-height: 1; flex-shrink: 0; }
 
     #mini-timer-section { display: flex; justify-content: space-between; align-items: center; padding: 6px 8px; }
     #mini-time-display { font-size: 1.8rem; font-weight: 700; color: #E0E0E0; font-variant-numeric: tabular-nums; }
@@ -212,10 +212,10 @@
         transform: translateX(-50%) translateY(0);
         width: calc(100% - 24px);
         max-width: 480px; 
-        background: rgba(20, 20, 20, 0.12) !important;
+        background: rgba(15, 15, 15, 0.72) !important;
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 24px; 
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
         z-index: 999;
         display: none;
         flex-direction: column;
@@ -251,7 +251,7 @@
         padding: 10px 16px; 
         border-radius: 50px; 
         bottom: 38px;
-        background: rgba(20, 20, 20, 0.12) !important;
+        background: rgba(15, 15, 15, 0.72) !important;
         border: 1px solid rgba(255, 255, 255, 0.1);
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
         cursor: pointer;
@@ -621,11 +621,7 @@
             </h3>
             <div id="ai-results-text"></div>
             
-            <div id="ai-followups" style="display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap;">
-                <button class="timer-btn secondary ai-followup-btn" data-followup="defense" style="flex: 1; font-size: 13px; padding: 8px;">Need Defense</button>
-                <button class="timer-btn secondary ai-followup-btn" data-followup="height" style="flex: 1; font-size: 13px; padding: 8px;">More Height</button>
-                <button class="timer-btn secondary ai-followup-btn" data-followup="3pt" style="flex: 1; font-size: 13px; padding: 8px;">Need Shooters</button>
-            </div>
+            <div id="ai-followups" style="display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap;"></div>
             
             <div style="display: flex; gap: 8px;">
                 <button id="ai-apply-btn" class="timer-btn primary" style="flex: 2;">Make Substitutes</button>
@@ -639,7 +635,6 @@
             Guahh AI
         </span>
         <div style="display: flex; gap: 8px; align-items: center; flex-shrink: 0;">
-            <button id="ai-restore-btn" class="timer-btn secondary" style="padding: 6px 12px; font-size: 14px; min-height: 32px; border-radius: 14px; background-color: #424242; color: #E0E0E0;">View</button>
             <button id="ai-close-btn" style="background-color: #424242; border: none; color: #E0E0E0; font-size: 22px; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; line-height: 0; padding-bottom: 2px;">&times;</button>
         </div>
     </div>
@@ -694,6 +689,15 @@
         return parseInt(localStorage.getItem(_S3) || '3') * 60;
     }
     let miniTimerInterval = null, miniTotalSeconds = getMiniTimerSeconds(), isMiniTimerRunning = false;
+
+    const ALL_FOLLOWUPS = [
+        { id: 'defense', text: 'Need Defense' },
+        { id: 'height', text: 'More Height' },
+        { id: 'speed', text: 'Need Speed' },
+        { id: '3pt', text: 'Need Shooters' },
+        { id: 'win', text: 'Play Best' },
+        { id: 'even', text: 'Fair Playtime' }
+    ];
 
     const timeDisplay = document.getElementById('time-display');
     const startPauseBtn = document.getElementById('start-pause-btn');
@@ -974,7 +978,7 @@
 
     function autoAddDefaultPlayers(teamId) {
         const teamPlayers = appData.players.filter(p => p.teamId === teamId);
-        teamPlayers.sort((a, b) => (parseInt(b.rank) || 0) - (parseInt(a.rank) || 0)); 
+        teamPlayers.sort((a, b) => (parseInt(b.rank) || 0) - (parseInt(a.rank) || 0));
         teamPlayers.forEach(p => {
             const existing = Array.from(document.querySelectorAll('.player-item')).find(item => item.dataset.playerId === p.playerId);
             if (!existing) addPlayerByName(p.playerName, p.playerNumber, p.playerId);
@@ -1155,7 +1159,7 @@
         if (!teamId) return;
         
         const teamPlayers = appData.players.filter(p => p.teamId === teamId);
-        teamPlayers.sort((a, b) => (parseInt(b.rank) || 0) - (parseInt(a.rank) || 0)); 
+        teamPlayers.sort((a, b) => (parseInt(b.rank) || 0) - (parseInt(a.rank) || 0));
         
         teamPlayers.forEach(p => {
             const div = document.createElement('div');
@@ -1414,13 +1418,13 @@
         timeOnFieldDisplay.className = 'player-time'; timeOnFieldDisplay.textContent = formatTime(0);
 
         const toggleBtn = document.createElement('button');
-        toggleBtn.className = 'toggle-btn status-off'; toggleBtn.textContent = 'ON';
+        toggleBtn.className = 'toggle-btn status-off'; toggleBtn.textContent = 'OFF';
 
         toggleBtn.onclick = () => {
             const isOn = playerItem.dataset.isOnField === '1';
             if (isOn) {
                 playerItem.dataset.isOnField = '0';
-                toggleBtn.textContent = 'ON';
+                toggleBtn.textContent = 'OFF';
                 toggleBtn.classList.add('status-off'); toggleBtn.classList.remove('status-on');
                 recordSubChange(name, 'off');
             } else {
@@ -1431,7 +1435,7 @@
                     return;
                 }
                 playerItem.dataset.isOnField = '1';
-                toggleBtn.textContent = 'OFF';
+                toggleBtn.textContent = 'ON';
                 toggleBtn.classList.remove('status-off'); toggleBtn.classList.add('status-on');
                 if (lowWarningIcon) lowWarningIcon.style.display = 'none';
                 recordSubChange(name, 'on');
@@ -1562,12 +1566,12 @@
         startPauseBtn.classList.remove('pause');
         startPauseBtn.classList.remove('resume-flash');
         timeDisplay.classList.remove('countdown-ended'); 
-        totalSeconds = isCountdownMode ? DEFAULT_COUNTDOWN_SECONDS : INITIAL_STOPWATCH_SECONDS;
+        totalSeconds = isCountdownMode ? DEFAULT_DOWN_SECONDS : INITIAL_STOPWATCH_SECONDS;
         timeDisplay.textContent = formatTime(totalSeconds);
         document.querySelectorAll('.player-item').forEach(item => {
             item.dataset.totalTime = 0; item.querySelector('.player-time').textContent = formatTime(0); item.dataset.isOnField = '0';
             const btn = item.querySelector('.toggle-btn');
-            if (btn) { btn.textContent = 'ON'; btn.classList.add('status-off'); btn.classList.remove('status-on'); }
+            if (btn) { btn.textContent = 'OFF'; btn.classList.add('status-off'); btn.classList.remove('status-on'); }
         });
         updateSubstitutionWarnings();
     }
@@ -1635,7 +1639,7 @@
 
     async function getBuiltInAiSuggestion(teamDataForAi, onField, offField, notes, goal, secondaryGoal, timeStr, recentSubs, abortSignal) {
         await new Promise((resolve, reject) => {
-            const delay = setTimeout(resolve, 2000);
+            const delay = setTimeout(resolve, 2500);
             if (abortSignal) {
                 abortSignal.addEventListener('abort', () => {
                     clearTimeout(delay);
@@ -1644,10 +1648,42 @@
             }
         });
         const teamData = teamDataForAi || { players: {} };
+        const notesLower = notes.toLowerCase();
         
         const getRank = (name) => teamData.players[name.toLowerCase()]?.rank || 5;
         const getSkill = (name) => teamData.players[name.toLowerCase()]?.skill || "";
         const getHeight = (name) => teamData.players[name.toLowerCase()]?.height || 0;
+
+        let activeSecondaryGoal = secondaryGoal;
+        let notesReasoning = [];
+
+        if (notesLower.includes('height') || notesLower.includes('tall') || notesLower.includes('rebound') || notesLower.includes('size')) {
+            activeSecondaryGoal = 'height';
+            notesReasoning.push("**Auto-Detected Focus:** Prioritizing tall height metrics and physical presence based on game notes.");
+        } else if (notesLower.includes('speed') || notesLower.includes('fast') || notesLower.includes('run') || notesLower.includes('pace') || notesLower.includes('quick')) {
+            activeSecondaryGoal = 'speed';
+            notesReasoning.push("**Auto-Detected Focus:** Prioritizing speed values to elevate team pace based on game notes.");
+        } else if (notesLower.includes('defense') || notesLower.includes('defend') || notesLower.includes('stop') || notesLower.includes('tighten up')) {
+            activeSecondaryGoal = 'defense';
+            notesReasoning.push("**Auto-Detected Focus:** Prioritizing defensive skill tags to halt opposing plays based on game notes.");
+        } else if (notesLower.includes('shoot') || notesLower.includes('shooter') || notesLower.includes('scoring') || notesLower.includes('3pt') || notesLower.includes('points')) {
+            activeSecondaryGoal = '3pt';
+            notesReasoning.push("**Auto-Detected Focus:** Prioritizing high accuracy scorers and perimeter threats based on game notes.");
+        }
+
+        const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+        const checkSubInCommand = (name) => {
+            const escaped = escapeRegExp(name.toLowerCase());
+            const regex = new RegExp(`(?:sub\\s+in|bring\\s+in|put\\s+in|play|activate|use|need|want)\\s+${escaped}|${escaped}\\s+(?:on|in|to\\s+play)`, 'i');
+            return regex.test(notesLower);
+        };
+
+        const checkSubOutCommand = (name) => {
+            const escaped = escapeRegExp(name.toLowerCase());
+            const regex = new RegExp(`(?:sub\\s+out|rest|take\\s+off|bench|remove|sit|get)\\s+${escaped}|${escaped}\\s+(?:off|out|needs\\s+a\\s+rest)`, 'i');
+            return regex.test(notesLower);
+        };
 
         const evaluateSkillsScore = (skills, goalType) => {
             let score = 0;
@@ -1681,11 +1717,10 @@
         const [minutes, seconds] = timeStr.split(':').map(Number);
         const timeLeftSec = Math.max(0, (40 * 60) - ((minutes * 60) + seconds));
         const isCrunchTime = timeLeftSec <= (5 * 60);
-        const notesLower = notes.toLowerCase();
 
         const isUnavailable = (name) => {
             const n = name.toLowerCase(); if (!notesLower.includes(n)) return false;
-            return /(injure|hurt|sick|late|absent|unwell|sore|pain|limp|cramp|dizzy|nausea|vomit|ill\b|not\s+well|not\s+feeling\s+well|feeling\s+sick|feeling\s+unwell|feeling\s+ill|doesn'?t\s+want\s+(to\s+)?(go\s+on|play|continue)|don'?t\s+want\s+(to\s+)?(go\s+on|play|continue)|does\s+not\s+want\s+(to\s+)?(go\s+on|play|continue)|won'?t\s+play|refuses?\s+to\s+play|can'?t\s+go\s+on|not\s+playing|sitting\s+out|needs?\s+a\s+rest|needs?\s+to\s+come\s+off|has\s+to\s+come\s+off|pull\s+(her|him)\s+off|take\s+(her|him)\s+off)/.test(notesLower.substring(Math.max(0, notesLower.indexOf(n) - 40), notesLower.indexOf(n) + 60));
+            return checkSubOutCommand(name) || /(injure|hurt|sick|late|absent|unwell|sore|pain|limp|cramp|dizzy|nausea|vomit|ill\b|not\s+well|not\s+feeling\s+well|feeling\s+sick|feeling\s+unwell|feeling\s+ill|doesn'?t\s+want\s+(to\s+)?(go\s+on|play|continue)|don'?t\s+want\s+(to\s+)?(go\s+on|play|continue)|does\s+not\s+want\s+(to\s+)?(go\s+on|play|continue)|won'?t\s+play|refuses?\s+to\s+play|can'?t\s+go\s+on|not\s+playing|sitting\s+out|needs?\s+a\s+rest|needs?\s+to\s+come\s+off|has\s+to\s+come\s+off|pull\s+(her|him)\s+off|take\s+(her|him)\s+off)/.test(notesLower.substring(Math.max(0, notesLower.indexOf(n) - 40), notesLower.indexOf(n) + 60));
         };
         const hasFoulTrouble = (name) => {
             const n = name.toLowerCase(); if (!notesLower.includes(n)) return false;
@@ -1716,6 +1751,8 @@
         let isEven = goal.toLowerCase().includes("even") || goal.toLowerCase().includes("fair");
         let isAny = !isWin && !isEven;
 
+        reasons.push(...notesReasoning);
+
         if (isLosing) { isWin = true; isEven = false; isAny = false; reasons.push("**Score Alert:** We are behind! Activating aggressive 'Win' mode."); } 
         else if (isWinning && isWin) reasons.push("**Game Flow:** We are winning! Starters can rest more.");
         else if (isWinning && isEven) reasons.push("**Game Flow:** Winning comfortably. Perfect time for bench development.");
@@ -1725,13 +1762,16 @@
         candidatesOut.forEach(p => {
             if (unavailablePlayers.includes(p.name)) { 
                 suggestedOut.push(p); 
-                reasons.push(`**Emergency:** ${p.name} subbed out.`); 
+                reasons.push(`**Emergency:** ${p.name} subbed out (due to injury or request in notes).`); 
             } else if (exhaustedPlayers.includes(p.name)) { 
                 suggestedOut.push(p); 
                 reasons.push(`**Exhausted:** ${p.name} needs recovery.`); 
             } else if (foulTroublePlayers.includes(p.name) && !isCrunchTime) { 
                 suggestedOut.push(p); 
                 reasons.push(`**Foul Trouble:** Protecting ${p.name}.`); 
+            } else if (checkSubOutCommand(p.name)) {
+                suggestedOut.push(p);
+                reasons.push(`**Coach Command:** Subbing out ${p.name} per game notes request.`);
             }
         });
 
@@ -1755,18 +1795,22 @@
                 const rA = getRank(a.name), rB = getRank(b.name);
                 const scoreA = rA + a.points * 0.5;
                 const scoreB = rB + b.points * 0.5;
-                if (scoreA !== scoreB) return scoreA - scoreB; 
+                if (scoreA !== scoreB) return scoreA - scoreB;
             }
             return b.time - a.time;
         });
 
         candidatesIn.sort((a, b) => {
+            const coachA = checkSubInCommand(a.name) ? -100 : 0;
+            const coachB = checkSubInCommand(b.name) ? -100 : 0;
+            if (coachA !== coachB) return coachA - coachB;
+
             const hA = hotPlayers.includes(a.name) ? -1 : 0, hB = hotPlayers.includes(b.name) ? -1 : 0;
             if (hA !== hB) return hA - hB;
             
-            if (secondaryGoal) {
-                const scoreA = evaluateSkillsScore(getSkill(a.name), secondaryGoal) + (getHeight(a.name) / 100);
-                const scoreB = evaluateSkillsScore(getSkill(b.name), secondaryGoal) + (getHeight(b.name) / 100);
+            if (activeSecondaryGoal) {
+                const scoreA = evaluateSkillsScore(getSkill(a.name), activeSecondaryGoal) + (getHeight(a.name) / 100);
+                const scoreB = evaluateSkillsScore(getSkill(b.name), activeSecondaryGoal) + (getHeight(b.name) / 100);
                 if (scoreA !== scoreB) return scoreB - scoreA;
             }
 
@@ -1774,13 +1818,19 @@
                 const rA = getRank(a.name), rB = getRank(b.name);
                 const scoreA = rA + a.points * 0.5;
                 const scoreB = rB + b.points * 0.5;
-                if (scoreA !== scoreB) return scoreB - scoreA; 
+                if (scoreA !== scoreB) return scoreB - scoreA;
             }
             return a.time - b.time;
         });
 
-        if (secondaryGoal && candidatesIn.length > 0) {
-            reasons.push(`**Tactical Focus:** Prioritizing players suited for ${secondaryGoal.toUpperCase()}.`);
+        candidatesIn.forEach(p => {
+            if (checkSubInCommand(p.name) && !suggestedIn.includes(p)) {
+                reasons.push(`**Coach Command:** Prioritizing ${p.name} due to direct request in game notes.`);
+            }
+        });
+
+        if (activeSecondaryGoal && candidatesIn.length > 0) {
+            reasons.push(`**Tactical Focus:** Prioritizing players suited for ${activeSecondaryGoal.toUpperCase()}.`);
         }
 
         let numToSub = 2;
@@ -1845,7 +1895,7 @@
     function dragStart(e) {
         startY = (e.clientY !== undefined) ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
         isDragging = true;
-        panel.style.transition = 'none'; 
+        panel.style.transition = 'none';
     }
 
     function dragMove(e) {
@@ -1878,13 +1928,13 @@
             if (dragOffset > 60) {
                 collapseAiPanel();
             } else {
-                expandAiPanel(); 
+                expandAiPanel();
             }
         } else {
             if (dragOffset < -60) {
                 expandAiPanel();
             } else {
-                collapseAiPanel(); 
+                collapseAiPanel();
             }
         }
         dragOffset = 0;
@@ -1906,6 +1956,17 @@
     document.addEventListener('mouseup', dragEnd);
     document.addEventListener('touchend', dragEnd);
 
+    panel.addEventListener('click', (e) => {
+        if (isAiCollapsed) {
+            if (e.target.closest('#ai-close-btn')) {
+                e.stopPropagation();
+                closeAiPanel();
+            } else {
+                expandAiPanel();
+            }
+        }
+    });
+
     document.getElementById('ai-cancel-btn').addEventListener('click', (e) => {
         e.stopPropagation();
         setTimeout(closeAiPanel, 100);
@@ -1917,20 +1978,6 @@
     document.getElementById('ai-close-btn').addEventListener('click', (e) => {
         e.stopPropagation();
         setTimeout(closeAiPanel, 100);
-    });
-    document.getElementById('ai-restore-btn').addEventListener('click', (e) => {
-        e.stopPropagation();
-        expandAiPanel();
-    });
-    
-    document.querySelectorAll('.ai-followup-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const followUpTarget = btn.getAttribute('data-followup');
-            const secondarySelect = document.getElementById('ai-secondary-select');
-            if(secondarySelect) secondarySelect.value = followUpTarget;
-            document.getElementById('ai-submit-btn').click();
-        });
     });
 
     document.getElementById('suggest-sub-btn').onclick = () => {
@@ -2006,6 +2053,36 @@
             resText.classList.remove('ai-text-flow');
             void resText.offsetWidth; 
             resText.classList.add('ai-text-flow');
+
+            const shuffledFollowups = [...ALL_FOLLOWUPS].sort(() => 0.5 - Math.random());
+            const selectedFollowups = shuffledFollowups.slice(0, 3);
+            
+            const followupsContainer = document.getElementById('ai-followups');
+            followupsContainer.innerHTML = '';
+            
+            selectedFollowups.forEach(f => {
+                const button = document.createElement('button');
+                button.className = 'timer-btn secondary ai-followup-btn';
+                button.style.cssText = 'flex: 1; min-width: 100px; font-size: 13px; padding: 8px;';
+                button.textContent = f.text;
+                button.dataset.followup = f.id;
+                
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const target = f.id;
+                    const secondarySelect = document.getElementById('ai-secondary-select');
+                    const goalSelect = document.getElementById('ai-goal-select');
+                    
+                    if (['win', 'even', 'any'].includes(target)) {
+                        if (goalSelect) goalSelect.value = target;
+                    } else {
+                        if (secondarySelect) secondarySelect.value = target;
+                    }
+                    document.getElementById('ai-submit-btn').click();
+                });
+                
+                followupsContainer.appendChild(button);
+            });
 
             const applyBtn = document.getElementById('ai-apply-btn');
             if (subActions && (subActions.out.length > 0 || subActions.in.length > 0)) {
