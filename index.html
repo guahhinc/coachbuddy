@@ -223,15 +223,15 @@
         left: 50%;
         transform: translateX(-50%) translateY(0);
         width: calc(100% - 24px);
-        max-width: 440px;
+        max-width: 480px; /* Increased from 440px */
         background: rgba(30, 30, 30, 0.35) !important;
         border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 21px;
+        border-radius: 24px; /* Increased from 21px */
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         z-index: 999;
         display: none;
         flex-direction: column;
-        padding: 12px 16px 16px 16px;
+        padding: 8px 20px 20px 20px; /* Optimized padding for handle spacing */
         color: #FFFFFF;
         backdrop-filter: blur(24px);
         -webkit-backdrop-filter: blur(24px);
@@ -240,11 +240,11 @@
     }
 
     #ai-floating-panel.collapsed {
-        width: 240px;
-        max-width: 240px;
-        padding: 6px 12px;
-        border-radius: 41px;
-        bottom: 20px;
+        width: 280px; /* Increased from 240px */
+        max-width: 280px; /* Increased from 240px */
+        padding: 10px 16px; /* Increased padding */
+        border-radius: 50px; /* Increased from 41px */
+        bottom: 24px; /* Slightly raised */
         background: rgba(30, 30, 30, 0.4) !important;
         border: 1px solid rgba(255, 255, 255, 0.15);
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
@@ -255,7 +255,7 @@
         font-size: 15px;
         line-height: 1.5;
         color: #E0E0E0;
-        max-height: 220px;
+        max-height: 280px; /* Increased from 220px to utilize larger layout */
         overflow-y: auto;
         margin-bottom: 12px;
         padding-right: 4px;
@@ -510,7 +510,10 @@
 
 <!-- Floating AI Panel -->
 <div id="ai-floating-panel">
-    <div id="ai-drag-handle" style="width: 40px; height: 5px; background: rgba(255,255,255,0.3); border-radius: 4px; margin: 0 auto 12px auto; cursor: grab;"></div>
+    <!-- Grab area optimized for touch swiping with centered visual bar -->
+    <div id="ai-drag-handle" style="width: 100%; height: 32px; margin: -8px auto 8px auto; cursor: grab; display: flex; align-items: center; justify-content: center; -webkit-user-select: none; user-select: none;">
+        <div style="width: 60px; height: 6px; background: rgba(255,255,255,0.4); border-radius: 3px;"></div>
+    </div>
     
     <div id="ai-expanded-content">
         <!-- STEP 1: CONFIG -->
@@ -545,7 +548,7 @@
             <svg class="spinner" viewBox="25 25 50 50" style="margin: 0 auto 12px auto; width: 44px; height: 44px;">
                 <circle cx="50" cy="50" r="20" style="stroke: #FFFFFF;"></circle>
             </svg>
-            <span style="display: block; animation: pulse 1.5s infinite; color: #FFFFFF; font-weight: bold; font-size: 14px;">Guahh AI is formulating strategy...</span>
+            <span style="display: block; animation: pulse 1.5s infinite; color: #FFFFFF; font-weight: bold; font-size: 14px;">Guahh AI is thinking...</span>
         </div>
 
         <!-- STEP 3: RESULTS -->
@@ -563,12 +566,12 @@
 
     <!-- COLLAPSED TINY PILL -->
     <div id="ai-collapsed-content" style="display: none; align-items: center; justify-content: space-between; width: 100%; gap: 10px;">
-        <span style="font-weight: bold; font-size: 13px; display: flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #FFFFFF;">
+        <span style="font-weight: bold; font-size: 14px; display: flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #FFFFFF;">
             Guahh AI
         </span>
         <div style="display: flex; gap: 8px; align-items: center; flex-shrink: 0;">
-            <button id="ai-restore-btn" class="timer-btn secondary" style="padding: 4px 10px; font-size: 11px; min-height: 24px; border-radius: 13px; background-color: #424242; color: #E0E0E0;">View</button>
-            <button id="ai-close-btn" style="background-color: #424242; border: 1px solid #555; color: #E0E0E0; font-size: 16px; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; line-height: 1;">&times;</button>
+            <button id="ai-restore-btn" class="timer-btn secondary" style="padding: 6px 12px; font-size: 12px; min-height: 28px; border-radius: 14px; background-color: #424242; color: #E0E0E0;">View</button>
+            <button id="ai-close-btn" style="background-color: #424242; border: 1px solid #555; color: #E0E0E0; font-size: 18px; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; line-height: 1;">&times;</button>
         </div>
     </div>
 </div>
@@ -1773,7 +1776,7 @@
         expanded.style.opacity = '1';          // Reset opacity
         document.getElementById('ai-collapsed-content').style.display = 'none';
         panel.style.transform = 'translateX(-50%)';
-        dragHandle.style.display = 'block';
+        dragHandle.style.display = 'flex';
     }
 
     function closeAiPanel() {
@@ -1805,8 +1808,8 @@
                 // Morph to pill visually
                 let progress = Math.min(dragOffset / 120, 1);
                 panel.style.transform = `translate3d(-50%, ${dragOffset}px, 0)`;
-                panel.style.borderRadius = `${21 + (progress * 20)}px`;
-                panel.style.width = `calc(100% - ${24 + (progress * 150)}px)`; 
+                panel.style.borderRadius = `${24 + (progress * 26)}px`; // Rescales gracefully from 24px to 50px
+                panel.style.width = `calc(100% - ${24 + (progress * 110)}px)`; // Transition target adjusted for larger 280px minimized width
                 
                 const expandedContent = document.getElementById('ai-expanded-content');
                 expandedContent.style.opacity = Math.max(0, 1 - (progress * 2));
@@ -1817,8 +1820,8 @@
                 // Morph to panel visually
                 let progress = Math.min(Math.abs(dragOffset) / 120, 1);
                 panel.style.transform = `translate3d(-50%, ${dragOffset}px, 0)`;
-                panel.style.borderRadius = `${41 - (progress * 20)}px`;
-                panel.style.width = `calc(250px + ${progress * 100}px)`; 
+                panel.style.borderRadius = `${50 - (progress * 26)}px`; // Rescales back down from 50px to 24px
+                panel.style.width = `calc(280px + ${progress * 120}px)`; // Interpolates cleanly to larger expanded size
             }
         }
     }
