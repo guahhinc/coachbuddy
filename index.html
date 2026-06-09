@@ -199,16 +199,8 @@
     }
     .skill-pill.active { background-color: #4CAF50; color: white; border-color: #4CAF50; }
 
-    @keyframes ai-gradient-flow {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-    }
-
     #suggest-sub-btn {
-        background: linear-gradient(270deg, #673ab7, #9c27b0, #3f51b5, #673ab7);
-        background-size: 300% 300%;
-        animation: ai-gradient-flow 4s ease infinite;
+        background: linear-gradient(90deg, #f9a238, #fd4e93, #aca1fd, #4eb4fc);
         color: white;
         border: none;
     }
@@ -220,8 +212,8 @@
         transform: translateX(-50%) translateY(0);
         width: calc(100% - 24px);
         max-width: 480px; 
-        background: rgba(30, 30, 30, 0.35) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(20, 20, 20, 0.12) !important;
+        border: none;
         border-radius: 24px; 
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         z-index: 999;
@@ -229,22 +221,52 @@
         flex-direction: column;
         padding: 8px 20px 20px 20px; 
         color: #FFFFFF;
-        backdrop-filter: blur(24px);
-        -webkit-backdrop-filter: blur(24px);
-        transition: max-width 0.4s ease, width 0.4s ease, padding 0.4s ease, border-radius 0.4s ease, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2), opacity 0.4s ease;
+        backdrop-filter: blur(12px) saturate(1.5);
+        -webkit-backdrop-filter: blur(12px) saturate(1.5);
+        transition: max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1), width 0.4s cubic-bezier(0.25, 1, 0.5, 1), max-width 0.4s cubic-bezier(0.25, 1, 0.5, 1), padding 0.4s cubic-bezier(0.25, 1, 0.5, 1), border-radius 0.4s cubic-bezier(0.25, 1, 0.5, 1), transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2), opacity 0.4s ease, bottom 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        max-height: 800px;
+        overflow: hidden;
         touch-action: none;
     }
 
+    #ai-floating-panel::before {
+        content: "";
+        position: absolute;
+        bottom: -20px;
+        left: 0;
+        right: 0;
+        height: 120px;
+        background: linear-gradient(90deg, #f9a238, #fd4e93, #aca1fd, #4eb4fc);
+        filter: blur(35px);
+        opacity: 0.5;
+        z-index: 0;
+        pointer-events: none;
+        transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
     #ai-floating-panel.collapsed {
-        width: 280px; 
-        max-width: 280px; 
+        max-height: 52px;
+        width: 320px; 
+        max-width: 320px; 
         padding: 10px 16px; 
         border-radius: 50px; 
-        bottom: 38px; 
-        background: rgba(30, 30, 30, 0.4) !important;
-        border: 1px solid rgba(255, 255, 255, 0.15);
+        bottom: 38px;
+        background: rgba(20, 20, 20, 0.12) !important;
+        border: none;
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
         cursor: pointer;
+    }
+
+    #ai-floating-panel.collapsed::before {
+        height: 100%;
+        bottom: 0;
+        opacity: 0.35;
+        filter: blur(25px);
+    }
+
+    #ai-drag-handle, #ai-expanded-content, #ai-collapsed-content {
+        position: relative;
+        z-index: 1;
     }
 
     #ai-floating-panel .timer-btn {
@@ -262,9 +284,55 @@
         padding-right: 4px;
         white-space: pre-wrap;
     }
+    
+    @keyframes textFlowUpBlur {
+        0% { opacity: 0; transform: translateY(20px); filter: blur(8px); }
+        100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+    }
+    .ai-text-flow {
+        animation: textFlowUpBlur 2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    }
+
+    #ai-expanded-content {
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .collapsed #ai-expanded-content {
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(10px);
+    }
+
+    #ai-collapsed-content {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 16px;
+        transition: opacity 0.3s ease;
+        opacity: 0;
+        pointer-events: none;
+    }
+    .collapsed #ai-collapsed-content {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    #ai-drag-handle {
+        width: 100%; height: 32px; margin: -8px auto 8px auto; cursor: grab; display: flex; align-items: center; justify-content: center; -webkit-user-select: none; user-select: none;
+        transition: opacity 0.3s ease, height 0.3s ease, margin 0.3s ease;
+        opacity: 1;
+    }
+    .collapsed #ai-drag-handle {
+        opacity: 0;
+        height: 0;
+        margin: 0 auto;
+        pointer-events: none;
+    }
 </style>
 
-<!-- Opening Connecting Loading Screen -->
 <div id="opening-loading-overlay" style="position: fixed; top:0; left:0; width:100%; height:100%; background: #121212; z-index: 100000; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 20px;">
     <h2 style="color: #FFFFFF; font-size: 1.3rem; font-weight: 600; margin: 0;">Connecting to Coachbuddy</h2>
     <svg class="spinner" viewBox="25 25 50 50">
@@ -272,7 +340,6 @@
     </svg>
 </div>
 
-<!-- Background Blur Action Overlay -->
 <div id="action-loading-overlay" style="position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(18, 18, 18, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 10000; display: none; justify-content: center; align-items: center;">
     <svg class="spinner" viewBox="25 25 50 50">
         <circle cx="50" cy="50" r="20"></circle>
@@ -282,7 +349,6 @@
 <div class="app-wrapper">
     <div class="app-container">
 
-        <!-- MAIN NAVIGATION -->
         <div id="app-nav" style="display: none; gap: 5px; margin-bottom: 10px;">
             <button id="nav-app-btn" class="timer-btn primary" style="flex: 1; font-size: 11px;">Game</button>
             <button id="nav-manage-btn" class="timer-btn secondary" style="flex: 1; font-size: 11px;">Manage</button>
@@ -290,7 +356,6 @@
             <button id="nav-settings-btn" class="timer-btn secondary" style="flex: 1; font-size: 11px;">Settings</button>
         </div>
 
-        <!-- LOGIN VIEW -->
         <div id="login-view" style="display: none;">
             <h2 style="text-align: center; margin-bottom: 30px; font-size: 2rem;">Coachbuddy</h2>
             <div id="login-form">
@@ -303,7 +368,6 @@
             </div>
         </div>
 
-        <!-- SIGN UP VIEW -->
         <div id="signup-view" style="display: none;">
             <h2 style="text-align: center; margin-bottom: 30px; font-size: 2rem;">Create Account</h2>
             <div id="signup-form">
@@ -318,7 +382,6 @@
             </div>
         </div>
 
-        <!-- SUBSCRIPTION BLOCK VIEW -->
         <div id="sub-block-view" style="display: none; text-align: center; background-color: #1E1E1E; padding: 20px; border-radius: 13px;">
             <h2 style="color: #FF9800;">Subscription Required</h2>
             <p style="color: #B0B0B0; font-size: 15px; line-height: 1.5;">Your account currently does not have an active subscription to use Coachbuddy.</p>
@@ -327,7 +390,6 @@
             <button id="logout-btn-sub" class="timer-btn secondary" style="width: 100%;">Log Out</button>
         </div>
 
-        <!-- GAME APP VIEW -->
         <div id="app-view" style="display: none;">
             <div id="team-name-section">
                 <label for="team-select" style="display:block; margin-bottom: 5px; font-weight: bold;">Team:</label>
@@ -396,7 +458,6 @@
             </div>
         </div>
 
-        <!-- MANAGE TEAMS & PLAYERS VIEW -->
         <div id="manage-view" style="display: none;">
             <div style="background-color: #1E1E1E; padding: 12px; border-radius: 13px; margin-bottom: 10px;">
                 <h3 style="margin-top: 0; color: #E0E0E0;">My Teams</h3>
@@ -445,7 +506,6 @@
             </div>
         </div>
 
-        <!-- STATS VIEW -->
         <div id="stats-view" style="display: none;">
             <div style="background-color: #1E1E1E; padding: 12px; border-radius: 13px;">
                 <h3 style="margin-top: 0; color: #E0E0E0;">Game Stats</h3>
@@ -457,7 +517,6 @@
             </div>
         </div>
 
-        <!-- SETTINGS VIEW -->
         <div id="settings-view" style="display: none;">
             <div style="background-color: #1E1E1E; padding: 12px; border-radius: 13px; margin-bottom: 10px;">
                 <h3 style="margin-top: 0; color: #E0E0E0;">Settings</h3>
@@ -517,9 +576,8 @@
     </div>
 </div>
 
-<!-- Floating AI Panel -->
 <div id="ai-floating-panel">
-    <div id="ai-drag-handle" style="width: 100%; height: 32px; margin: -8px auto 8px auto; cursor: grab; display: flex; align-items: center; justify-content: center; -webkit-user-select: none; user-select: none;">
+    <div id="ai-drag-handle">
         <div style="width: 60px; height: 6px; background: rgba(255,255,255,0.4); border-radius: 3px;"></div>
     </div>
     
@@ -562,6 +620,13 @@
                 AI Suggestion
             </h3>
             <div id="ai-results-text"></div>
+            
+            <div id="ai-followups" style="display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap;">
+                <button class="timer-btn secondary ai-followup-btn" data-followup="defense" style="flex: 1; font-size: 13px; padding: 8px;">Need Defense</button>
+                <button class="timer-btn secondary ai-followup-btn" data-followup="height" style="flex: 1; font-size: 13px; padding: 8px;">More Height</button>
+                <button class="timer-btn secondary ai-followup-btn" data-followup="3pt" style="flex: 1; font-size: 13px; padding: 8px;">Need Shooters</button>
+            </div>
+            
             <div style="display: flex; gap: 8px;">
                 <button id="ai-apply-btn" class="timer-btn primary" style="flex: 2;">Make Substitutes</button>
                 <button id="ai-dismiss-btn" class="timer-btn secondary" style="flex: 1;">Dismiss</button>
@@ -569,7 +634,7 @@
         </div>
     </div>
 
-    <div id="ai-collapsed-content" style="display: none; align-items: center; justify-content: space-between; width: 100%; gap: 10px;">
+    <div id="ai-collapsed-content">
         <span style="font-weight: bold; font-size: 16px; display: flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #FFFFFF;">
             Guahh AI
         </span>
@@ -594,16 +659,16 @@
     const _U = "\x68\x74\x74\x70\x73\x3a\x2f\x2f\x73\x63\x72\x69\x70\x74\x2e\x67\x6f\x6f\x67\x6c\x65\x2e\x63\x6f\x6d\x2f\x6d\x61\x63\x72\x6f\x73\x2f\x73\x2f\x41\x4b\x66\x79\x63\x62\x79\x57\x50\x34\x43\x6b\x7a\x48\x55\x66\x6b\x4f\x4d\x37\x39\x4e\x35\x53\x31\x76\x5a\x31\x4e\x79\x79\x39\x51\x52\x37\x63\x78\x72\x39\x30\x62\x63\x75\x67\x70\x2d\x6f\x32\x58\x7a\x49\x38\x74\x42\x46\x6b\x35\x70\x30\x42\x74\x44\x39\x32\x61\x5f\x77\x48\x67\x75\x64\x43\x73\x51\x2f\x65\x78\x65\x63";
     const _V = "\x30\x2e\x32";
 
-    const _TK = "\x5f\x63\x62\x5f\x74\x6b"; 
-    const _EM = "\x5f\x63\x62\x5f\x65\x6d"; 
-    const _PW = "\x5f\x63\x62\x5f\x70\x77"; 
-    const _ST = "\x5f\x63\x62\x5f\x73\x74"; 
-    const _S1 = "\x5f\x63\x62\x5f\x73\x31"; 
-    const _S2 = "\x5f\x63\x62\x5f\x73\x32"; 
-    const _S3 = "\x5f\x63\x62\x5f\x73\x33"; 
-    const _S4 = "\x5f\x63\x62\x5f\x73\x34"; 
-    const _S5 = "\x5f\x63\x62\x5f\x73\x35"; 
-    const _S6 = "\x5f\x63\x62\x5f\x73\x36"; 
+    const _TK = "\x5f\x63\x62\x5f\x74\x6b";
+    const _EM = "\x5f\x63\x62\x5f\x65\x6d";
+    const _PW = "\x5f\x63\x62\x5f\x70\x77";
+    const _ST = "\x5f\x63\x62\x5f\x73\x74";
+    const _S1 = "\x5f\x63\x62\x5f\x73\x31";
+    const _S2 = "\x5f\x63\x62\x5f\x73\x32";
+    const _S3 = "\x5f\x63\x62\x5f\x73\x33";
+    const _S4 = "\x5f\x63\x62\x5f\x73\x34";
+    const _S5 = "\x5f\x63\x62\x5f\x73\x35";
+    const _S6 = "\x5f\x63\x62\x5f\x73\x36";
 
     let authToken = localStorage.getItem(_TK);
     let currentUser = null;
@@ -909,7 +974,7 @@
 
     function autoAddDefaultPlayers(teamId) {
         const teamPlayers = appData.players.filter(p => p.teamId === teamId);
-        teamPlayers.sort((a, b) => (parseInt(b.rank) || 0) - (parseInt(a.rank) || 0)); 
+        teamPlayers.sort((a, b) => (parseInt(b.rank) || 0) - (parseInt(a.rank) || 0));
         teamPlayers.forEach(p => {
             const existing = Array.from(document.querySelectorAll('.player-item')).find(item => item.dataset.playerId === p.playerId);
             if (!existing) addPlayerByName(p.playerName, p.playerNumber, p.playerId);
@@ -1090,7 +1155,7 @@
         if (!teamId) return;
         
         const teamPlayers = appData.players.filter(p => p.teamId === teamId);
-        teamPlayers.sort((a, b) => (parseInt(b.rank) || 0) - (parseInt(a.rank) || 0)); 
+        teamPlayers.sort((a, b) => (parseInt(b.rank) || 0) - (parseInt(a.rank) || 0));
         
         teamPlayers.forEach(p => {
             const div = document.createElement('div');
@@ -1605,7 +1670,7 @@
                 if (s.includes('rebounding')) score += 6;
                 if (s.includes('positioning')) score += 5;
                 if (s.includes('communication')) score += 4;
-            } else if (goalType === '3pt') { 
+            } else if (goalType === '3pt') {
                 if (s.includes('3 point star')) score += 10;
                 if (s.includes('shot accuracy')) score += 8;
                 if (s.includes('good passing')) score += 4;
@@ -1690,7 +1755,7 @@
                 const rA = getRank(a.name), rB = getRank(b.name);
                 const scoreA = rA + a.points * 0.5;
                 const scoreB = rB + b.points * 0.5;
-                if (scoreA !== scoreB) return scoreA - scoreB; 
+                if (scoreA !== scoreB) return scoreA - scoreB;
             }
             return b.time - a.time;
         });
@@ -1709,7 +1774,7 @@
                 const rA = getRank(a.name), rB = getRank(b.name);
                 const scoreA = rA + a.points * 0.5;
                 const scoreB = rB + b.points * 0.5;
-                if (scoreA !== scoreB) return scoreB - scoreA; 
+                if (scoreA !== scoreB) return scoreB - scoreA;
             }
             return a.time - b.time;
         });
@@ -1759,30 +1824,19 @@
     function collapseAiPanel() {
         isAiCollapsed = true;
         panel.classList.add('collapsed');
-        document.getElementById('ai-expanded-content').style.display = 'none';
-        document.getElementById('ai-collapsed-content').style.display = 'flex';
         panel.style.transform = 'translateX(-50%)';
-        dragHandle.style.display = 'none';
     }
 
     function expandAiPanel() {
         isAiCollapsed = false;
         panel.classList.remove('collapsed');
-        const expanded = document.getElementById('ai-expanded-content');
-        expanded.style.display = 'block';
-        expanded.style.pointerEvents = 'auto'; 
-        expanded.style.opacity = '1';          
-        document.getElementById('ai-collapsed-content').style.display = 'none';
         panel.style.transform = 'translateX(-50%)';
-        dragHandle.style.display = 'flex';
     }
 
     function closeAiPanel() {
         panel.style.display = 'none';
         isAiCollapsed = false;
         panel.classList.remove('collapsed');
-        document.getElementById('ai-expanded-content').style.display = 'block';
-        document.getElementById('ai-collapsed-content').style.display = 'none';
         if (aiAbortController) {
             aiAbortController.abort();
         }
@@ -1791,7 +1845,7 @@
     function dragStart(e) {
         startY = (e.clientY !== undefined) ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
         isDragging = true;
-        panel.style.transition = 'none'; 
+        panel.style.transition = 'none';
     }
 
     function dragMove(e) {
@@ -1803,21 +1857,11 @@
 
         if (!isAiCollapsed) {
             if (dragOffset > 0) {
-                let progress = Math.min(dragOffset / 120, 1);
                 panel.style.transform = `translate3d(-50%, ${dragOffset}px, 0)`;
-                panel.style.borderRadius = `${24 + (progress * 26)}px`; 
-                panel.style.width = `calc(100% - ${24 + (progress * 110)}px)`; 
-                
-                const expandedContent = document.getElementById('ai-expanded-content');
-                expandedContent.style.opacity = Math.max(0, 1 - (progress * 2));
-                expandedContent.style.pointerEvents = progress > 0.8 ? 'none' : 'auto';
             }
         } else {
             if (dragOffset < 0) {
-                let progress = Math.min(Math.abs(dragOffset) / 120, 1);
                 panel.style.transform = `translate3d(-50%, ${dragOffset}px, 0)`;
-                panel.style.borderRadius = `${50 - (progress * 26)}px`; 
-                panel.style.width = `calc(280px + ${progress * 120}px)`; 
             }
         }
     }
@@ -1826,26 +1870,21 @@
         if (!isDragging) return;
         isDragging = false;
         
-        panel.style.transition = 'max-width 0.4s ease, width 0.4s ease, padding 0.4s ease, border-radius 0.4s ease, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2), opacity 0.4s ease';
+        panel.style.transition = 'max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1), width 0.4s cubic-bezier(0.25, 1, 0.5, 1), max-width 0.4s cubic-bezier(0.25, 1, 0.5, 1), padding 0.4s cubic-bezier(0.25, 1, 0.5, 1), border-radius 0.4s cubic-bezier(0.25, 1, 0.5, 1), transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2), opacity 0.4s ease, bottom 0.4s cubic-bezier(0.25, 1, 0.5, 1)';
 
-        panel.style.transform = '';
-        panel.style.borderRadius = '';
-        panel.style.width = '';
-        const expandedContent = document.getElementById('ai-expanded-content');
-        expandedContent.style.opacity = '';
-        expandedContent.style.pointerEvents = ''; 
+        panel.style.transform = 'translateX(-50%)';
 
         if (!isAiCollapsed) {
             if (dragOffset > 60) {
                 collapseAiPanel();
             } else {
-                expandAiPanel(); 
+                expandAiPanel();
             }
         } else {
             if (dragOffset < -60) {
                 expandAiPanel();
             } else {
-                collapseAiPanel(); 
+                collapseAiPanel();
             }
         }
         dragOffset = 0;
@@ -1883,6 +1922,16 @@
         e.stopPropagation();
         expandAiPanel();
     });
+    
+    document.querySelectorAll('.ai-followup-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const followUpTarget = btn.getAttribute('data-followup');
+            const secondarySelect = document.getElementById('ai-secondary-select');
+            if(secondarySelect) secondarySelect.value = followUpTarget;
+            document.getElementById('ai-submit-btn').click();
+        });
+    });
 
     document.getElementById('suggest-sub-btn').onclick = () => {
         const playerItems = document.querySelectorAll('.player-item');
@@ -1904,6 +1953,7 @@
         const resultsStep = document.getElementById('ai-step-results');
 
         configStep.style.display = 'none';
+        resultsStep.style.display = 'none';
         loadingStep.style.display = 'block';
 
         aiAbortController = new AbortController();
@@ -1946,10 +1996,16 @@
             }
 
             const formattedText = suggestionText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            document.getElementById('ai-results-text').innerHTML = formattedText;
+            
+            const resText = document.getElementById('ai-results-text');
+            resText.innerHTML = formattedText;
 
             loadingStep.style.display = 'none';
             resultsStep.style.display = 'block';
+            
+            resText.classList.remove('ai-text-flow');
+            void resText.offsetWidth;
+            resText.classList.add('ai-text-flow');
 
             const applyBtn = document.getElementById('ai-apply-btn');
             if (subActions && (subActions.out.length > 0 || subActions.in.length > 0)) {
@@ -2029,7 +2085,7 @@
     requestWakeLock();
 
     initApp();
-})(); 
+})();
 </script>
 </body>
 </html>
