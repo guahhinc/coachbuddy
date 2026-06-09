@@ -132,7 +132,7 @@
 
     #roster { overflow: hidden; }
     .player-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #333; }
-    .player-item_info-group { display: flex; align-items: center; gap: 6px; flex-grow: 1; padding-right: 8px; }
+    .player-info-group { display: flex; align-items: center; gap: 6px; flex-grow: 1; padding-right: 8px; }
 
     .player-rank {
         font-weight: 700; color: white; background-color: #424242; font-size: 14px; width: 28px; height: 28px;
@@ -264,6 +264,7 @@
     }
 </style>
 
+<!-- Opening Connecting Loading Screen -->
 <div id="opening-loading-overlay" style="position: fixed; top:0; left:0; width:100%; height:100%; background: #121212; z-index: 100000; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 20px;">
     <h2 style="color: #FFFFFF; font-size: 1.3rem; font-weight: 600; margin: 0;">Connecting to Coachbuddy</h2>
     <svg class="spinner" viewBox="25 25 50 50">
@@ -271,6 +272,7 @@
     </svg>
 </div>
 
+<!-- Background Blur Action Overlay -->
 <div id="action-loading-overlay" style="position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(18, 18, 18, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 10000; display: none; justify-content: center; align-items: center;">
     <svg class="spinner" viewBox="25 25 50 50">
         <circle cx="50" cy="50" r="20"></circle>
@@ -280,6 +282,7 @@
 <div class="app-wrapper">
     <div class="app-container">
 
+        <!-- MAIN NAVIGATION -->
         <div id="app-nav" style="display: none; gap: 5px; margin-bottom: 10px;">
             <button id="nav-app-btn" class="timer-btn primary" style="flex: 1; font-size: 11px;">Game</button>
             <button id="nav-manage-btn" class="timer-btn secondary" style="flex: 1; font-size: 11px;">Manage</button>
@@ -287,6 +290,7 @@
             <button id="nav-settings-btn" class="timer-btn secondary" style="flex: 1; font-size: 11px;">Settings</button>
         </div>
 
+        <!-- LOGIN VIEW -->
         <div id="login-view" style="display: none;">
             <h2 style="text-align: center; margin-bottom: 30px; font-size: 2rem;">Coachbuddy</h2>
             <div id="login-form">
@@ -299,6 +303,7 @@
             </div>
         </div>
 
+        <!-- SIGN UP VIEW -->
         <div id="signup-view" style="display: none;">
             <h2 style="text-align: center; margin-bottom: 30px; font-size: 2rem;">Create Account</h2>
             <div id="signup-form">
@@ -313,6 +318,7 @@
             </div>
         </div>
 
+        <!-- SUBSCRIPTION BLOCK VIEW -->
         <div id="sub-block-view" style="display: none; text-align: center; background-color: #1E1E1E; padding: 20px; border-radius: 13px;">
             <h2 style="color: #FF9800;">Subscription Required</h2>
             <p style="color: #B0B0B0; font-size: 15px; line-height: 1.5;">Your account currently does not have an active subscription to use Coachbuddy.</p>
@@ -321,6 +327,7 @@
             <button id="logout-btn-sub" class="timer-btn secondary" style="width: 100%;">Log Out</button>
         </div>
 
+        <!-- GAME APP VIEW -->
         <div id="app-view" style="display: none;">
             <div id="team-name-section">
                 <label for="team-select" style="display:block; margin-bottom: 5px; font-weight: bold;">Team:</label>
@@ -389,6 +396,7 @@
             </div>
         </div>
 
+        <!-- MANAGE TEAMS & PLAYERS VIEW -->
         <div id="manage-view" style="display: none;">
             <div style="background-color: #1E1E1E; padding: 12px; border-radius: 13px; margin-bottom: 10px;">
                 <h3 style="margin-top: 0; color: #E0E0E0;">My Teams</h3>
@@ -437,6 +445,7 @@
             </div>
         </div>
 
+        <!-- STATS VIEW -->
         <div id="stats-view" style="display: none;">
             <div style="background-color: #1E1E1E; padding: 12px; border-radius: 13px;">
                 <h3 style="margin-top: 0; color: #E0E0E0;">Game Stats</h3>
@@ -448,6 +457,7 @@
             </div>
         </div>
 
+        <!-- SETTINGS VIEW -->
         <div id="settings-view" style="display: none;">
             <div style="background-color: #1E1E1E; padding: 12px; border-radius: 13px; margin-bottom: 10px;">
                 <h3 style="margin-top: 0; color: #E0E0E0;">Settings</h3>
@@ -507,6 +517,7 @@
     </div>
 </div>
 
+<!-- Floating AI Panel -->
 <div id="ai-floating-panel">
     <div id="ai-drag-handle" style="width: 100%; height: 32px; margin: -8px auto 8px auto; cursor: grab; display: flex; align-items: center; justify-content: center; -webkit-user-select: none; user-select: none;">
         <div style="width: 60px; height: 6px; background: rgba(255,255,255,0.4); border-radius: 3px;"></div>
