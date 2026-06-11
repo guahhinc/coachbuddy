@@ -9,11 +9,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <link rel="icon" href="https://raw.githubusercontent.com/guahhinc/coachbuddy/main/Icon-iOS-Default-1024x1024%401x.png">
     <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/guahhinc/coachbuddy/main/Icon-iOS-Default-1024x1024%401x.png">
 
     <script src="https://unpkg.com/siriwave/dist/siriwave.umd.min.js"></script>
+
     <script src="ai.js"></script>
 
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -354,6 +357,11 @@
         margin: 0 auto;
         pointer-events: none;
     }
+    
+    .material-icons {
+        user-select: none;
+        pointer-events: none;
+    }
 </style>
 </head>
 <body>
@@ -622,10 +630,14 @@
             
             <div id="ai-step-suggestions-stacked" style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px;"></div>
 
-            <div style="margin-bottom: 15px; text-align: left;">
-                <input type="text" id="ai-chat-input" placeholder="Ask anything" style="width: 100%; height: 44px; padding: 0 14px; border-radius: 12px; background-color: #1A1A1A; color: white; border: 1px solid #222; font-size: 15px; font-family: inherit; outline: none; box-sizing: border-box;">
+            <div style="margin-bottom: 15px; text-align: left; display: flex; gap: 8px;">
+                <input type="text" id="ai-chat-input" placeholder="Ask anything" style="flex: 1; height: 44px; padding: 0 14px; border-radius: 12px; background-color: #1A1A1A; color: white; border: 1px solid #222; font-size: 15px; font-family: inherit; outline: none; box-sizing: border-box;">
+                <button id="ai-voice-btn" class="timer-btn secondary" style="width: 44px; height: 44px; padding: 0; border-radius: 12px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;"><span class="material-icons">mic</span></button>
             </div>
-            <div style="display: flex; gap: 8px;">
+            
+            <div id="ai-voice-wave-config" style="display: none; width: 100%; height: 90px; margin: 5px auto; text-align: center;"></div>
+            
+            <div style="display: flex; gap: 8px;" id="ai-config-buttons-row">
                 <button id="ai-submit-btn" class="timer-btn primary" style="flex: 2;">Ask Assistant</button>
                 <button id="ai-cancel-btn" class="timer-btn secondary" style="flex: 1;">Close</button>
             </div>
@@ -644,10 +656,13 @@
             
             <div id="ai-results-followup-container" style="display: flex; gap: 8px; margin-bottom: 12px; background: #2D2D2D !important; padding: 4px; border-radius: 14px; border: none !important; height: 50px; align-items: center; box-sizing: border-box; box-shadow: none !important;">
                 <input type="text" id="ai-results-followup-input" placeholder="Ask anything" style="flex: 1; padding: 0 14px; border-radius: 10px; background-color: transparent; color: white; border: none !important; outline: none !important; font-size: 15px; box-sizing: border-box; height: 100%; box-shadow: none !important;">
+                <button id="ai-results-voice-btn" class="timer-btn secondary" style="width: 42px; height: 42px; padding: 0; border-radius: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin-right: 2px;"><span class="material-icons" style="font-size: 20px;">mic</span></button>
                 <button id="ai-results-followup-btn" class="timer-btn primary" style="padding: 0 20px; height: 100%; font-size: 14px; border: none !important; outline: none !important; border-radius: 10px; flex-shrink: 0; box-shadow: none !important; font-weight: 700;">Ask</button>
             </div>
             
-            <div style="display: flex; gap: 8px;">
+            <div id="ai-voice-wave-results" style="display: none; width: 100%; height: 90px; margin: 5px auto; text-align: center;"></div>
+            
+            <div style="display: flex; gap: 8px;" id="ai-results-buttons-row">
                 <button id="ai-apply-btn" class="timer-btn primary" style="flex: 2; min-height: 44px; font-size: 15px; border-radius: 12px;">Make Substitutes</button>
                 <button id="ai-dismiss-btn" class="timer-btn secondary" style="flex: 1; min-height: 44px; font-size: 15px; border-radius: 12px;">Dismiss</button>
             </div>
@@ -733,6 +748,13 @@
     let dragOffset = 0;
     let isDragging = false;
     let siriWave = null;
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition = null;
+    let isListening = false;
+    let activeVoiceInput = null;
+    let activeVoiceButton = null;
+    let voiceSiriWave = null; 
 
     let authToken = localStorage.getItem(_TK);
     let currentUser = null;
@@ -1448,8 +1470,249 @@
         }
     }
 
+    function runVoiceSiriWave(containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        container.innerHTML = '';
+        const width = container.clientWidth || 320;
+        
+        voiceSiriWave = new SiriWave({
+            container: container,
+            width: width,
+            height: 90,
+            style: 'ios9',
+            speed: 0,           
+            amplitude: 0.01,    
+            autostart: true,
+            curveDefinition: [
+                { color: "255, 255, 255", supportLine: true },
+                { color: "240, 240, 240" },
+                { color: "215, 220, 225" },
+                { color: "190, 195, 200" }
+            ]
+        });
+    }
+
+    function stopVoiceSiriWave() {
+        if (voiceSiriWave) {
+            voiceSiriWave.stop();
+            voiceSiriWave = null;
+        }
+    }
+
+    function handleInputChange(inputEl, buttonEl) {
+        const iconEl = buttonEl.querySelector('.material-icons');
+        if (inputEl.value.trim().length > 0) {
+            buttonEl.style.backgroundColor = '#007bff';
+            buttonEl.style.color = '#FFFFFF';
+            if (iconEl) {
+                iconEl.textContent = 'send';
+            }
+            buttonEl.dataset.mode = 'send';
+        } else {
+            buttonEl.style.backgroundColor = '';
+            buttonEl.style.color = '';
+            if (iconEl) {
+                iconEl.textContent = 'mic';
+            }
+            buttonEl.dataset.mode = 'mic';
+        }
+    }
+
+    async function startVoiceRecognition(inputEl, buttonEl, isFollowUp) {
+        if (!SpeechRecognition) {
+            showConfirmation('Not Supported', 'Voice recognition is not supported in this browser. Please use Google Chrome or Safari.');
+            return;
+        }
+
+        if (isListening) {
+            stopVoiceRecognition();
+            return;
+        }
+
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            stream.getTracks().forEach(track => track.stop());
+        } catch (err) {
+            showConfirmation('Microphone Access Blocked', 'Please allow microphone access in your browser settings to speak to the assistant.');
+            return;
+        }
+
+        isListening = true;
+        activeVoiceInput = inputEl;
+        activeVoiceButton = buttonEl;
+
+        if (inputEl) {
+            inputEl.placeholder = 'Listening... Speak now.';
+            inputEl.value = '';
+        }
+
+        if (!isFollowUp) {
+            const voiceBtn = document.getElementById('ai-voice-btn');
+            const submitBtn = document.getElementById('ai-submit-btn');
+            const cancelBtn = document.getElementById('ai-cancel-btn');
+            const waveContainer = document.getElementById('ai-voice-wave-config');
+            
+            if (voiceBtn) voiceBtn.style.display = 'none';
+            if (submitBtn) submitBtn.style.display = 'none';
+            if (cancelBtn) cancelBtn.style.display = 'none';
+            if (waveContainer) {
+                waveContainer.style.display = 'block';
+                runVoiceSiriWave('ai-voice-wave-config');
+            }
+        } else {
+            const resultsVoiceBtn = document.getElementById('ai-results-voice-btn');
+            const applyBtn = document.getElementById('ai-apply-btn');
+            const dismissBtn = document.getElementById('ai-dismiss-btn');
+            const waveContainer = document.getElementById('ai-voice-wave-results');
+            
+            if (resultsVoiceBtn) resultsVoiceBtn.style.display = 'none';
+            if (applyBtn) applyBtn.style.display = 'none';
+            if (dismissBtn) dismissBtn.style.display = 'none';
+            if (waveContainer) {
+                waveContainer.style.display = 'block';
+                runVoiceSiriWave('ai-voice-wave-results');
+            }
+        }
+
+        recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = true;
+        recognition.lang = 'en-AU';
+
+        recognition.onstart = () => {
+            if (voiceSiriWave) {
+                voiceSiriWave.setSpeed(0);
+                voiceSiriWave.setAmplitude(0.01);
+            }
+        };
+
+        recognition.onspeechstart = () => {
+            if (voiceSiriWave) {
+                voiceSiriWave.setSpeed(0.2);
+                voiceSiriWave.setAmplitude(1.5);
+            }
+        };
+
+        recognition.onspeechend = () => {
+            if (voiceSiriWave) {
+                voiceSiriWave.setSpeed(0);
+                voiceSiriWave.setAmplitude(0.01);
+            }
+        };
+
+        recognition.onsoundstart = () => {
+            if (voiceSiriWave) {
+                voiceSiriWave.setSpeed(0.2);
+                voiceSiriWave.setAmplitude(1.5);
+            }
+        };
+
+        recognition.onsoundend = () => {
+            if (voiceSiriWave) {
+                voiceSiriWave.setSpeed(0);
+                voiceSiriWave.setAmplitude(0.01);
+            }
+        };
+
+        recognition.onresult = (event) => {
+            let interimTranscript = '';
+            let finalTranscript = '';
+
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                    finalTranscript += event.results[i][0].transcript;
+                } else {
+                    interimTranscript += event.results[i][0].transcript;
+                }
+            }
+
+            const currentText = finalTranscript || interimTranscript;
+            if (inputEl) {
+                inputEl.value = currentText;
+            }
+
+            if (finalTranscript.trim().length > 0) {
+                const cleanText = finalTranscript.trim();
+                stopVoiceRecognition();
+                executeQuerySubmission(cleanText);
+            }
+        };
+
+        recognition.onerror = (event) => {
+            console.warn("Speech recognition exception caught:", event.error);
+            stopVoiceRecognition();
+        };
+
+        recognition.onend = () => {
+            if (isListening) {
+                stopVoiceRecognition();
+            }
+        };
+
+        try {
+            recognition.start();
+        } catch (e) {
+            console.error("Failed to start speech recording:", e);
+            stopVoiceRecognition();
+        }
+    }
+
+    function stopVoiceRecognition() {
+        isListening = false;
+        if (recognition) {
+            try {
+                recognition.stop();
+            } catch (e) {}
+            recognition = null;
+        }
+
+        const voiceBtn = document.getElementById('ai-voice-btn');
+        const submitBtn = document.getElementById('ai-submit-btn');
+        const cancelBtn = document.getElementById('ai-cancel-btn');
+        const waveConfig = document.getElementById('ai-voice-wave-config');
+        
+        if (voiceBtn) {
+            voiceBtn.style.display = '';
+            voiceBtn.style.backgroundColor = '';
+            voiceBtn.style.color = '';
+            const iconEl = voiceBtn.querySelector('.material-icons');
+            if (iconEl) iconEl.textContent = 'mic';
+        }
+        if (submitBtn) submitBtn.style.display = '';
+        if (cancelBtn) cancelBtn.style.display = '';
+        if (waveConfig) waveConfig.style.display = 'none';
+
+        const resultsVoiceBtn = document.getElementById('ai-results-voice-btn');
+        const applyBtn = document.getElementById('ai-apply-btn');
+        const dismissBtn = document.getElementById('ai-dismiss-btn');
+        const waveResults = document.getElementById('ai-voice-wave-results');
+        
+        if (resultsVoiceBtn) {
+            resultsVoiceBtn.style.display = '';
+            resultsVoiceBtn.style.backgroundColor = '';
+            resultsVoiceBtn.style.color = '';
+            const iconEl = resultsVoiceBtn.querySelector('.material-icons');
+            if (iconEl) iconEl.textContent = 'mic';
+        }
+        if (applyBtn) applyBtn.style.display = '';
+        if (dismissBtn) dismissBtn.style.display = '';
+        if (waveResults) waveResults.style.display = 'none';
+
+        if (activeVoiceInput) {
+            activeVoiceInput.placeholder = 'Ask anything';
+        }
+
+        stopVoiceSiriWave();
+
+        activeVoiceInput = null;
+        activeVoiceButton = null;
+    }
+
     async function executeQuerySubmission(queryText) {
         if (!queryText) return;
+
+        stopVoiceRecognition(); 
 
         const configStep = document.getElementById('ai-step-config');
         const loadingStep = document.getElementById('ai-step-loading');
@@ -1509,7 +1772,10 @@
             void resText.offsetWidth; 
             resText.classList.add('ai-text-flow');
 
-            document.getElementById('ai-results-followup-input').value = '';
+            if (followupInput) {
+                followupInput.value = '';
+                handleInputChange(followupInput, aiResultsVoiceBtn);
+            }
 
             const applyBtn = document.getElementById('ai-apply-btn');
             applyBtn.style.display = 'none';
@@ -1595,6 +1861,7 @@
         isAiCollapsed = false;
         panel.classList.remove('collapsed');
         stopSiriWave();
+        stopVoiceRecognition(); 
     }
 
     function dragStart(e) {
@@ -1795,6 +2062,7 @@
                 executeQuerySubmission(queryText);
             }
         };
+        chatInput.addEventListener('input', () => handleInputChange(chatInput, aiVoiceBtn));
     }
 
     const submitBtn = document.getElementById('ai-submit-btn');
@@ -1805,29 +2073,65 @@
         };
     }
 
-    const followUpBtn = document.getElementById('ai-results-followup-btn');
-    if(followUpBtn) {
-        followUpBtn.onclick = (e) => {
+    const aiVoiceBtn = document.getElementById('ai-voice-btn');
+    if (aiVoiceBtn) {
+        aiVoiceBtn.onclick = (e) => {
             e.stopPropagation();
-            const followText = document.getElementById('ai-results-followup-input').value.trim();
-            executeQuerySubmission(followText);
-        };
-    }
-
-    const followUpInput = document.getElementById('ai-results-followup-input');
-    if(followUpInput) {
-        followUpInput.onkeydown = (e) => {
-            if (e.key === 'Enter') {
-                e.stopPropagation();
-                const followText = document.getElementById('ai-results-followup-input').value.trim();
-                executeQuerySubmission(followText);
+            if (aiVoiceBtn.dataset.mode === 'send') {
+                const queryText = chatInput.value.trim();
+                executeQuerySubmission(queryText);
+            } else {
+                startVoiceRecognition(chatInput, aiVoiceBtn, false);
             }
         };
     }
 
+    const aiResultsVoiceBtn = document.getElementById('ai-results-voice-btn');
+    const followupInput = document.getElementById('ai-results-followup-input');
+    if (aiResultsVoiceBtn) {
+        aiResultsVoiceBtn.onclick = (e) => {
+            e.stopPropagation();
+            if (aiResultsVoiceBtn.dataset.mode === 'send') {
+                const followText = followupInput.value.trim();
+                executeQuerySubmission(followText);
+            } else {
+                startVoiceRecognition(followupInput, aiResultsVoiceBtn, true);
+            }
+        };
+    }
+
+    const followUpBtn = document.getElementById('ai-results-followup-btn');
+    if(followUpBtn) {
+        followUpBtn.onclick = (e) => {
+            e.stopPropagation();
+            const followText = followupInput.value.trim();
+            executeQuerySubmission(followText);
+        };
+    }
+
+    if(followupInput) {
+        followupInput.onkeydown = (e) => {
+            if (e.key === 'Enter') {
+                e.stopPropagation();
+                const followText = followupInput.value.trim();
+                executeQuerySubmission(followText);
+            }
+        };
+        followupInput.addEventListener('input', () => handleInputChange(followupInput, aiResultsVoiceBtn));
+    }
+
     const suggestBtn = document.getElementById('suggest-sub-btn');
     if(suggestBtn) {
-        suggestBtn.onclick = () => {
+        suggestBtn.onclick = async () => {
+            if (SpeechRecognition) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    stream.getTracks().forEach(track => track.stop());
+                } catch (err) {
+                    console.warn(err);
+                }
+            }
+
             if(panel) {
                 panel.style.display = 'flex';
                 expandAiPanel();
@@ -1836,7 +2140,11 @@
             document.getElementById('ai-step-config').style.display = 'block';
             document.getElementById('ai-step-loading').style.display = 'none';
             document.getElementById('ai-step-results').style.display = 'none';
-            if (chatInput) chatInput.value = '';
+            
+            if (chatInput) {
+                chatInput.value = '';
+                handleInputChange(chatInput, aiVoiceBtn);
+            }
         };
     }
 
