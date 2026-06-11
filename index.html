@@ -14,7 +14,6 @@
     <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/guahhinc/coachbuddy/main/Icon-iOS-Default-1024x1024%401x.png">
 
     <script src="https://unpkg.com/siriwave/dist/siriwave.umd.min.js"></script>
-
     <script src="ai.js"></script>
 
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -70,17 +69,16 @@
         100% { stroke-dasharray: 89, 200; stroke-dashoffset: -124px; }
     }
 
-    html { height: 100%; background-color: #080808; }
+    html { background-color: #080808; overflow-x: hidden; }
     body {
         font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         margin: 0; padding: 0; background-color: #080808; color: #E0E0E0;
-        height: 100%; overflow-x: hidden; overflow-y: auto; font-size: 13px;
-        padding-top: 50vh;
+        font-size: 13px; overflow-x: hidden; min-height: 100vh;
     }
 
     .app-wrapper {
         display: flex; flex-direction: column; align-items: center;
-        width: 100%; height: auto; margin-top: -50vh;
+        width: 100%; height: auto;
     }
 
     .app-container {
@@ -129,9 +127,9 @@
     }
 
     .roster-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid #222; }
-    .roster-title { font-weight: bold; font-size: 14px; color: #B0B0B0; }
+    .roster-title { font-weight: bold; font-size: 13px; color: #B0B0B0; }
     .sort-buttons-group { display: flex; gap: 6px; }
-    .sort-btn { background-color: #222; color: #E0E0E0; border: none; padding: 6px 12px; border-radius: 21px; font-size: 11px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .sort-btn { background-color: #222; color: #E0E0E0; border: none; padding: 6px 12px; border-radius: 21px; font-size: 10px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; }
     .sort-btn:active { background-color: #333; }
 
     #roster { overflow: hidden; }
@@ -143,13 +141,14 @@
         gap: 8px !important; 
         flex-grow: 1; 
         padding-right: 8px; 
+        min-width: 0;
     }
 
     .player-rank {
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
-        font-weight: 700; color: white; background-color: #222; font-size: 14px; width: 28px; height: 28px;
+        font-weight: 700; color: white; background-color: #222; font-size: 13px; width: 26px; height: 26px;
         text-align: center; border-radius: 9px; flex-shrink: 0; margin-right: 4px; transition: background-color 0.3s, color 0.3s;
     }
     .player-rank.rank-color-1 { background-color: #D32F2F; color: white; }
@@ -157,34 +156,42 @@
     .player-rank.rank-color-3 { background-color: #4CAF50; color: white; }
     .player-rank.rank-color-4 { background-color: #007bff; color: white; }
 
-    .player-number { font-weight: 700; color: #64B5F6; font-size: 15px; flex-shrink: 0; white-space: nowrap; }
-    .player-name { font-weight: 500; font-size: 15px; word-break: break-word; }
-    .warning-icon { font-size: 16px; margin-left: 5px; display: none; animation: pulse 2s infinite; }
+    .player-name-wrapper {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        flex-grow: 1;
+        min-width: 0;
+    }
+
+    .player-number { font-weight: 700; color: #64B5F6; font-size: 10px; flex-shrink: 0; white-space: nowrap; line-height: 1; margin-bottom: 2px; }
+    .player-name { font-weight: 500; font-size: 14px; word-break: break-word; line-height: 1.2; }
+    .warning-icon { font-size: 15px; margin-left: 5px; display: none; animation: pulse 2s infinite; }
     @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
     .warning-icon.low { color: #FFC107; }
 
-    .player-time { font-weight: bold; color: #64B5F6; font-size: 15px; min-width: 50px; text-align: right; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+    .player-time { font-weight: bold; color: #64B5F6; font-size: 14px; min-width: 44px; text-align: right; flex-shrink: 0; font-variant-numeric: tabular-nums; }
     .player-controls-group { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
     
     .points-controls {
-        display: flex; align-items: center; gap: 2px; background-color: #1A1A1A; padding: 3px; border-radius: 9px; flex-shrink: 0; margin-right: 6px; height: 28px;
+        display: flex; align-items: center; gap: 2px; background-color: #1A1A1A; padding: 3px; border-radius: 9px; flex-shrink: 0; margin-left: 6px; margin-right: 4px; height: 26px;
     }
     .pt-btn {
-        width: 22px; height: 22px; font-size: 14px; line-height: 1; border-radius: 7px; border: none; cursor: pointer;
+        width: 20px; height: 20px; font-size: 13px; line-height: 1; border-radius: 7px; border: none; cursor: pointer;
         background-color: #2D2D2D; color: #E0E0E0; display: flex; align-items: center; justify-content: center;
         transition: background-color 0.2s;
     }
     .pt-btn:active { background-color: #424242; transform: scale(0.95); }
-    .pt-display { font-size: 13px; font-weight: bold; min-width: 16px; text-align: center; color: #FFF; font-variant-numeric: tabular-nums; }
+    .pt-display { font-size: 12px; font-weight: bold; min-width: 14px; text-align: center; color: #FFF; font-variant-numeric: tabular-nums; }
 
     body.hide-points-tracking .points-controls {
         display: none !important;
     }
 
-    .toggle-btn { height: 28px; width: 60px; font-size: 13px; border-radius: 9px; flex-shrink: 0; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 600; line-height: 1; }
+    .toggle-btn { height: 28px; width: 46px; font-size: 12px; border-radius: 9px; flex-shrink: 0; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 600; line-height: 1; }
     .toggle-btn.status-on { background-color: #4CAF50; color: white; }
     .toggle-btn.status-off { background-color: #D32F2F; color: white; }
-    .delete-btn { width: 28px; height: 28px; font-size: 14px; border-radius: 9px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; background-color: #222; color: white; padding: 0; line-height: 1; flex-shrink: 0; }
+    .delete-btn { width: 26px; height: 26px; font-size: 13px; border-radius: 9px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; background-color: #222; color: white; padding: 0; line-height: 1; flex-shrink: 0; }
 
     #mini-timer-section { display: flex; justify-content: space-between; align-items: center; padding: 6px 8px; }
     #mini-time-display { font-size: 1.8rem; font-weight: 700; color: #E0E0E0; font-variant-numeric: tabular-nums; }
@@ -221,7 +228,7 @@
 
     #ai-floating-panel {
         position: fixed;
-        bottom: 16px;
+        bottom: calc(16px + env(safe-area-inset-bottom, 0px));
         left: 50%;
         transform: translateX(-50%) translateY(0);
         width: calc(100% - 24px);
@@ -241,6 +248,7 @@
         max-height: 92vh; 
         overflow: hidden;
         touch-action: none;
+        will-change: transform, bottom;
     }
 
     #ai-floating-panel::before {
@@ -264,7 +272,7 @@
         max-width: 180px; 
         padding: 0;       
         border-radius: 23px; 
-        bottom: 38px;
+        bottom: calc(38px + env(safe-area-inset-bottom, 0px));
         background: rgba(10, 10, 10, 0.72) !important;
         border: 1px solid rgba(255, 255, 255, 0.1);
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
@@ -692,9 +700,9 @@
         "Who's my best player"
     ];
 
-    const MIN_GAME_TIME_FOR_WARNINGS = 300; 
-    const LOW_TIME_RATIO = 0.55; 
-    const SIGNIFICANT_TIME_GAP = 360; 
+    const MIN_GAME_TIME_FOR_WARNINGS = 180; 
+    const LOW_TIME_RATIO = 0.65; 
+    const SIGNIFICANT_TIME_GAP = 240; 
     const INITIAL_STOPWATCH_SECONDS = 0;
     const DEFAULT_COUNTDOWN_SECONDS = 2400;
 
@@ -1073,15 +1081,20 @@
         playerRankDisplay.dataset.role = 'player-rank-display';
         playerInfoGroup.appendChild(playerRankDisplay);
 
+        const nameWrapper = document.createElement('div');
+        nameWrapper.className = 'player-name-wrapper';
+
         if (number !== null) {
             const playerNumber = document.createElement('span');
             playerNumber.className = 'player-number'; playerNumber.textContent = `#${number}`;
-            playerInfoGroup.appendChild(playerNumber);
+            nameWrapper.appendChild(playerNumber);
         }
 
         const playerName = document.createElement('span');
         playerName.className = 'player-name'; playerName.textContent = name;
-        playerInfoGroup.appendChild(playerName);
+        nameWrapper.appendChild(playerName);
+
+        playerInfoGroup.appendChild(nameWrapper);
 
         const lowWarningIcon = document.createElement('span');
         lowWarningIcon.className = 'warning-icon low'; lowWarningIcon.textContent = '⚠️';
@@ -1161,8 +1174,8 @@
             });
         };
 
-        playerControlsGroup.appendChild(pointsGroup);
         playerControlsGroup.appendChild(timeOnFieldDisplay);
+        playerControlsGroup.appendChild(pointsGroup);
         playerControlsGroup.appendChild(toggleBtn);
         playerControlsGroup.appendChild(deleteBtn);
         playerItem.appendChild(playerInfoGroup);
@@ -1385,7 +1398,6 @@
         
         const shuffledRest = [...rest].sort(() => 0.5 - Math.random());
         const selectedRest = shuffledRest.slice(0, 2);
-        
         const selected = [mandatory, ...selectedRest];
         
         selected.forEach(text => {
