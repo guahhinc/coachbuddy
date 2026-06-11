@@ -10,6 +10,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+    <link rel="icon" href="https://raw.githubusercontent.com/guahhinc/coachbuddy/main/Icon-iOS-Default-1024x1024%401x.png">
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/guahhinc/coachbuddy/main/Icon-iOS-Default-1024x1024%401x.png">
+
     <script src="https://unpkg.com/siriwave/dist/siriwave.umd.min.js"></script>
 
     <script src="ai.js"></script>
@@ -256,10 +259,10 @@
     }
 
     #ai-floating-panel.collapsed {
-        max-height: 68px; 
+        max-height: 76px;
         width: 320px; 
         max-width: 320px; 
-        padding: 16px 20px; 
+        padding: 16px 20px;
         border-radius: 50px; 
         bottom: 38px;
         background: rgba(10, 10, 10, 0.72) !important;
@@ -290,7 +293,7 @@
         font-size: 17px; 
         line-height: 1.5;
         color: #E0E0E0;
-        max-height: 380px; 
+        max-height: 380px;
         overflow-y: auto;
         margin-bottom: 12px;
         padding-right: 4px;
@@ -536,7 +539,7 @@
                 <h3 style="margin-top: 0; color: #E0E0E0;">Settings</h3>
 
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #222;">
-                    <span style="font-size: 14px;">Guahh Intelligence</span>
+                    <span style="font-size: 14px;">Guahh AI</span>
                     <label class="switch">
                         <input type="checkbox" id="setting-guahh-ai" checked>
                         <span class="slider round"></span>
@@ -590,21 +593,19 @@
     </div>
 </div>
 
-<!-- Floating AI Panel (Unified Conversational Assistant & SiriWave Thinking) -->
 <div id="ai-floating-panel">
     <div id="ai-drag-handle">
         <div style="width: 60px; height: 6px; background: rgba(255,255,255,0.4); border-radius: 3px;"></div>
     </div>
     
     <div id="ai-expanded-content">
-        <!-- STEP 1: CONVERSATIONAL CHAT INPUT -->
         <div id="ai-step-config">
             <h3 style="margin-top: 0; margin-bottom: 12px; color: #fff; text-align: center; font-size: 18px;">Guahh AI</h3>
             
             <div id="ai-step-suggestions-stacked" style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px;"></div>
 
             <div style="margin-bottom: 15px; text-align: left;">
-                <textarea id="ai-chat-input" placeholder="Ask anything" style="width: 100%; min-height: 80px; max-height: 140px; padding: 12px; border-radius: 12px; background-color: #1A1A1A; color: white; border: 1px solid #222; font-size: 15px; font-family: inherit; resize: none; outline: none; box-sizing: border-box;"></textarea>
+                <input type="text" id="ai-chat-input" placeholder="Ask anything" style="width: 100%; height: 44px; padding: 0 14px; border-radius: 12px; background-color: #1A1A1A; color: white; border: 1px solid #222; font-size: 15px; font-family: inherit; outline: none; box-sizing: border-box;">
             </div>
             <div style="display: flex; gap: 8px;">
                 <button id="ai-submit-btn" class="timer-btn primary" style="flex: 2;">Ask Assistant</button>
@@ -612,13 +613,11 @@
             </div>
         </div>
 
-        <!-- STEP 2: SIRIWAVE VISUAL THINKING STATE -->
         <div id="ai-step-loading" style="display: none; text-align: center; padding: 10px 0;">
             <div id="siri-container" style="width: 100%; height: 110px; margin: 0 auto;"></div>
             <span style="display: block; color: #FFFFFF; font-weight: bold; font-size: 15px; margin-top: 10px;">Guahh AI is thinking...</span>
         </div>
 
-        <!-- STEP 3: RESULTS & CONTINUOUS CHAT INTERFACE -->
         <div id="ai-step-results" style="display: none;">
             <h3 style="margin-top: 0; margin-bottom: 12px; color: #fff; text-align: center; font-size: 18px; display: flex; align-items: center; justify-content: center; gap: 6px;">
                 Response
@@ -659,14 +658,13 @@
 (() => {
     console.log = console.warn = console.error = console.info = console.debug = function() {};
     
-    // --- CONSTANTS, DATA ARRAYS, AND STORAGE KEYS ---
     const _U = "\x68\x74\x74\x70\x73\x3a\x2f\x2f\x73\x63\x72\x69\x70\x74\x2e\x67\x6f\x6f\x67\x6c\x65\x2e\x63\x6f\x6d\x2f\x6d\x61\x63\x72\x6f\x73\x2f\x73\x2f\x41\x4b\x66\x79\x63\x62\x79\x57\x50\x34\x43\x6b\x7a\x48\x55\x66\x6b\x4f\x4d\x37\x39\x4e\x35\x53\x31\x76\x5a\x31\x4e\x79\x79\x39\x51\x52\x37\x63\x78\x72\x39\x30\x62\x63\x75\x67\x70\x2d\x6f\x32\x58\x7a\x49\x38\x74\x42\x46\x6b\x35\x70\x30\x42\x74\x44\x39\x32\x61\x5f\x77\x48\x67\x75\x64\x43\x73\x51\x2f\x65\x78\x65\x63";
     const _V = "0.2";
 
     const _TK = "\x5f\x63\x62\x5f\x74\x6b"; 
     const _EM = "\x5f\x63\x62\x5f\x65\x6d"; 
     const _PW = "\x5f\x63\x62\x5f\x70\x77"; 
-    const _ST = "\x5f\x63\x62\x5f\x73\x74"; 
+    const _ST = "\x5f\x63\x62\x5f\x73\x31"; 
     const _S1 = "\x5f\x63\x62\x5f\x73\x31"; 
     const _S2 = "\x5f\x63\x62\x5f\x73\x32"; 
     const _S3 = "\x5f\x63\x62\x5f\x73\x33"; 
@@ -692,7 +690,6 @@
 
     const views = ['login-view', 'signup-view', 'sub-block-view', 'app-view', 'manage-view', 'stats-view', 'settings-view'];
 
-    // --- DOM ELEMENTS SELECTORS ---
     const timeDisplay = document.getElementById('time-display');
     const startPauseBtn = document.getElementById('start-pause-btn');
     const resetBtn = document.getElementById('reset-btn');
@@ -713,7 +710,6 @@
     const dragHandle = document.getElementById('ai-drag-handle');
     const customModal = document.getElementById('custom-modal');
 
-    // --- STATE VARIABLES ---
     let isAiCollapsed = false;
     let startY = 0;
     let dragOffset = 0;
@@ -738,7 +734,6 @@
     let miniTotalSeconds = 180; 
     let isMiniTimerRunning = false;
 
-    // --- HOIST-FREE GETTERS & UTILITIES ---
     function getMaxPlayers() { 
         return parseInt(localStorage.getItem(_S4) || '5'); 
     }
@@ -763,7 +758,24 @@
         }
     }
 
-    // --- SYSTEM SETTINGS CONFIGURATIONS ---
+    function getSelectedSkills() {
+        const activePills = document.querySelectorAll('.skill-pill.active');
+        const skills = Array.from(activePills).map(pill => pill.dataset.skill);
+        return skills.join(', ');
+    }
+
+    function setSelectedSkills(skillString) {
+        const skills = skillString ? skillString.split(',').map(s => s.trim().toLowerCase()) : [];
+        document.querySelectorAll('.skill-pill').forEach(pill => {
+            const pillSkill = (pill.dataset.skill || '').trim().toLowerCase();
+            if (skills.includes(pillSkill)) {
+                pill.classList.add('active');
+            } else {
+                pill.classList.remove('active');
+            }
+        });
+    }
+
     if (localStorage.getItem(_S1) === 'false') {
         if(autoTimerCheckbox) autoTimerCheckbox.checked = false;
     } else {
@@ -781,7 +793,6 @@
     if (pointsTrackingCheckbox) pointsTrackingCheckbox.checked = localStorage.getItem(_S6) !== 'false';
     updatePointsTrackingVisibility();
 
-    // --- SECURE API REQUESTS ---
     async function apiCall(action, payload = {}) {
         payload.action = action;
         payload.version = _V;
@@ -812,7 +823,6 @@
         return data;
     }
 
-    // --- MODALS & CONFIRMATIONS ---
     function closeModal() { 
         setTimeout(() => { if(customModal) customModal.style.display = 'none'; }, 100); 
     }
@@ -845,7 +855,6 @@
         showCustomModal(title, `<p>${message}</p>`, buttons);
     }
 
-    // --- STOPWATCH/MAIN TIMER ENGINE CONTROLLERS ---
     function resetMiniTimer() {
         clearInterval(miniTimerInterval); 
         isMiniTimerRunning = false; 
@@ -976,7 +985,6 @@
         updateSubstitutionWarnings(); 
     }
 
-    // --- GAME ROTATION WARNINGS & LOGIC CONTROLLERS ---
     function updateRecentSubsUI() {
         const container = document.getElementById('recent-subs-section');
         const list = document.getElementById('recent-subs-list');
@@ -1323,7 +1331,6 @@
         editingPlayerId = null;
     }
 
-    // --- NAVIGATION ROUTING ---
     function showView(viewId) {
         views.forEach(v => {
             const el = document.getElementById(v);
@@ -1367,7 +1374,7 @@
     }
 
     function promptLogoutAll() {
-        showConfirmation('Log Out All Sessions', 'Are you sure you want to log out of all your devices? You will need to log in again.', (c) => {
+        showConfirmation('Log Out All Sessions', 'Are you sure you want to log out of all sessions?', (c) => {
             if (c) {
                 apiCall('logout_all').catch(e => {});
                 clearLocalAuth();
@@ -1376,19 +1383,23 @@
         });
     }
 
-    // --- DYNAMIC SLIDER SUGGESTION CONFIG ENGINE --- [index.html]
     function loadStepConfigSuggestions() {
         const container = document.getElementById('ai-step-suggestions-stacked');
         if (!container) return;
         container.innerHTML = '';
         
-        const shuffled = [...SUGGESTION_POOL].sort(() => 0.5 - Math.random());
-        const selected = shuffled.slice(0, 3);
+        const mandatory = "Subs suggestion";
+        const rest = SUGGESTION_POOL.filter(item => item !== mandatory);
+        
+        const shuffledRest = [...rest].sort(() => 0.5 - Math.random());
+        const selectedRest = shuffledRest.slice(0, 2);
+        
+        const selected = [mandatory, ...selectedRest];
         
         selected.forEach(text => {
             const btn = document.createElement('button');
             btn.className = 'timer-btn secondary';
-            btn.style.cssText = 'width: 100%; min-height: 38px; text-align: center; font-size: 13px; font-weight: 600; border-radius: 9px; margin-bottom: 2px; border: none; outline: none; display: flex; align-items: center; justify-content: center;';
+            btn.style.cssText = 'width: 100%; min-height: 38px; text-align: left; font-size: 13px; font-weight: 600; border-radius: 9px; margin-bottom: 2px; border: none; outline: none; display: flex; align-items: center; justify-content: flex-start; padding: 0 14px;';
             btn.textContent = text;
             btn.onclick = (e) => {
                 e.stopPropagation();
@@ -1403,7 +1414,6 @@
         });
     }
 
-    // --- SIRIWAVE THINKING DESIGN --- [assistant.html]
     function runSiriWave() {
         const container = document.getElementById('siri-container');
         if (!container) return;
@@ -1434,7 +1444,6 @@
         }
     }
 
-    // --- CONVERSATIONAL INPUT & ASYNC PIPELINE SUBMISSION ---
     async function executeQuerySubmission(queryText) {
         if (!queryText) return;
 
@@ -1451,7 +1460,6 @@
         await new Promise(resolve => setTimeout(resolve, 1500)); 
 
         try {
-            // Build live context parameters for the conversational brain
             const onField = [];
             const offField = [];
             document.querySelectorAll('.player-item').forEach(item => {
@@ -1477,7 +1485,6 @@
                 apiCall: apiCall
             };
 
-            // Call Consolidated External Brain Module (GuahhAI)
             const result = await GuahhAI.processQuery(queryText, contextPayload);
 
             stopSiriWave();
@@ -1495,7 +1502,6 @@
 
             document.getElementById('ai-results-followup-input').value = '';
 
-            // Handle App-Level Actions returned dynamically by the AI brain
             const applyBtn = document.getElementById('ai-apply-btn');
             applyBtn.style.display = 'none';
 
@@ -1518,7 +1524,6 @@
                             closeAiPanel();
                         };
                     } else if (action.type === 'UPDATE_POINTS') {
-                        // Apply point adjustment directly to UI roster
                         const allPlayers = Array.from(document.querySelectorAll('.player-item'));
                         const p = allPlayers.find(item => (item.querySelector('.player-name')?.textContent || '').toLowerCase().includes(action.targetName.toLowerCase()));
                         if (p) {
@@ -1553,7 +1558,6 @@
         }
     }
 
-    // --- FLOATING AI PANEL SWIPE AND DRAG HANDLING ---
     function collapseAiPanel() {
         isAiCollapsed = true;
         panel.classList.add('collapsed');
@@ -1614,7 +1618,6 @@
         dragOffset = 0;
     }
 
-    // --- APPLICATION STARTUP SEQUENCE (Declared completely & correctly as standard hoisted function) --- [index.html]
     async function initApp() {
         const overlay = document.getElementById('opening-loading-overlay');
         const actionOverlay = document.getElementById('action-loading-overlay');
@@ -1657,7 +1660,6 @@
         }
     }
 
-    // Bind local methods onto window directly so HTML context can safely execute them [index.html]
     window._dt = function(teamId) {
         showConfirmation('Delete Team', 'Are you sure you want to completely delete this team? This action cannot be undone.', async (c) => {
             if (c) {
@@ -1720,7 +1722,6 @@
         });
     };
 
-    // --- SYNCHRONOUS DOM EVENT LISTENERS BOUND AFTER DECLARATIONS ---
     if(dragHandle) {
         dragHandle.addEventListener('mousedown', dragStart);
         dragHandle.addEventListener('touchstart', dragStart, { passive: false });
@@ -1755,10 +1756,21 @@
     const closeBtn = document.getElementById('ai-close-btn');
     if(closeBtn) closeBtn.onclick = (e) => { e.stopPropagation(); setTimeout(closeAiPanel, 100); };
 
+    const chatInput = document.getElementById('ai-chat-input');
+    if(chatInput) {
+        chatInput.onkeydown = (e) => {
+            if (e.key === 'Enter') {
+                e.stopPropagation();
+                const queryText = chatInput.value.trim();
+                executeQuerySubmission(queryText);
+            }
+        };
+    }
+
     const submitBtn = document.getElementById('ai-submit-btn');
     if(submitBtn) {
         submitBtn.onclick = () => {
-            const queryText = document.getElementById('ai-chat-input').value.trim();
+            const queryText = chatInput ? chatInput.value.trim() : '';
             executeQuerySubmission(queryText);
         };
     }
@@ -1790,11 +1802,11 @@
                 panel.style.display = 'flex';
                 expandAiPanel();
             }
-            loadStepConfigSuggestions(); // Load stacked suggestions randomly [index.html]
+            loadStepConfigSuggestions();
             document.getElementById('ai-step-config').style.display = 'block';
             document.getElementById('ai-step-loading').style.display = 'none';
             document.getElementById('ai-step-results').style.display = 'none';
-            document.getElementById('ai-chat-input').value = '';
+            if (chatInput) chatInput.value = '';
         };
     }
 
@@ -2169,7 +2181,6 @@
     document.addEventListener('visibilitychange', async () => { if (wakeLock !== null && document.visibilityState === 'visible') await requestWakeLock(); });
     requestWakeLock();
 
-    // Run Initialization [index.html]
     initApp();
 })(); 
 </script>
