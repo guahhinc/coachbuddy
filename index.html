@@ -238,7 +238,7 @@
         backdrop-filter: blur(12px) saturate(1.5);
         -webkit-backdrop-filter: blur(12px) saturate(1.5);
         transition: max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1), width 0.4s cubic-bezier(0.25, 1, 0.5, 1), max-width 0.4s cubic-bezier(0.25, 1, 0.5, 1), padding 0.4s cubic-bezier(0.25, 1, 0.5, 1), border-radius 0.4s cubic-bezier(0.25, 1, 0.5, 1), transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2), opacity 0.4s ease, bottom 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-        max-height: 85vh;
+        max-height: 92vh; 
         overflow: hidden;
         touch-action: none;
     }
@@ -259,11 +259,11 @@
     }
 
     #ai-floating-panel.collapsed {
-        max-height: 76px;
-        width: 320px; 
-        max-width: 320px; 
-        padding: 16px 20px;
-        border-radius: 50px; 
+        max-height: 46px; 
+        width: 180px;     
+        max-width: 180px; 
+        padding: 0;       
+        border-radius: 23px; 
         bottom: 38px;
         background: rgba(10, 10, 10, 0.72) !important;
         border: 1px solid rgba(255, 255, 255, 0.1);
@@ -272,10 +272,10 @@
     }
 
     #ai-floating-panel.collapsed::before {
-        height: 130px;
-        bottom: -35px;
+        height: 80px;
+        bottom: -20px;
         opacity: 0.8;
-        filter: blur(20px);
+        filter: blur(15px);
     }
 
     #ai-drag-handle, #ai-expanded-content, #ai-collapsed-content {
@@ -293,7 +293,7 @@
         font-size: 17px; 
         line-height: 1.5;
         color: #E0E0E0;
-        max-height: 380px;
+        max-height: 460px; 
         overflow-y: auto;
         margin-bottom: 12px;
         padding-right: 4px;
@@ -479,9 +479,19 @@
             <div style="background-color: #121212; padding: 12px; border-radius: 13px; margin-bottom: 10px;">
                 <h3 style="margin-top: 0; color: #E0E0E0;">My Teams</h3>
                 <div id="manage-team-list" style="margin-bottom: 10px;"></div>
-                <div style="display: flex; gap: 6px;">
-                    <input type="text" id="new-team-name" placeholder="New Team Name" style="flex-grow: 1; padding: 9px; border-radius: 9px; background: #1A1A1A; color: #E0E0E0; border: 1px solid #222; font-size: 15px;">
-                    <button id="create-team-btn" class="timer-btn primary">Create</button>
+                
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <div style="display: flex; gap: 6px;">
+                        <input type="text" id="new-team-name" placeholder="New Team Name" style="flex: 2; padding: 9px; border-radius: 9px; background: #1A1A1A; color: #E0E0E0; border: 1px solid #222; font-size: 15px;">
+                        <select id="new-team-sport" style="flex: 1.2; padding: 9px; border-radius: 9px; background: #1A1A1A; color: #E0E0E0; border: 1px solid #222; font-size: 15px;">
+                            <option value="" disabled selected>Sport...</option>
+                            <option value="Basketball">Basketball</option>
+                            <option value="Soccer">Soccer</option>
+                            <option value="Footy">Footy</option>
+                            <option value="Netball">Netball</option>
+                        </select>
+                    </div>
+                    <button id="create-team-btn" class="timer-btn primary" style="width: 100%;">Create Team</button>
                 </div>
             </div>
 
@@ -497,7 +507,7 @@
                     <div style="display: flex; gap: 6px; margin-bottom: 6px; flex-wrap: wrap;">
                         <input type="text" id="new-player-name" placeholder="Name" style="flex: 2; min-width: 100px; padding: 9px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 15px;">
                         <input type="text" id="new-player-number" placeholder="No." style="flex: 1; min-width: 50px; padding: 9px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 15px;">
-                        <input type="number" id="new-player-rank" placeholder="Rating (10=Best)" style="flex: 1; min-width: 110px; padding: 9px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 15px;" min="1" max="10">
+                        <input type="number" id="new-player-rank" placeholder="Rate (1/10)" style="flex: 1; min-width: 110px; padding: 9px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 15px;" min="1" max="10">
                     </div>
                     <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px;">
                         <input type="number" id="new-player-height" placeholder="Height (cm)" style="flex: 1; min-width: 80px; padding: 9px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 15px;">
@@ -619,7 +629,7 @@
         </div>
 
         <div id="ai-step-results" style="display: none;">
-            <h3 style="margin-top: 0; margin-bottom: 12px; color: #fff; text-align: center; font-size: 18px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+            <h3 id="ai-results-title" style="margin-top: 0; margin-bottom: 12px; color: #fff; text-align: center; font-size: 14px; font-weight: 600; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 8px;">
                 Response
             </h3>
             <div id="ai-results-text"></div>
@@ -637,7 +647,7 @@
     </div>
 
     <div id="ai-collapsed-content">
-        <span style="font-weight: bold; font-size: 16px; display: flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #FFFFFF;">
+        <span style="font-weight: bold; font-size: 15px; display: flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #FFFFFF;">
             Guahh AI
         </span>
         <div style="display: flex; gap: 8px; align-items: center; flex-shrink: 0;">
@@ -658,13 +668,13 @@
 (() => {
     console.log = console.warn = console.error = console.info = console.debug = function() {};
     
-    const _U = "\x68\x74\x74\x70\x73\x3a\x2f\x2f\x73\x63\x72\x69\x70\x74\x2e\x67\x6f\x6f\x67\x6c\x65\x2e\x63\x6f\x6d\x2f\x6d\x61\x63\x72\x6f\x73\x2f\x73\x2f\x41\x4b\x66\x79\x63\x62\x79\x57\x50\x34\x43\x6b\x7a\x48\x55\x66\x6b\x4f\x4d\x37\x39\x4e\x35\x53\x31\x76\x5a\x31\x4e\x79\x79\x39\x51\x52\x37\x63\x78\x72\x39\x30\x62\x63\x75\x67\x70\x2d\x6f\x32\x58\x7a\x49\x38\x74\x42\x46\x6b\x35\x70\x30\x42\x74\x44\x39\x32\x61\x5f\x77\x48\x67\x75\x64\x43\x73\x51\x2f\x65\x78\x65\x63";
-    const _V = "0.2";
+    const _U = "\x68\x74\x74\x70\x73\x3a\x2f\x2f\x73\x63\x72\x69\x70\x74\x2e\x67\x6f\x6f\x67\x6c\x65\x2e\x63\x6f\x6d\x2f\x6d\x61\x63\x72\x6f\x73\x2f\x73\x2f\x41\x4b\x66\x79\x63\x62\x78\x32\x4a\x78\x46\x4f\x5f\x37\x68\x64\x38\x74\x6a\x62\x43\x47\x36\x6d\x30\x68\x45\x34\x2d\x36\x53\x6d\x38\x6c\x2d\x68\x42\x41\x79\x79\x32\x31\x62\x66\x77\x44\x70\x64\x59\x77\x38\x32\x74\x35\x6d\x59\x66\x37\x72\x55\x71\x70\x53\x6e\x39\x71\x4b\x77\x2d\x30\x76\x51\x71\x67\x2f\x65\x78\x65\x63";
+    const _V = "0.3";
 
     const _TK = "\x5f\x63\x62\x5f\x74\x6b"; 
     const _EM = "\x5f\x63\x62\x5f\x65\x6d"; 
     const _PW = "\x5f\x63\x62\x5f\x70\x77"; 
-    const _ST = "\x5f\x63\x62\x5f\x73\x31"; 
+    const _ST = "\x5f\x63\x62\x5f\x73\x74"; 
     const _S1 = "\x5f\x63\x62\x5f\x73\x31"; 
     const _S2 = "\x5f\x63\x62\x5f\x73\x32"; 
     const _S3 = "\x5f\x63\x62\x5f\x73\x33"; 
@@ -842,17 +852,6 @@
             btnContainer.appendChild(button);
         });
         customModal.style.display = 'flex';
-    }
-
-    function showConfirmation(title, message, callback) {
-        let buttons = [];
-        if (callback) {
-            buttons.push({ text: 'Confirm', className: 'primary', action: () => { callback(true); closeModal(); } });
-            buttons.push({ text: 'Cancel', className: 'secondary', action: () => { callback(false); closeModal(); } });
-        } else {
-            buttons.push({ text: 'OK', className: 'primary', action: closeModal });
-        }
-        showCustomModal(title, `<p>${message}</p>`, buttons);
     }
 
     function resetMiniTimer() {
@@ -1268,7 +1267,10 @@
         appData.teams.forEach(t => {
             list.innerHTML += `
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #121212; margin-bottom: 5px; border-radius: 9px;">
-                <span style="font-weight: 500; font-size: 15px; color: #E0E0E0;">${t.teamName}</span>
+                <div style="display: flex; flex-direction: column;">
+                    <span style="font-weight: 500; font-size: 15px; color: #E0E0E0;">${t.teamName}</span>
+                    <span style="font-size: 11px; color: #B0B0B0; margin-top: 2px;">Sport: ${t.sport || 'N/A'}</span>
+                </div>
                 <button class="timer-btn secondary" style="padding: 5px 10px; font-size: 11px; min-height: 0; background-color: #D32F2F; color: white;" onclick="window._dt('${t.teamId}')">Delete</button>
             </div>`;
         });
@@ -1367,16 +1369,6 @@
         showConfirmation('Log Out', 'Are you sure you want to log out?', (c) => {
             if (c) {
                 apiCall('logout').catch(e => {});
-                clearLocalAuth();
-                showView('login-view');
-            }
-        });
-    }
-
-    function promptLogoutAll() {
-        showConfirmation('Log Out All Sessions', 'Are you sure you want to log out of all sessions?', (c) => {
-            if (c) {
-                apiCall('logout_all').catch(e => {});
                 clearLocalAuth();
                 showView('login-view');
             }
@@ -1489,9 +1481,14 @@
 
             stopSiriWave();
 
-            const formattedText = result.text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            const formattedText = result.text.replace(/\*\*([\s\S]+?)\*\*/g, '<strong>$1</strong>');
             const resText = document.getElementById('ai-results-text');
             resText.innerHTML = formattedText;
+
+            const resTitle = document.getElementById('ai-results-title');
+            if (resTitle) {
+                resTitle.textContent = queryText;
+            }
 
             loadingStep.style.display = 'none';
             resultsStep.style.display = 'block';
@@ -1564,6 +1561,17 @@
         panel.style.transform = 'translateX(-50%)';
     }
 
+    function showConfirmation(title, message, callback) {
+        let buttons = [];
+        if (callback) {
+            buttons.push({ text: 'Confirm', className: 'primary', action: () => { callback(true); closeModal(); } });
+            buttons.push({ text: 'Cancel', className: 'secondary', action: () => { callback(false); closeModal(); } });
+        } else {
+            buttons.push({ text: 'OK', className: 'primary', action: closeModal });
+        }
+        showCustomModal(title, `<p>${message}</p>`, buttons);
+    }
+
     function expandAiPanel() {
         isAiCollapsed = false;
         panel.classList.remove('collapsed');
@@ -1616,6 +1624,16 @@
             else collapseAiPanel();
         }
         dragOffset = 0;
+    }
+
+    function promptLogoutAll() {
+        showConfirmation('Log Out All Sessions', 'Are you sure you want to log out of all your devices? You will need to log in again.', (c) => {
+            if (c) {
+                apiCall('logout_all').catch(e => {});
+                clearLocalAuth();
+                showView('login-view');
+            }
+        });
     }
 
     async function initApp() {
@@ -1802,7 +1820,7 @@
                 panel.style.display = 'flex';
                 expandAiPanel();
             }
-            loadStepConfigSuggestions();
+            loadStepConfigSuggestions(); 
             document.getElementById('ai-step-config').style.display = 'block';
             document.getElementById('ai-step-loading').style.display = 'none';
             document.getElementById('ai-step-results').style.display = 'none';
@@ -1969,13 +1987,23 @@
     if(createTeamBtn) {
         createTeamBtn.onclick = async () => {
             const nameInput = document.getElementById('new-team-name');
+            const sportSelect = document.getElementById('new-team-sport');
             const name = nameInput.value.trim();
-            if (!name) return;
+            const sport = sportSelect ? sportSelect.value : '';
+            
+            if (!name) {
+                showConfirmation('Error', 'Please enter a team name.');
+                return;
+            }
+            if (!sport) {
+                showConfirmation('Error', 'Please select a sport.');
+                return;
+            }
             
             document.getElementById('action-loading-overlay').style.display = 'flex';
             try {
-                const res = await apiCall('create_team', { teamName: name });
-                appData.teams.push({ teamId: res.teamId, teamName: res.teamName });
+                const res = await apiCall('create_team', { teamName: name, sport: sport });
+                appData.teams.push({ teamId: res.teamId, teamName: res.teamName, sport: res.sport });
                 renderManageTeams(); 
                 renderTeams(); 
                 
@@ -1984,6 +2012,7 @@
                     manageTeamSelect.dispatchEvent(new Event('change'));
                 }
                 nameInput.value = '';
+                if(sportSelect) sportSelect.value = '';
             } catch (e) {
                 showConfirmation('Error', 'Failed to create team: ' + e.message);
             } finally {
@@ -2058,8 +2087,8 @@
                 }
                 res.stats.reverse().forEach(game => {
                     let html = `<div style="background: #2D2D2D; padding: 12px; border-radius: 9px; margin-bottom: 10px;">
-                        <div style="font-weight: bold; margin-bottom: 5px; color: #4CAF50; font-size: 14px;">${game.date}</div>
-                        <div style="font-size: 12px; color: #B0B0B0; margin-bottom: 8px;">Duration: <span style="color:white;">${game.duration}</span> | Notes: <span style="color:white;">${game.notes}</span></div>
+                        <div style="font-weight: bold; margin-bottom: 5px; color: #64B5F6; font-size: 14px;">${game.date}</div>
+                        <div style="font-size: 12px; color: #B0B0B0; margin-bottom: 8px;">Duration: <span style="color: #64B5F6; font-weight: bold;">${game.duration}</span> | Notes: <span style="color:white;">${game.notes}</span></div>
                         <table style="width: 100%; font-size: 13px; border-collapse: collapse;">
                         <tr style="border-bottom: 1px solid #444; color: #E0E0E0;">
                             <th style="text-align: left; padding: 6px 4px;">Player</th>
@@ -2071,7 +2100,7 @@
                         html += `<tr style="border-bottom: 3px solid #333;">
                         <td style="padding: 6px 4px;">${p.name}</td>
                         <td style="text-align: center; padding: 6px 4px;">${p.number}</td>
-                        <td style="text-align: center; padding: 6px 4px; font-weight:bold; color: #FF9800;">${p.points || 0}</td>
+                        <td style="text-align: center; padding: 6px 4px; font-weight:bold; color: #FFFFFF;">${p.points || 0}</td>
                         <td style="text-align: right; padding: 6px 4px; color:#64B5F6; font-weight:bold;">${p.time}</td>
                         </tr>`;
                     });

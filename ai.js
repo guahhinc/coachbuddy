@@ -1,11 +1,6 @@
-/**
- * Guahh AI - Standalone Advanced Sports & Coaching Assistant Brain
- * Handles natural language processing, fuzzy entity extraction, context memory, and live app controls.
- */
 window.GuahhAI = (() => {
-    // --- CONVERSATION MEMORY STATE ---
     let aiConversationState = {
-        lastQueryType: null, // 'drill', 'subs', 'tactics', etc.
+        lastQueryType: null,
         lastSubGoal: 'any',
         lastSubSecondary: '',
         lastDrillIndex: -1,
@@ -13,26 +8,43 @@ window.GuahhAI = (() => {
         excludedInPlayers: []
     };
 
-    // --- KNOWLEDGE DATABASES ---
     const coachingDatabase = {
-        drills: [
-            "**Three-Cone Reaction Drill (Speed & Agility)**:\n1. Place three cones in a triangle 5 meters apart.\n2. Player starts in the middle.\n3. Coach calls out a cone number (1, 2, or 3).\n4. Player must sprint to that cone, touch it, and backpedal to the center as fast as possible.",
-            "**Give-and-Go Shooting Drill (Passing & Scoring)**:\n1. Shooter stands at the wing, passer at the top of the key.\n2. Shooter passes to the top, then cuts hard toward the basket.\n3. Passer delivers a quick chest pass back for a running layup or close-range bank shot.",
-            "**Defensive Slide & Closeout (Defensive Positioning)**:\n1. Players line up at the baseline.\n2. On the whistle, they defensive-slide laterally to the free-throw line.\n3. On the second whistle, they sprint out to the perimeter to simulate closing out on an imaginary shooter with hands up.",
-            "**Mikan Drill (Finishing & Layups)**:\n1. Player stands directly under the basket.\n2. Rebound and shoot a layup with the right hand on the right side of the rim.\n3. Catch the ball cleanly out of the net, step, and immediately shoot with the left hand on the left side.\n4. Repeat continuously for 60 seconds to build finishing touch.",
-            "**Around-the-World (Shooting Consistency)**:\n1. Mark 5 spots around the key (corners, wings, top of the key).\n2. Player must make a shot from spot 1 before moving to spot 2.\n3. If they miss, they can stay, or 'risk' a second shot to advance. If they miss the risk shot, they must go back to the start.",
-            "**Three-Man Weave (Full-Court Passing & Speed)**:\n1. Three players line up at the baseline (wings and center).\n2. Center passes to left wing, then sprints behind them.\n3. Left wing passes to right wing, then sprints behind them.\n4. Players run down court passing without letting ball touch floor or dribbling, finishing with a hard layup.",
-            "**Star Passing Drill (Rapid Perimeter Movement)**:\n1. Set up five players around the 3-point arc (corners, wings, top).\n2. Pass ball across arc in a star pattern (e.g. Corner to opposite Wing).\n3. Follow pass and sprint to fill that teammate's vacated spot.\n4. Teammate catches, fires next pass, and relocates. Builds high-tempo perimeter movement.",
-            "**Box-Out Battle (Rebounding Aggression)**:\n1. Set up three defenders around key, and three offensive players outside arc.\n2. Coach fires a shot at rim.\n3. Defensive players must locate their matchups, make physical contact, pivot, and seal them with wide arms to secure rebounding position.",
-            "**Pressure Defensive Deny (Denial & Recovery)**:\n1. Set up matchup on wing (offense vs defender).\n2. Ball starts with passer at top of key.\n3. Wing defender maintains heavy 'deny' stance (hand in passing lane, back to ball).\n4. If wing player cuts, defender must slide and recover to prevent pass reception."
-        ],
+        drills: {
+            basketball: [
+                "**Three-Cone Reaction Drill (Speed & Agility)**:\n1. Place three cones in a triangle 5 meters apart.\n2. Player starts in the middle.\n3. Coach calls out a cone number (1, 2, or 3).\n4. Player must sprint to that cone, touch it, and backpedal to the center as fast as possible.",
+                "**Give-and-Go Shooting Drill (Passing & Scoring)**:\n1. Shooter stands at the wing, passer at the top of the key.\n2. Shooter passes to the top, then cuts hard toward the basket.\n3. Passer delivers a quick chest pass back for a running layup or close-range bank shot.",
+                "**Defensive Slide & Closeout (Defensive Positioning)**:\n1. Players line up at the baseline.\n2. On the whistle, they defensive-slide laterally to the free-throw line.\n3. On the second whistle, they sprint out to the perimeter to simulate closing out on an imaginary shooter with hands up.",
+                "**Mikan Drill (Finishing & Layups)**:\n1. Player stands directly under the basket.\n2. Rebound and shoot a layup with the right hand on the right side of the rim.\n3. Catch the ball cleanly out of the net, step, and immediately shoot with the left hand on the left side.\n4. Repeat continuously for 60 seconds to build finishing touch.",
+                "**Around-the-World (Shooting Consistency)**:\n1. Mark 5 spots around the key (corners, wings, top of the key).\n2. Player must make a shot from spot 1 before moving to spot 2.\n3. If they miss, they can stay, or 'risk' a second shot to advance. If they miss the risk shot, they must go back to the start.",
+                "**Three-Man Weave (Full-Court Passing & Speed)**:\n1. Three players line up at the baseline (wings and center).\n2. Center passes to left wing, then sprints behind them.\n3. Left wing passes to right wing, then sprints behind them.\n4. Players run down court passing without letting ball touch floor or dribbling, finishing with a hard layup.",
+                "**Star Passing Drill (Rapid Perimeter Movement)**:\n1. Set up five players around the 3-point arc (corners, wings, top).\n2. Pass ball across arc in a star pattern (e.g. Corner to opposite Wing).\n3. Follow pass and sprint to fill that teammate's vacated spot.\n4. Teammate catches, fires next pass, and relocates. Builds high-tempo perimeter movement.",
+                "**Box-Out Battle (Rebounding Aggression)**:\n1. Set up three defenders around key, and three offensive players outside arc.\n2. Coach fires a shot at rim.\n3. Defensive players must locate their matchups, make physical contact, pivot, and seal them with wide arms to secure rebounding position.",
+                "**Pressure Defensive Deny (Denial & Recovery)**:\n1. Set up matchup on wing (offense vs defender).\n2. Ball starts with passer at top of key.\n3. Wing defender maintains heavy 'deny' stance (hand in passing lane, back to ball).\n4. If wing player cuts, defender must slide and recover to prevent pass reception."
+            ],
+            soccer: [
+                "**Two-Touch Passing Grid (Control & Vision)**:\n1. Set up 4 cones to make a 10x10 meter square.\n2. Two players inside pass the ball back and forth with exactly two touches (one to receive, one to pass).\n3. Focus on active receiving angles and clean contact.",
+                "**Cone Dribbling Slalom (Close Ball Control)**:\n1. Line up 6 cones spaced 1 meter apart.\n2. Players weave through cones using alternating feet and surfaces (inside, outside of foot).\n3. Accelerate cleanly after passing the final cone.",
+                "**Give-and-Go Shooting (Combination & Finish)**:\n1. Attacker passes to a target player at the edge of the box and cuts past them.\n2. Target player lays off a soft, angled one-touch pass into space.\n3. Attacker strikes on goal cleanly without stopping the ball.",
+                "**Defensive Containment Drill (Jockeying)**:\n1. In a 5x15 meter lane, one attacker dribbles forward.\n2. Defender jockeys backward, keeping low, knees bent, maintaining a 1.5-meter distance.\n3. Defender tackles only when the attacker over-extends or reaches the end line."
+            ],
+            footy: [
+                "**Kick-to-Kick Leading Drill (Accuracy & Timing)**:\n1. Passer stands at center, target player starts 20 meters away.\n2. On whistle, target sprints at a sharp angle to receive the lead.\n3. Passer must hit them directly on the chest with a drop punt.",
+                "**Handpass Weave (Coordination & Speed)**:\n1. Set up a zig-zag line of 4 players.\n2. Run alongside them executing rapid handpasses from left to right.\n3. Maintain clean hands, punching through the ball with a flat fist.",
+                "**Ground Ball Sweep (Contested Pick-up)**:\n1. Players stand in pairs.\n2. Coach rolls the ball hard along the ground between them.\n3. Players compete to get low, shield the ball, and gather it cleanly in stride."
+            ],
+            netball: [
+                "**Chest Pass & Relocate (Spacing & Court Agility)**:\n1. Two players stand 5 meters apart.\n2. Player A chest-passes to Player B, then immediately cuts to a new open space.\n3. Relocate rapidly while maintaining eye contact.",
+                "**Goal Circle Feeding Drill (Shooting Entry)**:\n1. Midcourt feeder stands at the edge of the circle.\n2. Shooter works against a defender inside the circle to break free.\n3. Feeder delivers a quick, high lob or bounce pass for the shot.",
+                "**Defensive Intercept Drill (Anticipation)**:\n1. Feeder passes back and forth with an attacker.\n2. Defender hovers behind, timing their leap to tip or secure the pass cleanly in mid-air."
+            ]
+        },
         tactics: {
-            'defense': "**Zone Defense vs Man-to-Man**:\n- Use **2-3 Zone** if the opposing team has strong inside drivers or if you want to protect your key players from foul trouble. Focus on shifting collectively as the ball swings.\n- Use **Man-to-Man** to pressure ball handlers, deny passing lanes, and match up your quickest defenders against their top scorers directly.",
-            'shooting': "**Shooting Form Tips (B.E.E.F.)**:\n- **B - Balance**: Keep your feet shoulder-width apart, dominant foot slightly forward.\n- **E - Elbow**: Keep your shooting elbow tucked in, forming an 'L' shape directly under the ball.\n- **E - Eyes**: Focus your eyes completely on the back of the rim, not the flight of the ball.\n- **F - Follow-through**: Release cleanly, flicking your wrist like reaching into a high cookie jar.",
-            'rebounding': "**How to Box Out**:\n1. Locate your opponent as soon as the shot is released.\n2. Make initial physical contact with your forearm to check where they are shifting.\n3. Reverse pivot to seal them behind your hips, drop into a low stance, and keep your arms wide to secure rebound space.",
+            'defense': "**Defensive Strategy**:\n- Focus on shifting collectively as the ball swings.\n- Pressure ball handlers, deny passing lanes, and match up your quickest defenders against their top scorers directly.",
+            'shooting': "**Shooting Form Basics**:\n- **Balance**: Keep feet shoulder-width apart.\n- **Elbow**: Keep your elbow tucked in directly under the ball.\n- **Eyes**: Focus entirely on the target, not the ball.\n- **Follow-through**: Release cleanly, flicking your wrist with high trajectory.",
+            'rebounding': "**How to Box Out / Secure Space**:\n1. Locate your opponent as soon as the shot is released.\n2. Make initial contact with forearm to track them.\n3. Reverse pivot to seal them behind your hips, drop into a low stance, and keep your arms wide.",
             'spacing': "**Offensive Spacing Guide**:\n- Maintain at least 12-15 feet between perimeter players at all times.\n- If a teammate drives toward you, vacate that space and relocate to an open passing lane on the arc to stretch the defense out.",
-            'passing': "**Precision Passing Fundamentals**:\n- **Chest Pass**: Hold ball with both hands at chest. Step toward target and push ball out, flipping wrists so thumbs point down.\n- **Bounce Pass**: Aim to bounce ball about 2/3 of the distance to your teammate so it rises to their waist.\n- **Overhead Pass**: Perfect for passing over defenders. Keep hands back, release over head without bringing ball behind neck.",
-            'fastbreak': "**Transition / Fastbreak Strategy**:\n- **Outlet Pass**: Rebounder quickly turns and clears ball with rapid outlet pass to the wings.\n- **Lane Filling**: Center runs middle while guards sprint down left/right wings to stretch defensive coverage and create numbers advantages."
+            'passing': "**Precision Passing Fundamentals**:\n- Step toward your target and push the ball out, flipping your wrists so thumbs point down.\n- Aim to bounce the ball about 2/3 of the distance to your teammate so it rises to their waist.\n- Keep your hands back and release overhead without bringing the ball behind your neck.",
+            'fastbreak': "**Transition / Fastbreak Strategy**:\n- Rebounders must quickly turn and clear the ball with a rapid outlet pass to the wings.\n- Sprints down the wings stretch defensive coverage and create numerical advantages."
         }
     };
 
@@ -51,7 +63,6 @@ window.GuahhAI = (() => {
         'good job': "Appreciate it! I'm always ready to crunch the stats to keep our squad fresh."
     };
 
-    // --- HELPER UTILITIES ---
     function convertSpokenNumbers(text) {
         const units = {
             'zero': 0, 'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5, 'six': 6, 'seven': 7, 'eight': 8, 'nine': 9,
@@ -86,16 +97,11 @@ window.GuahhAI = (() => {
         return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
     }
 
-    /**
-     * Unbreakable Fuzzy Entity Matcher
-     * Safely finds a roster player by name, number, sub-string, or initials.
-     */
     function findPlayer(query, playersArray) {
         if (!query || !playersArray) return null;
         const cleanQuery = query.toLowerCase().replace(/[\s#]/g, '').trim();
         if (!cleanQuery) return null;
 
-        // 1. Exact match on name or number
         let found = playersArray.find(p => {
             const name = (p.name || p.playerName || "").toLowerCase().replace(/\s/g, '');
             const num = String(p.number || p.playerNumber || "").replace(/[\s#]/g, '');
@@ -103,14 +109,12 @@ window.GuahhAI = (() => {
         });
         if (found) return found;
 
-        // 2. Fuzzy contains match
         found = playersArray.find(p => {
             const name = (p.name || p.playerName || "").toLowerCase().replace(/\s/g, '');
             return name.includes(cleanQuery) || cleanQuery.includes(name);
         });
         if (found) return found;
 
-        // 3. Initials match (e.g., "LB" for "LeBron James")
         if (cleanQuery.length >= 2 && cleanQuery.length <= 3) {
             found = playersArray.find(p => {
                 const name = (p.name || p.playerName || "").toLowerCase().trim();
@@ -123,7 +127,6 @@ window.GuahhAI = (() => {
         return null;
     }
 
-    // --- STRATEGIC ROTATION ALGORITHM ---
     function generateRotationStrategy(context, queryText) {
         const { players, onField, offField, recentSubs, notes } = context;
         let notesLower = (notes + " " + queryText).toLowerCase();
@@ -251,13 +254,6 @@ window.GuahhAI = (() => {
         };
     }
 
-    // --- MAIN ENGINE ENTRY POINT ---
-    /**
-     * @param {string} rawQuery - The user's text input.
-     * @param {object} context - App state payload. 
-     *      Expects: { teamId, players[], onField[], offField[], gameTimeSecs, recentSubs[], notes, apiCall }
-     * @returns {object} - { text: string, actions: array }
-     */
     async function processQuery(rawQuery, context) {
         let query = convertSpokenNumbers(rawQuery.trim().toLowerCase());
         if (!query) return { text: "No input detected.", actions: [] };
@@ -265,7 +261,9 @@ window.GuahhAI = (() => {
         const responseObj = { text: "", actions: [] };
         const allCurrentPlayers = [...context.onField, ...context.offField];
 
-        // --- DIRECT INTEGRATED RESPONSES FOR PRESET SUGGESTION BUTTONS ---
+        const activeTeam = (typeof appData !== 'undefined' && appData.teams) ? appData.teams.find(t => t.teamId === context.teamId) : null;
+        const currentSport = activeTeam ? (activeTeam.sport || 'basketball').toLowerCase() : 'basketball';
+
         if (query.includes("what can you do") || query.includes("what you can do") || query.includes("features") || query === "help") {
             return {
                 text: "**Here is what I can do for you on the sidelines:**\n\n" +
@@ -273,27 +271,25 @@ window.GuahhAI = (() => {
                       "2. **Real-time Substitutions**: Say \"sub in [Name]\" or \"swap [Name] with [Name]\".\n" +
                       "3. **In-Game Point Adjustments**: Say \"[Name] scored a layup\" or \"add 3 points to [Name]\".\n" +
                       "4. **Interactive Drills & Play Tactics**: Say \"make me a drill\" or ask about \"zone defense\".\n" +
-                      "5. **Sideline Data Analytics**: Ask \"who's my best player\" or \"who has played the most time overall\".\n" +
-                      "6. **Game Timer Commands**: Ask me to \"pause the game\" or \"start the clock\".",
+                      "5. **Sideline Data Analytics**: Ask \"who's my best player\", \"who is my tallest player\", or \"who's the best defender\".\n" +
+                      "6. **Live Court Overviews**: Ask \"who's on court right now\" or \"who is on the bench\".\n" +
+                      "7. **Game Timer Commands**: Ask me to \"pause the game\" or \"start the clock\".",
                 actions: []
             };
         }
 
-        // 1. Roster Setup: Add Default Players Action
         if (/(?:add|load|populate|import)\s+(?:default\s+)?(players|roster|team)/i.test(query)) {
             responseObj.text = "Opening the confirmation modal to import your default team roster.";
             responseObj.actions.push({ type: 'ADD_DEFAULT_PLAYERS' });
             return responseObj;
         }
 
-        // 2. Game Lifecycle: Finish/Save Game Action
         if (/(?:finish|save|end|complete|stop)\s+(?:the\s+)?game/i.test(query)) {
             responseObj.text = "Opening the save confirmation modal to finish this game.";
             responseObj.actions.push({ type: 'FINISH_GAME' });
             return responseObj;
         }
 
-        // 3. App Controls: Timer Manipulation Action
         const timerMatch = query.match(/(start|resume|pause|stop|reset)\s+(?:the\s+)?(timer|game|clock|match)/i);
         if (timerMatch) {
             const actionType = timerMatch[1].toLowerCase();
@@ -306,43 +302,79 @@ window.GuahhAI = (() => {
             return responseObj;
         }
 
-        // 4. Substitution: Explicit Swap/Replacement Actions
-        let swapMatch = query.match(/(?:sub|bring|put)\s+([a-z0-9\s#]+)\s+(?:on|in)\s+for\s+([a-z0-9\s#]+)/i);
-        if (!swapMatch) {
-            swapMatch = query.match(/replace\s+([a-z0-9\s#]+)\s+with\s+([a-z0-9\s#]+)/i);
-            if (swapMatch) {
-                const temp = swapMatch[1];
-                swapMatch[1] = swapMatch[2];
-                swapMatch[2] = temp;
-            }
-        }
-        if (!swapMatch) {
-            swapMatch = query.match(/swap\s+([a-z0-9\s#]+)\s+(?:with|and)\s+([a-z0-9\s#]+)/i);
+        // --- ROBUST MULTI-PLAYER SWAP PARSER ---
+        let multiSwapMatch = query.match(/(?:sub|bring|put|swap|replace)\s+(.+?)\s+(?:on|in)?\s*for\s+(.+)/i);
+        if (!multiSwapMatch) {
+            multiSwapMatch = query.match(/(?:replace|swap)\s+(.+?)\s+(?:with|and)\s+(.+)/i);
         }
 
-        if (swapMatch) {
-            const rawOnTarget = swapMatch[1].trim();
-            const rawOffTarget = swapMatch[2].trim();
+        if (multiSwapMatch) {
+            let incomingRaw = multiSwapMatch[1].trim();
+            let outgoingRaw = multiSwapMatch[2].trim();
 
-            const onPlayer = findPlayer(rawOnTarget, context.offField);
-            const offPlayer = findPlayer(rawOffTarget, context.onField);
+            const splitNames = (str) => {
+                return str.split(/(?:,|\band\b|&)+/)
+                          .map(s => s.trim())
+                          .filter(s => s.length > 0);
+            };
 
-            if (onPlayer && offPlayer) {
-                responseObj.text = `Substituting **${onPlayer.name}** on for **${offPlayer.name}**.`;
-                responseObj.actions.push({ type: 'SUB_PLAYERS', out: [offPlayer.name], in: [onPlayer.name] });
-            } else {
-                if (!onPlayer && !offPlayer) {
-                    responseObj.text = `I couldn't locate either player inside the active bench or court.`;
-                } else if (!onPlayer) {
-                    responseObj.text = `I found **${offPlayer.name}** on court, but couldn't find an available bench player matching "${rawOnTarget}".`;
+            let incomingTokens = splitNames(incomingRaw);
+            let outgoingTokens = splitNames(outgoingRaw);
+
+            let inPlayersResolved = [];
+            let outPlayersResolved = [];
+            let unresolvedIn = [];
+            let unresolvedOut = [];
+
+            // Resolve incoming bench players (should currently be resting)
+            incomingTokens.forEach(tok => {
+                const p = findPlayer(tok, context.offField);
+                if (p) {
+                    inPlayersResolved.push(p);
                 } else {
-                    responseObj.text = `I found **${onPlayer.name}** on the bench, but couldn't find an active court player matching "${rawOffTarget}".`;
+                    const alreadyOn = findPlayer(tok, context.onField);
+                    if (!alreadyOn) {
+                        unresolvedIn.push(tok);
+                    }
                 }
+            });
+
+            // Resolve outgoing court players (should currently be playing)
+            outgoingTokens.forEach(tok => {
+                const p = findPlayer(tok, context.onField);
+                if (p) {
+                    outPlayersResolved.push(p);
+                } else {
+                    unresolvedOut.push(tok);
+                }
+            });
+
+            if (inPlayersResolved.length > 0 || outPlayersResolved.length > 0) {
+                let textParts = [];
+                let inNames = inPlayersResolved.map(p => p.name);
+                let outNames = outPlayersResolved.map(p => p.name);
+
+                if (inNames.length > 0 && outNames.length > 0) {
+                    textParts.push(`Substituting **${inNames.join(', ')}** ON for **${outNames.join(', ')}** OFF.`);
+                } else if (inNames.length > 0) {
+                    textParts.push(`Substituting **${inNames.join(', ')}** ON.`);
+                } else if (outNames.length > 0) {
+                    textParts.push(`Substituting **${outNames.join(', ')}** OFF.`);
+                }
+
+                if (unresolvedIn.length > 0) {
+                    textParts.push(`Could not find bench players matching: "${unresolvedIn.join(', ')}".`);
+                }
+                if (unresolvedOut.length > 0) {
+                    textParts.push(`Could not find court players matching: "${unresolvedOut.join(', ')}".`);
+                }
+
+                responseObj.text = textParts.join('\n');
+                responseObj.actions.push({ type: 'SUB_PLAYERS', out: outNames, in: inNames });
+                return responseObj;
             }
-            return responseObj;
         }
 
-        // 5. Individual Roster Actions: Solo Substitutions
         const subInMatch = query.match(/(?:sub|bring|put|play)\s+(?:in\s+)?([a-z0-9\s#]+)\s*(?:on)?/i);
         const subOutMatch = query.match(/(?:sub|take|sit|bench|rest|remove)\s+(?:out\s+)?([a-z0-9\s#]+)\s*(?:off)?/i);
 
@@ -372,7 +404,6 @@ window.GuahhAI = (() => {
             return responseObj;
         }
 
-        // 6. Direct App Actions: Adjusting Points (and Natural Basketball Actions)
         let pointsAmount = 0;
         let targetNameRaw = "";
         let naturalActionLabel = "";
@@ -416,7 +447,77 @@ window.GuahhAI = (() => {
             return responseObj;
         }
 
-        // 7. Live Game Performance Queries
+        // --- COURT & BENCH LINEUP DETECTORS ---
+        if (/(who's\s+on\s+(?:the\s+)?court|who\s+is\s+on\s+(?:the\s+)?court|court\s+players|who\s+is\s+playing|who's\s+playing|current\s+lineup|active\s+lineup|who's\s+on\s+field|who\s+is\s+on\s+field)/i.test(query)) {
+            if (context.onField.length === 0) {
+                return { text: "No players are currently assigned on the court.", actions: [] };
+            }
+            const activeLineup = context.onField.map(p => `#${p.number || p.playerNumber || ''} ${p.name}`.trim()).join('\n- ');
+            return { text: `**Active Court Lineup (${context.onField.length} active):**\n\n- ${activeLineup}`, actions: [] };
+        }
+
+        if (/(who's\s+on\s+(?:the\s+)?bench|who\s+is\s+on\s+(?:the\s+)?bench|bench\s+players|who's\s+benched|who\s+is\s+benched|who\s+is\s+resting|who's\s+resting|show\s+(?:the\s+)?bench)/i.test(query)) {
+            if (context.offField.length === 0) {
+                return { text: "No players are currently sitting on the bench.", actions: [] };
+            }
+            const benchLineup = context.offField.map(p => `#${p.number || p.playerNumber || ''} ${p.name}`.trim()).join('\n- ');
+            return { text: `**Bench Lineup (${context.offField.length} resting):**\n\n- ${benchLineup}`, actions: [] };
+        }
+
+        const statsQueryMatch = query.match(/(?:stats?\s+(?:for|of)\s+([a-zA-Z0-9\s#]+))|(([a-zA-Z0-9\s#]+)\s+stats?)/i);
+        if (statsQueryMatch) {
+            const rawTarget = (statsQueryMatch[1] || statsQueryMatch[2] || "").replace(/\bstats?\b/g, "").trim();
+            const playerProfile = findPlayer(rawTarget, context.players);
+            
+            if (playerProfile) {
+                let statSummary = `### Player Profile: ${playerProfile.playerName}\n`;
+                statSummary += `- **Number**: #${playerProfile.playerNumber || 'N/A'}\n`;
+                statSummary += `- **Rating**: ${playerProfile.rank || '5'}/10\n`;
+                statSummary += `- **Height**: ${playerProfile.height ? playerProfile.height + ' cm' : 'N/A'}\n`;
+                statSummary += `- **Registered Skills**: ${playerProfile.skill || 'None configured'}\n\n`;
+
+                if (context.teamId) {
+                    try {
+                        const res = await context.apiCall('get_stats', { teamId: context.teamId });
+                        if (res.stats && res.stats.length > 0) {
+                            let matchesCount = 0;
+                            let totalPoints = 0;
+                            let totalMinutesSecs = 0;
+                            
+                            res.stats.forEach(game => {
+                                const gameRecord = game.players.find(p => p.name.toLowerCase() === playerProfile.playerName.toLowerCase());
+                                if (gameRecord) {
+                                    matchesCount++;
+                                    totalPoints += parseInt(gameRecord.points) || 0;
+                                    totalMinutesSecs += timeToSeconds(gameRecord.time);
+                                }
+                            });
+
+                            if (matchesCount > 0) {
+                                statSummary += `**Server Statistics (across ${matchesCount} recorded matches):**\n`;
+                                statSummary += `- **Total Points Scored**: ${totalPoints}\n`;
+                                statSummary += `- **Avg PPG**: ${(totalPoints / matchesCount).toFixed(1)}\n`;
+                                statSummary += `- **Total Playground Minutes**: ${formatTime(totalMinutesSecs)}`;
+                            } else {
+                                statSummary += `*No matches recorded for this player yet.*`;
+                            }
+                        }
+                    } catch (e) {}
+                }
+                return { text: statSummary, actions: [] };
+            }
+        }
+
+        if (/(tallest|highest\s+height|who\s+is\s+the\s+tallest|tallest\s+player)/i.test(query)) {
+            const validHeightPlayers = context.players.filter(p => p.height && parseInt(p.height) > 0);
+            if (validHeightPlayers.length > 0) {
+                validHeightPlayers.sort((a, b) => parseInt(b.height) - parseInt(a.height));
+                const tallest = validHeightPlayers[0];
+                return { text: `The tallest player registered is **${tallest.playerName}** measuring **${tallest.height} cm** tall.`, actions: [] };
+            }
+            return { text: "No height parameters have been configured on the register player forms yet.", actions: [] };
+        }
+
         if (/(who has|who).*(least|lowest|most|highest).*(time|minutes|playtime|points).*(this game|today|now)/i.test(query)) {
             if (allCurrentPlayers.length === 0) return { text: "There are no players currently in this game.", actions: [] };
 
@@ -434,7 +535,6 @@ window.GuahhAI = (() => {
             return responseObj;
         }
 
-        // 8. Greetings & Local Casual Conversations
         const greetings = ['hello', 'hi', 'hey', 'yo', 'gday', 'g\'day', 'whats up', 'what\'s up'];
         const lowerQuery = query.toLowerCase().trim();
         if (greetings.includes(lowerQuery) || lowerQuery === "hi guahh ai" || lowerQuery === "hello guahh ai") {
@@ -445,16 +545,21 @@ window.GuahhAI = (() => {
             if (query.includes(key)) return { text: casualResponses[key], actions: [] };
         }
 
-        // 9. Historical Server Queries & Advanced Analytics
         const isBestPlayerQuery = /(who is|who's|whos).* (best|mvp|top|star) (player|scorer|on my team|on our team)/i.test(query);
         const isHistoricalQuery = /(who has|who).*(least|lowest|most|highest).*(time|playtime|minutes|points).*(total|overall|all time|history)/i.test(query);
         const isAvgPoints = /(average|avg)\s+(?:points|pts)/i.test(query);
         const isTotalGames = /(total|how many)\s+(?:games|recorded|played)/i.test(query);
-        const isBestDefender = /(best|top|strongest)\s+defender/i.test(query);
-        const isBestShooter = /(best|top|strongest)\s+shooter/i.test(query);
+        
+        const isBestDefender = /(best|top|strongest|reliable|anchor)\s+defender/i.test(query);
+        const isBestShooter = /(best|top|sharpshooter|deadly|shooter|scoring\s+option)/i.test(query);
+        const isBestPasser = /(best|top|quickest|passer|playmaker|maker|creator|handler|hands)/i.test(query);
+        const isBestRebounder = /(best|top|rebounder|board|glass)/i.test(query);
+        const isFastestPlayer = /(fastest|quickest|speedster|speedy)\s+player/i.test(query);
+        const isAllRounder = /(all-rounder|allrounder|good\s+at\s+everything|smartest|highest\s+iq)/i.test(query);
+        
         const isTeamSummary = /(summary|overview|status|progress|stats)/i.test(query);
 
-        if (isBestPlayerQuery || isHistoricalQuery || isAvgPoints || isTotalGames || isBestDefender || isBestShooter || isTeamSummary) {
+        if (isBestPlayerQuery || isHistoricalQuery || isAvgPoints || isTotalGames || isBestDefender || isBestShooter || isBestPasser || isBestRebounder || isFastestPlayer || isAllRounder || isTeamSummary) {
             if (!context.teamId) return { text: "Please select a team in the app first to analyze historical data.", actions: [] };
             
             try {
@@ -478,12 +583,10 @@ window.GuahhAI = (() => {
                 const aggArray = Object.values(aggregate).filter(p => p.games > 0);
                 if (aggArray.length === 0) return { text: "Not enough historical player data available to analyze.", actions: [] };
 
-                // Team Games Played
                 if (isTotalGames) {
                     return { text: `We have played a total of **${res.stats.length}** recorded game(s) on the server.`, actions: [] };
                 }
 
-                // Team Average PPG
                 if (isAvgPoints) {
                     let totalTeamPoints = 0;
                     res.stats.forEach(game => {
@@ -493,9 +596,8 @@ window.GuahhAI = (() => {
                     return { text: `Our team is averaging **${avgPPG} points per game** across ${res.stats.length} recorded match(es).`, actions: [] };
                 }
 
-                // Best Defender
                 if (isBestDefender) {
-                    const defenders = aggArray.filter(p => /(defence|defense|rebounding|block)/i.test(p.skill));
+                    const defenders = aggArray.filter(p => /(defence|defense|rebounding|block|containment|jockeying|intercept|tackle)/i.test(p.skill));
                     if (defenders.length > 0) {
                         defenders.sort((a,b) => b.rank - a.rank);
                         const anchor = defenders[0];
@@ -505,9 +607,8 @@ window.GuahhAI = (() => {
                     return { text: `We don't have registered defense tags, but based on player ratings, **${aggArray[0].name}** is our most reliable defensive matchup.`, actions: [] };
                 }
 
-                // Best Shooter
                 if (isBestShooter) {
-                    const shooters = aggArray.filter(p => /(3 point|accuracy|shot|shooter)/i.test(p.skill));
+                    const shooters = aggArray.filter(p => /(3 point|accuracy|shot|shooter|scoring|feed)/i.test(p.skill));
                     if (shooters.length > 0) {
                         shooters.sort((a,b) => b.totalPoints - a.totalPoints);
                         const topShooter = shooters[0];
@@ -517,7 +618,50 @@ window.GuahhAI = (() => {
                     return { text: `Based on overall historical scoring, **${aggArray[0].name}** is our top shooting option with ${aggArray[0].totalPoints} total points.`, actions: [] };
                 }
 
-                // Team Summary Dashboard
+                if (isBestPasser) {
+                    const passers = aggArray.filter(p => /(pass|passing|playmaker|assist|handles)/i.test(p.skill));
+                    if (passers.length > 0) {
+                        passers.sort((a,b) => b.rank - a.rank);
+                        const topPasser = passers[0];
+                        return { text: `Our top playmaker is **${topPasser.name}** (Rating: ${topPasser.rank}/10), with skill tags: "${topPasser.skill}".`, actions: [] };
+                    }
+                    aggArray.sort((a,b) => b.rank - a.rank);
+                    return { text: `We don't have registered passing tags, but based on baseline player ratings, **${aggArray[0].name}** has the best playmaking vision.`, actions: [] };
+                }
+
+                if (isBestRebounder) {
+                    const rebounders = aggArray.filter(p => /(rebounding|rebound|height|size|jump)/i.test(p.skill));
+                    if (rebounders.length > 0) {
+                        rebounders.sort((a,b) => b.rank - a.rank);
+                        const topRebounder = rebounders[0];
+                        return { text: `Our dominant rebounder on the boards is **${topRebounder.name}**, with skill tags: "${topRebounder.skill}".`, actions: [] };
+                    }
+                    aggArray.sort((a,b) => b.rank - a.rank);
+                    return { text: `Based on ratings, **${aggArray[0].name}** is our strongest presence around the circle/key.`, actions: [] };
+                }
+
+                if (isFastestPlayer) {
+                    const speedsters = aggArray.filter(p => /(speed|quick|fast|pace|sprint)/i.test(p.skill));
+                    if (speedsters.length > 0) {
+                        speedsters.sort((a,b) => b.rank - a.rank);
+                        const sprinter = speedsters[0];
+                        return { text: `The fastest player on court is **${sprinter.name}** with registered speed skills: "${sprinter.skill}".`, actions: [] };
+                    }
+                    aggArray.sort((a,b) => b.rank - a.rank);
+                    return { text: `We don't have registered speed tags, but rating-wise, **${aggArray[0].name}** is our most agile selection on court.`, actions: [] };
+                }
+
+                if (isAllRounder) {
+                    const allRounders = aggArray.filter(p => /(everything|all-round|allrounder|iq|smart)/i.test(p.skill));
+                    if (allRounders.length > 0) {
+                        allRounders.sort((a,b) => b.rank - a.rank);
+                        const jack = allRounders[0];
+                        return { text: `Our ultimate all-rounder is **${jack.name}** (Rating: ${jack.rank}/10), with skill profile: "${jack.skill}".`, actions: [] };
+                    }
+                    aggArray.sort((a,b) => b.rank - a.rank);
+                    return { text: `Based on overall versatile ratings, **${aggArray[0].name}** is our most well-balanced player choice on the court.`, actions: [] };
+                }
+
                 if (isTeamSummary) {
                     let totalTeamPoints = 0;
                     res.stats.forEach(game => {
@@ -529,7 +673,7 @@ window.GuahhAI = (() => {
 
                     let summary = `### Team Progress Summary\n\n`;
                     summary += `- **Games Recorded**: ${res.stats.length} matches\n`;
-                    summary += `- **Offensive Efficiency**: ${avgPPG} PPG (points per game)\n`;
+                    summary += `- **Offensive Efficiency**: ${avgPPG} PPG\n`;
                     summary += `- **Leading Scorer**: ${topScorer.name} (${topScorer.totalPoints} total points)\n`;
                     summary += `- **Active Roster Base**: ${context.players.length} players registered`;
                     return { text: summary, actions: [] };
@@ -570,12 +714,12 @@ window.GuahhAI = (() => {
             }
         }
 
-        // 10. Conversational Memory Follow-ups
         const isFollowUp = /(another|different|next|other|change|something else|new ones|new subs|different subs|another one|different one|gimme another|give me another|different rotation)/i.test(query);
         if (isFollowUp && aiConversationState.lastQueryType) {
             if (aiConversationState.lastQueryType === 'drill') {
-                aiConversationState.lastDrillIndex = (aiConversationState.lastDrillIndex + 1) % coachingDatabase.drills.length;
-                return { text: "Here is another coaching drill:\n\n" + coachingDatabase.drills[aiConversationState.lastDrillIndex], actions: [] };
+                const sportDrills = coachingDatabase.drills[currentSport] || coachingDatabase.drills.basketball;
+                aiConversationState.lastDrillIndex = (aiConversationState.lastDrillIndex + 1) % sportDrills.length;
+                return { text: `Here is another ${currentSport} drill:\n\n` + sportDrills[aiConversationState.lastDrillIndex], actions: [] };
             }
             if (aiConversationState.lastQueryType === 'tactics') {
                 const keys = Object.keys(coachingDatabase.tactics);
@@ -587,11 +731,9 @@ window.GuahhAI = (() => {
             }
         }
 
-        // 11. Rotation & Sub suggestions matrices (Includes shooter/defense keyword routing)
         if (/(sub|substitution|rotation|lineup|bench|roster|field|court|on-field|off-field|fair play|playtime|game state|tactics|situation|who should|bring in|put in|take off|rest|exhausted|foul|win|balanced|shooters|shooter|defense|defence)/i.test(query)) {
             aiConversationState.lastQueryType = 'subs';
             
-            // Premium fallback behavior if the roster isn't set up yet
             if (allCurrentPlayers.length < 2 || context.onField.length === 0) {
                 let fallbackTactics = "";
                 if (/(shoot|scoring|3pt|three|points|shooter)/i.test(query)) {
@@ -617,20 +759,30 @@ window.GuahhAI = (() => {
             return responseObj;
         }
 
-        // 12. Practice Coaching Drills / Tactical guides
         if (/drill|practice|training|exercise/i.test(query)) {
             aiConversationState.lastQueryType = 'drill';
-            const drills = coachingDatabase.drills;
-            if (/shoot|shooting/i.test(query)) { aiConversationState.lastDrillIndex = 1; return { text: drills[1] + "\n\n" + drills[4], actions: [] }; }
-            if (/defense|defending|defensive/i.test(query)) { aiConversationState.lastDrillIndex = 2; return { text: drills[2], actions: [] }; }
-            if (/speed|agility|footwork/i.test(query)) { aiConversationState.lastDrillIndex = 0; return { text: drills[0], actions: [] }; }
-            if (/layup|finish|mikan/i.test(query)) { aiConversationState.lastDrillIndex = 3; return { text: drills[3], actions: [] }; }
-            if (/passing|passing drill|pass/i.test(query)) { aiConversationState.lastDrillIndex = 5; return { text: drills[5] + "\n\n" + drills[6], actions: [] }; }
-            if (/rebound|box out/i.test(query)) { aiConversationState.lastDrillIndex = 7; return { text: drills[7], actions: [] }; }
+            const sportDrills = coachingDatabase.drills[currentSport] || coachingDatabase.drills.basketball;
             
-            const randIdx = Math.floor(Math.random() * drills.length);
+            if (/shoot|shooting|goal|kick|punt/i.test(query)) {
+                const pick = sportDrills.find(d => /(shoot|scoring|goal|kick|feeding)/i.test(d.toLowerCase())) || sportDrills[0];
+                return { text: `**${currentSport.toUpperCase()} Shooting Focus:**\n\n${pick}`, actions: [] };
+            }
+            if (/defense|defending|defensive|jockey|tackle/i.test(query)) {
+                const pick = sportDrills.find(d => /(defen|containment|jockeying|intercept|tackle)/i.test(d.toLowerCase())) || sportDrills[0];
+                return { text: `**${currentSport.toUpperCase()} Defensive Focus:**\n\n${pick}`, actions: [] };
+            }
+            if (/speed|agility|footwork|weave/i.test(query)) {
+                const pick = sportDrills.find(d => /(speed|agility|cone|weave)/i.test(d.toLowerCase())) || sportDrills[0];
+                return { text: `**${currentSport.toUpperCase()} Speed Focus:**\n\n${pick}`, actions: [] };
+            }
+            if (/passing|pass|handpass/i.test(query)) {
+                const pick = sportDrills.find(d => /(pass|handpass|feed|grid)/i.test(d.toLowerCase())) || sportDrills[0];
+                return { text: `**${currentSport.toUpperCase()} Passing Focus:**\n\n${pick}`, actions: [] };
+            }
+            
+            const randIdx = Math.floor(Math.random() * sportDrills.length);
             aiConversationState.lastDrillIndex = randIdx;
-            return { text: "Here is a useful team drill:\n\n" + drills[randIdx], actions: [] };
+            return { text: `Here is a useful **${currentSport}** drill:\n\n` + sportDrills[randIdx], actions: [] };
         }
 
         if (/defense|defending|defensive|zone|man to man/i.test(query)) { aiConversationState.lastQueryType = 'tactics'; return { text: coachingDatabase.tactics.defense, actions: [] }; }
@@ -640,7 +792,6 @@ window.GuahhAI = (() => {
         if (/passing|pass/i.test(query)) { aiConversationState.lastQueryType = 'tactics'; return { text: coachingDatabase.tactics.passing, actions: [] }; }
         if (/fastbreak|transition/i.test(query)) { aiConversationState.lastQueryType = 'tactics'; return { text: coachingDatabase.tactics.fastbreak, actions: [] }; }
 
-        // 13. Knowledge Fallbacks: Weather Lookups
         if (/weather|temperature|temp|forecast/i.test(query)) {
             let city = "Melbourne"; 
             const match = query.match(/weather in ([a-zA-Z\s]+)/);
@@ -656,7 +807,6 @@ window.GuahhAI = (() => {
             } catch (e) {}
         }
 
-        // 14. Last Resort: Wikipedia API Search Lookups
         try {
             const searchRes = await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(query)}&limit=1&origin=*`);
             const searchData = await searchRes.json();
@@ -667,8 +817,7 @@ window.GuahhAI = (() => {
             }
         } catch (e) {}
 
-        // Custom Sideline Fallback
-        return { text: "Sorry I didn't quite get that. Try asking for 'subs', 'basketball drills' or 'who has the most time total'", actions: [] };
+        return { text: "Sorry I didn't quite get that. Try asking for 'subs', 'coaching drills' or 'who has the most points this game'", actions: [] };
     }
 
     return { processQuery };
