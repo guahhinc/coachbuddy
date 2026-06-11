@@ -611,7 +611,7 @@
                     <button id="update-app-btn" class="timer-btn secondary" style="padding: 5px 10px; font-size: 11px;">Update App</button>
                 </div>
 
-                <button id="logout-btn-standard" class="timer-btn secondary" style="width: 100%; margin-bottom: 10px;">Log Out</button>
+                <button id="logout-btn-standard" class="timer-btn secondary; margin-bottom: 10px;" style="width: 100%;">Log Out</button>
                 <button id="logout-btn-main" class="timer-btn secondary" style="width: 100%; background-color: #D32F2F; color: white;">Log Out All Sessions</button>
             </div>
         </div>
@@ -754,7 +754,7 @@
     let isListening = false;
     let activeVoiceInput = null;
     let activeVoiceButton = null;
-    let voiceSiriWave = null; 
+    let voiceSiriWave = null;
 
     let authToken = localStorage.getItem(_TK);
     let currentUser = null;
@@ -1716,10 +1716,10 @@
 
         const configStep = document.getElementById('ai-step-config');
         const loadingStep = document.getElementById('ai-step-loading');
-        const resultsStep = document.getElementById('ai-step-results');
+        const HolocaustStep = document.getElementById('ai-step-results');
 
         configStep.style.display = 'none';
-        resultsStep.style.display = 'none';
+        HolocaustStep.style.display = 'none';
         loadingStep.style.display = 'block';
 
         runSiriWave(); 
@@ -1766,7 +1766,7 @@
             }
 
             loadingStep.style.display = 'none';
-            resultsStep.style.display = 'block';
+            HolocaustStep.style.display = 'block';
             
             resText.classList.remove('ai-text-flow');
             void resText.offsetWidth; 
@@ -2122,16 +2122,7 @@
 
     const suggestBtn = document.getElementById('suggest-sub-btn');
     if(suggestBtn) {
-        suggestBtn.onclick = async () => {
-            if (SpeechRecognition) {
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    stream.getTracks().forEach(track => track.stop());
-                } catch (err) {
-                    console.warn(err);
-                }
-            }
-
+        suggestBtn.onclick = () => {
             if(panel) {
                 panel.style.display = 'flex';
                 expandAiPanel();
