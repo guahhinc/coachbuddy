@@ -5,7 +5,13 @@ window.GuahhAI = (() => {
         lastSubSecondary: '',
         lastDrillIndex: -1,
         excludedOutPlayers: [],
-        excludedInPlayers: []
+        excludedInPlayers: [],
+        lastSuggestionDetails: null, // Remembers rotation calculations
+        
+        // Dynamic game-state monitors
+        tiredPlayers: [],
+        injuredPlayers: [],
+        cardedPlayers: {} // Tracks cards or foul status (e.g. 'yellow', 'red', 'foul trouble')
     };
 
     const coachingDatabase = {
@@ -25,25 +31,42 @@ window.GuahhAI = (() => {
                 "**Two-Touch Passing Grid (Control & Vision)**:\n1. Set up 4 cones to make a 10x10 meter square.\n2. Two players inside pass the ball back and forth with exactly two touches (one to receive, one to pass).\n3. Focus on active receiving angles and clean contact.",
                 "**Cone Dribbling Slalom (Close Ball Control)**:\n1. Line up 6 cones spaced 1 meter apart.\n2. Players weave through cones using alternating feet and surfaces (inside, outside of foot).\n3. Accelerate cleanly after passing the final cone.",
                 "**Give-and-Go Shooting (Combination & Finish)**:\n1. Attacker passes to a target player at the edge of the box and cuts past them.\n2. Target player lays off a soft, angled one-touch pass into space.\n3. Attacker strikes on goal cleanly without stopping the ball.",
-                "**Defensive Containment Drill (Jockeying)**:\n1. In a 5x15 meter lane, one attacker dribbles forward.\n2. Defender jockeys backward, keeping low, knees bent, maintaining a 1.5-meter distance.\n3. Defender tackles only when the attacker over-extends or reaches the end line."
+                "**Defensive Containment Drill (Jockeying)**:\n1. In a 5x15 meter lane, one attacker dribbles forward.\n2. Defender jockeys backward, keeping low, knees bent, maintaining a 1.5-meter distance.\n3. Defender tackles only when the attacker over-extends or reaches the end line.",
+                "**Ring of Fire (Passing & Pressurized Intercepts)**:\n1. Set up a 15-meter circle of 6 players with 1 defender in the middle.\n2. Circle players must pass cleanly to one another.\n3. Middle defender works to close down angles, force turnovers, or intercept. If defender secures ball, they swap out.",
+                "**Overlap Crossing Drill (Flank Runs & Volleys)**:\n1. Midfielder passes to a winger making an overlapping run down the sideline.\n2. Winger controls and crosses into the penalty box on the second touch.\n3. Strikers timing their leads must finish with a clean half-volley or header on goal.",
+                "**3v2 Transition Counter-Attack**:\n1. Three attackers sprint forward against two retreating defenders.\n2. Attackers must use width, pass into space, and pull defenders out of position before taking a strike on goal.\n3. Defenders focus on communication, delaying the attack, and forcing wide shots.",
+                "**Corner Kick Delivery & Defensive Marking**:\n1. Attacker places corner kick targeting the near or far post.\n2. Defenders must match up tightly, keep body contact, and clear the ball high and wide.\n3. Offensive players work on checking their runs to meet the cross cleanly.",
+                "**Possession Keeper Grid (4v4 + 2 Neutral)**:\n1. Set up a 20x20 meter grid.\n2. Two teams of 4 compete for possession, assisted by 2 neutral players who always play for the team on the ball.\n3. Teaches close-quarters vision, spatial awareness, and quick-release passing."
             ],
             footy: [
                 "**Kick-to-Kick Leading Drill (Accuracy & Timing)**:\n1. Passer stands at center, target player starts 20 meters away.\n2. On whistle, target sprints at a sharp angle to receive the lead.\n3. Passer must hit them directly on the chest with a drop punt.",
                 "**Handpass Weave (Coordination & Speed)**:\n1. Set up a zig-zag line of 4 players.\n2. Run alongside them executing rapid handpasses from left to right.\n3. Maintain clean hands, punching through the ball with a flat fist.",
-                "**Ground Ball Sweep (Contested Pick-up)**:\n1. Players stand in pairs.\n2. Coach rolls the ball hard along the ground between them.\n3. Players compete to get low, shield the ball, and gather it cleanly in stride."
+                "**Ground Ball Sweep (Contested Pick-up)**:\n1. Players stand in pairs.\n2. Coach rolls the ball hard along the ground between them.\n3. Players compete to get low, shield the ball, and gather it cleanly in stride.",
+                "**Clearance Extract Drill (Stoppage & Ruck)**:\n1. Ruckman contests a tossed ball in the center circle against a defender.\n2. On the tap, midfielders must read the flight, protect the drop zone, gather cleanly, and execute a quick handball or drop punt clear of the pack.",
+                "**Target Lead & Mark (Tight Defensive Shepherding)**:\n1. Lead kicker starts on the wing. Forward player checks their run and leads hard back into space.\n2. Defender plays tight, trying to spoil the mark.\n3. Kicker must execute a low, spearing drop punt into the forward’s chest.",
+                "**Boundary Set Shots (Angled Pocket Kicking)**:\n1. Place cones along the boundary pocket lines, 20-30 meters out.\n2. Players execute drop punts from difficult angles, accounting for wind drift.\n3. Teaches focus, trajectory control, and reliable scoring mechanics.",
+                "**Handpass Grid Under Pressure**:\n1. Define a 10x10 meter grid with 4 attackers and 2 defenders.\n2. Attackers must handpass continuously while moving.\n3. Defenders close space and apply physical tackles. Focuses on rapid vision and protecting the ball.",
+                "**Spoil & Recover (Defensive Backs)**:\n1. Midfielder kicks a high ball into the 50-meter arc.\n2. Defender waits behind the forward, leaps at the peak, and fists/spoils the ball away.\n3. Surrounding players sprint to recover the loose ground ball.",
+                "**Oval Switch & Transition**:\n1. Backline gathers a loose ball on the flank.\n2. Immediately kick across the face of the goal to the opposite pocket to switch play.\n3. Midfielders run hard to provide leads and transition the ball rapidly down the oval."
             ],
             netball: [
                 "**Chest Pass & Relocate (Spacing & Court Agility)**:\n1. Two players stand 5 meters apart.\n2. Player A chest-passes to Player B, then immediately cuts to a new open space.\n3. Relocate rapidly while maintaining eye contact.",
                 "**Goal Circle Feeding Drill (Shooting Entry)**:\n1. Midcourt feeder stands at the edge of the circle.\n2. Shooter works against a defender inside the circle to break free.\n3. Feeder delivers a quick, high lob or bounce pass for the shot.",
-                "**Defensive Intercept Drill (Anticipation)**:\n1. Feeder passes back and forth with an attacker.\n2. Defender hovers behind, timing their leap to tip or secure the pass cleanly in mid-air."
+                "**Defensive Intercept Drill (Anticipation)**:\n1. Feeder passes back and forth with an attacker.\n2. Defender hovers behind, timing their leap to tip or secure the pass cleanly in mid-air.",
+                "**Goal Circle Rotation (Dodging & Clearance)**:\n1. Goal Shooter (GS) and Goal Attack (GA) work inside the shooting circle.\n2. They must continuously rotate, swapping positions and executing screen-and-rolls to pull defenders out of position.\n3. Create open feeding space for the feeder on the ring.",
+                "**Defensive Rebounding & Box Out**:\n1. Shooter takes a shot from the edge of the circle.\n2. Goal Defence (GD) and Goal Keeper (GK) must immediately block out attackers using wide stances.\n3. Track the ball off the ring and leap aggressively to pull down the rebound.",
+                "**Center Pass Tactical Launch**:\n1. Center (C) prepares to pass from the center circle.\n2. Wing Attack (WA) and Goal Attack (GA) execute crossing leads across the transverse line.\n3. C fires a sharp shoulder pass to WA, who immediately pivots to feed GA entering the circle.",
+                "**Shoulder Pass Drive & Intercept**:\n1. Set up two lines of players 10 meters apart.\n2. Execute hard, long shoulder passes down the court.\n3. Defender in the center lane reads the passer's eyes and leaps to secure clean intercepts.",
+                "**Fast Perimeter Footwork & Jockeying**:\n1. Defender matches up on an attacker on the circle edge.\n2. Defender must use rapid lateral footwork, keeping hands behind their back, to contain the attacker's drive.\n3. Force the attacker wide and away from the feeding line.",
+                "**Spatial Boundary Dodge & Catch**:\n1. Attacker drives hard toward the sideline.\n2. Feeder delivers the ball right at the edge of the court.\n3. Attacker must leap, catch, secure balance, and land safely inside the line to avoid stepping out."
             ]
         },
         tactics: {
-            'defense': "**Defensive Strategy**:\n- Focus on shifting collectively as the ball swings.\n- Pressure ball handlers, deny passing lanes, and match up your quickest defenders against their top scorers directly.",
-            'shooting': "**Shooting Form Basics**:\n- **Balance**: Keep feet shoulder-width apart.\n- **Elbow**: Keep your elbow tucked in directly under the ball.\n- **Eyes**: Focus entirely on the target, not the ball.\n- **Follow-through**: Release cleanly, flicking your wrist with high trajectory.",
-            'rebounding': "**How to Box Out / Secure Space**:\n1. Locate your opponent as soon as the shot is released.\n2. Make initial contact with forearm to track them.\n3. Reverse pivot to seal them behind your hips, drop into a low stance, and keep your arms wide.",
-            'spacing': "**Offensive Spacing Guide**:\n- Maintain at least 12-15 feet between perimeter players at all times.\n- If a teammate drives toward you, vacate that space and relocate to an open passing lane on the arc to stretch the defense out.",
-            'passing': "**Precision Passing Fundamentals**:\n- Step toward your target and push the ball out, flipping your wrists so thumbs point down.\n- Aim to bounce the ball about 2/3 of the distance to your teammate so it rises to their waist.\n- Keep your hands back and release overhead without bringing the ball behind your neck.",
+            'defense': "**Defensive Strategy**:\n- Focus on shifting collectively as the ball/play swings.\n- Pressure ball handlers, deny passing lanes, and match up your quickest defenders against their top scorers directly.",
+            'shooting': "**Shooting Form Basics**:\n- **Balance**: Keep feet shoulder-width apart.\n- **Elbow/Arms**: Keep your release aligned directly under the ball.\n- **Eyes**: Focus entirely on the target, not the ball.\n- **Follow-through**: Release cleanly, flicking your wrist with high trajectory.",
+            'rebounding': "**How to Box Out / Secure Space**:\n1. Locate your opponent as soon as the shot/ball is released.\n2. Make initial contact with forearm to track them.\n3. Reverse pivot to seal them behind your hips, drop into a low stance, and keep your arms wide.",
+            'spacing': "**Offensive Spacing Guide**:\n- Maintain healthy passing lanes between perimeter players at all times.\n- If a teammate drives toward you, vacate that space and relocate to an open passing lane to stretch the defense out.",
+            'passing': "**Precision Passing Fundamentals**:\n- Step toward your target and push the ball out, releasing cleanly with thumbs down.\n- Aim passes to rise to your teammate's waist.\n- Keep your release balanced and track movement patterns across lanes.",
             'fastbreak': "**Transition / Fastbreak Strategy**:\n- Rebounders must quickly turn and clear the ball with a rapid outlet pass to the wings.\n- Sprints down the wings stretch defensive coverage and create numerical advantages."
         }
     };
@@ -60,7 +83,13 @@ window.GuahhAI = (() => {
         'your name': "My name is Guahh AI. I'm here to handle the numbers, strategy, and drills while you focus on the court.",
         'thank you': "You're welcome! Let me know if you need any other play strategies, drills, or roster adjustments.",
         'thanks': "No worries! Let's get these players rotated and win this game.",
-        'good job': "Appreciate it! I'm always ready to crunch the stats to keep our squad fresh."
+        'good job': "Appreciate it! I'm always ready to crunch the stats to keep our squad fresh.",
+        'weather forecast': "Ask me 'weather in [CityName]' to fetch live local temperatures!",
+        'who is the best coach': "All our coaches are doing a fantastic job running their teams!",
+        'how to be a better coach': "Stay organized, balance player minutes to avoid fatigue, and keep drills exciting and high-intensity!",
+        'love you': "Thank you! I am fully committed to helping your team achieve maximum success on the court.",
+        'hello there': "General Kenobi! Or rather, hello coach! How can I assist you on the sidelines today?",
+        'help with drills': "I have a library of basketball, soccer, netball, and Australian footy drills. Ask me 'recommend a defense drill' or 'give me a shooting drill'."
     };
 
     function convertSpokenNumbers(text) {
@@ -127,9 +156,34 @@ window.GuahhAI = (() => {
         return null;
     }
 
-    function generateRotationStrategy(context, queryText) {
-        const { players, onField, offField, recentSubs, notes } = context;
-        let notesLower = (notes + " " + queryText).toLowerCase();
+    // --- SPORT-SPECIFIC VOCABULARY NORMALIZATION TRANSLATOR ---
+    function normalizeSportInputs(q, sport) {
+        q = q.replace(/\bdefence\b/g, 'defense');
+        
+        if (sport === 'soccer') {
+            q = q.replace(/\bpitch\b/g, 'court');
+            q = q.replace(/\bfield\b/g, 'court');
+            q = q.replace(/\bsubstitute\b/g, 'sub');
+        } else if (sport === 'footy') {
+            q = q.replace(/\bground\b/g, 'court');
+            q = q.replace(/\boval\b/g, 'court');
+            q = q.replace(/\binterchange\b/g, 'bench');
+            q = q.replace(/\bsubstitute\b/g, 'sub');
+        } else if (sport === 'netball') {
+            q = q.replace(/\bthirds\b/g, 'court');
+            q = q.replace(/\bsubstitute\b/g, 'sub');
+        }
+        return q;
+    }
+
+    function generateRotationStrategy(context, queryText, onField, offField, players, recentSubs) {
+        // DEFENSIVE FAIL-SAFES: Guarantee arguments never evaluate to undefined even if omitted in caller
+        onField = onField || context.onField || [];
+        offField = offField || context.offField || [];
+        players = players || context.players || [];
+        recentSubs = recentSubs || context.recentSubs || [];
+
+        let notesLower = ((context.notes || "") + " " + queryText).toLowerCase();
         
         let goal = 'any';
         if (/(win|best|lose|behind|deficit|need to win)/i.test(notesLower)) goal = 'win';
@@ -179,7 +233,11 @@ window.GuahhAI = (() => {
             return score;
         };
 
-        const isUnavailable = (name) => /(injure|hurt|sick|late|absent|unwell|sore|bench)/.test(notesLower.substring(Math.max(0, notesLower.indexOf(name.toLowerCase()) - 40), notesLower.indexOf(name.toLowerCase()) + 60));
+        const isUnavailable = (name) => {
+            if (aiConversationState.injuredPlayers.includes(name)) return true;
+            if (aiConversationState.cardedPlayers[name] === 'red') return true;
+            return /(injure|hurt|sick|late|absent|unwell|sore|bench)/.test(notesLower.substring(Math.max(0, notesLower.indexOf(name.toLowerCase()) - 40), notesLower.indexOf(name.toLowerCase()) + 60));
+        };
 
         let unavailablePlayers = [];
         [...onField, ...offField].forEach(p => { if (isUnavailable(p.name)) unavailablePlayers.push(p.name); });
@@ -202,7 +260,7 @@ window.GuahhAI = (() => {
 
         candidatesIn = candidatesIn.filter(p => !unavailablePlayers.includes(p.name));
         candidatesOut.forEach(p => {
-            if (unavailablePlayers.includes(p.name)) { suggestedOut.push(p); reasonsList.push(`**Emergency Rest:** ${p.name} subbed off per game logs.`); }
+            if (unavailablePlayers.includes(p.name)) { suggestedOut.push(p); reasonsList.push(`**Emergency Rest:** ${p.name} subbed off due to injury or card violation.`); }
         });
 
         candidatesOut = candidatesOut.filter(p => !suggestedOut.some(outP => outP.name === p.name));
@@ -210,8 +268,15 @@ window.GuahhAI = (() => {
         if (candidatesOut.length === 0) candidatesOut = onField.filter(p => !suggestedOut.some(outP => outP.name === p.name));
 
         candidatesOut.sort((a, b) => {
-            if (isWin) return (getRank(a.name) + a.points * 0.5) - (getRank(b.name) + b.points * 0.5); 
-            return b.time - a.time;
+            let scoreA = a.time;
+            let scoreB = b.time;
+            if (aiConversationState.tiredPlayers.includes(a.name)) scoreA += 10000;
+            if (aiConversationState.tiredPlayers.includes(b.name)) scoreB += 10000;
+            if (aiConversationState.cardedPlayers[a.name] === 'yellow' || aiConversationState.cardedPlayers[a.name] === 'foul trouble') scoreA += 5000;
+            if (aiConversationState.cardedPlayers[b.name] === 'yellow' || aiConversationState.cardedPlayers[b.name] === 'foul trouble') scoreB += 5000;
+            
+            if (isWin) return (getRank(a.name) + a.points * 0.5 - scoreA * 0.01) - (getRank(b.name) + b.points * 0.5 - scoreB * 0.01); 
+            return scoreB - scoreA;
         });
 
         candidatesIn.sort((a, b) => {
@@ -224,7 +289,13 @@ window.GuahhAI = (() => {
             return a.time - b.time;
         });
 
-        let numToSub = Math.min(2, candidatesOut.length + suggestedOut.length, candidatesIn.length + suggestedIn.length);
+        const avgCourtTime = onField.reduce((acc, p) => acc + p.time, 0) / (onField.length || 1);
+        let tiredPlayers = candidatesOut.filter(p => p.time >= avgCourtTime || aiConversationState.tiredPlayers.includes(p.name));
+        if (tiredPlayers.length === 0) tiredPlayers = candidatesOut;
+
+        let numToSub = Math.min(tiredPlayers.length, candidatesIn.length);
+        if (numToSub < 1 && candidatesOut.length > 0 && candidatesIn.length > 0) numToSub = 1;
+
         while (suggestedOut.length < numToSub && candidatesOut.length > 0) suggestedOut.push(candidatesOut.shift());
         while (suggestedIn.length < suggestedOut.length && candidatesIn.length > 0) suggestedIn.push(candidatesIn.shift());
 
@@ -233,6 +304,12 @@ window.GuahhAI = (() => {
         }
 
         const outNames = suggestedOut.map(p => p.name), inNames = suggestedIn.map(p => p.name);
+        
+        outNames.forEach(n => {
+            if (aiConversationState.tiredPlayers.includes(n)) reasonsList.push(`**Fatigue Management:** Resting ${n} who is reported as tired.`);
+            if (aiConversationState.cardedPlayers[n] === 'yellow' || aiConversationState.cardedPlayers[n] === 'foul trouble') reasonsList.push(`**Foul Protection:** Resting ${n} to protect them from further card violations.`);
+        });
+
         if (isWin) reasonsList.push("**Win Optimization:** Keeping high-value rating scorers on court.");
         else if (isEven) reasonsList.push("**Fair Play Optimization:** Rotating rest periods for balanced minutes.");
         else reasonsList.push("**Balanced Rotation:** Cycle completed to avoid over-exertion.");
@@ -241,6 +318,12 @@ window.GuahhAI = (() => {
         aiConversationState.excludedInPlayers = [...inNames];
         aiConversationState.lastSubGoal = goal;
         aiConversationState.lastSubSecondary = secondaryGoal;
+
+        aiConversationState.lastSuggestionDetails = {
+            out: outNames,
+            in: inNames,
+            reasons: reasonsList
+        };
 
         const futureOnField = [...onField.map(p => p.name).filter(n => !outNames.includes(n)), ...inNames];
         
@@ -255,16 +338,391 @@ window.GuahhAI = (() => {
     }
 
     async function processQuery(rawQuery, context) {
+        let activeTeam = null;
+        if (typeof appData !== 'undefined' && appData.teams) {
+            activeTeam = appData.teams.find(t => t.teamId === context.teamId);
+        } else if (typeof clubData !== 'undefined' && clubData.teams) {
+            activeTeam = clubData.teams.find(t => t.teamId === context.teamId);
+        }
+        const currentSport = activeTeam ? (activeTeam.sport || 'basketball').toLowerCase() : 'basketball';
+
         let query = convertSpokenNumbers(rawQuery.trim().toLowerCase());
+        query = normalizeSportInputs(query, currentSport);
+
         if (!query) return { text: "No input detected.", actions: [] };
 
         const responseObj = { text: "", actions: [] };
-        const allCurrentPlayers = [...context.onField, ...context.offField];
+        
+        // Defensively fall back to empty arrays to prevent spread errors across environments
+        const onField = context.onField || [];
+        const offField = context.offField || [];
+        const players = context.players || [];
+        const recentSubs = context.recentSubs || [];
+        const allCurrentPlayers = [...onField, ...offField];
 
-        const activeTeam = (typeof appData !== 'undefined' && appData.teams) ? appData.teams.find(t => t.teamId === context.teamId) : null;
-        const currentSport = activeTeam ? (activeTeam.sport || 'basketball').toLowerCase() : 'basketball';
+        // ==========================================
+        // 🏢 GATED INTELLIGENCE: CLUB & CROSS-TEAM ANALYSIS INTENTS
+        // ==========================================
+        const isBestAcrossTeams = /(best|top|mvp|star|highest\s+scoring)\s+player\s+across\s+(all|my|the)\s+teams/i.test(query) || /(best|top|star)\s+player\s+in\s+the\s+club/i.test(query);
+        const isMostPlaytimeAcrossTeams = /(most\s+playtime|most\s+minutes|highest\s+playtime|active\s+player)\s+across\s+(all|my|the)\s+teams/i.test(query) || /(most\s+active|most\s+playtime)\s+player\s+in\s+the\s+club/i.test(query);
+        const isHighestScoringTeam = /(highest\s+scoring|best\s+scoring|most\s+points)\s+team/i.test(query);
+        const isClubAverages = /(average\s+points|avg\s+ppg|club\s+average|overall\s+average)\s+across\s+the\s+club/i.test(query);
+
+        if (isBestAcrossTeams || isMostPlaytimeAcrossTeams || isHighestScoringTeam || isClubAverages) {
+            // Compile all historical games across all club teams
+            let clubGameRecords = [];
+
+            // Stage 1: Load directly available local games
+            if (context.recentGames && Array.isArray(context.recentGames)) {
+                context.recentGames.forEach(g => {
+                    clubGameRecords.push({
+                        teamName: g.teamName,
+                        date: g.date || 'Unknown Date',
+                        notes: g.notes || '',
+                        players: g.players || []
+                    });
+                });
+            }
+
+            // Stage 2: Attempt dynamic fetch for stats of every registered team
+            if (context.teams && Array.isArray(context.teams) && typeof context.apiCall === 'function') {
+                try {
+                    const teamFetches = context.teams.map(t => 
+                        context.apiCall('get_stats', { teamId: t.teamId })
+                            .then(res => {
+                                if (res && Array.isArray(res.stats)) {
+                                    res.stats.forEach(g => {
+                                        // Ensure entry uniqueness
+                                        const exists = clubGameRecords.some(r => r.teamName === t.teamName && r.date === g.date && r.notes === g.notes);
+                                        if (!exists) {
+                                            clubGameRecords.push({
+                                                teamName: t.teamName,
+                                                date: g.date || 'Unknown Date',
+                                                notes: g.notes || '',
+                                                players: g.players || []
+                                            });
+                                        }
+                                    });
+                                }
+                            })
+                            .catch(() => {})
+                    );
+                    await Promise.all(teamFetches);
+                } catch (e) {
+                    console.warn("Could not retrieve deep remote team stats, relying on local subset.", e);
+                }
+            }
+
+            // Map and calculate player performance parameters across teams
+            let playerStats = {};
+            clubGameRecords.forEach(game => {
+                const tName = game.teamName;
+                game.players.forEach(p => {
+                    const uniqueKey = `${p.name}|${tName}`;
+                    if (!playerStats[uniqueKey]) {
+                        playerStats[uniqueKey] = {
+                            name: p.name,
+                            teamName: tName,
+                            totalPoints: 0,
+                            totalTimeSecs: 0,
+                            gamesCount: 0
+                        };
+                    }
+                    playerStats[uniqueKey].totalPoints += parseInt(p.points) || 0;
+                    playerStats[uniqueKey].totalTimeSecs += timeToSeconds(p.time);
+                    playerStats[uniqueKey].gamesCount++;
+                });
+            });
+
+            const statsArray = Object.values(playerStats);
+
+            if (isBestAcrossTeams) {
+                if (statsArray.length === 0) {
+                    return { text: "No statistical logs have been uploaded across any of your teams yet.", actions: [] };
+                }
+                
+                // Sort by total scoring
+                statsArray.sort((a, b) => b.totalPoints - a.totalPoints);
+                const topTotalScorer = statsArray[0];
+
+                // Sort by Points-Per-Game (PPG)
+                const statsWithPPG = statsArray.map(p => ({
+                    ...p,
+                    ppg: p.gamesCount > 0 ? (p.totalPoints / p.gamesCount) : 0
+                })).sort((a, b) => b.ppg - a.ppg);
+                const topPPGScorer = statsWithPPG[0];
+
+                let response = `### 👑 Leaderboards Across All Teams:\n\n`;
+                response += `🏆 **Overall Leading Scorer:**\n`;
+                response += `- **Player:** **${topTotalScorer.name}**\n`;
+                response += `- **Team:** ${topTotalScorer.teamName}\n`;
+                response += `- **Total Points Scored:** ${topTotalScorer.totalPoints} points over ${topTotalScorer.gamesCount} game(s)\n`;
+                response += `- **Total Playing Time:** ${formatTime(topTotalScorer.totalTimeSecs)}\n\n`;
+
+                if (topPPGScorer.name !== topTotalScorer.name) {
+                    response += `⭐ **Highest Average Scorer (PPG):**\n`;
+                    response += `- **Player:** **${topPPGScorer.name}**\n`;
+                    response += `- **Team:** ${topPPGScorer.teamName}\n`;
+                    response += `- **Avg PPG:** ${topPPGScorer.ppg.toFixed(1)} points per game (${topPPGScorer.totalPoints} points in ${topPPGScorer.gamesCount} game(s))\n\n`;
+                }
+                return { text: response, actions: [] };
+            }
+
+            if (isMostPlaytimeAcrossTeams) {
+                if (statsArray.length === 0) {
+                    return { text: "No court minutes have been synced across any teams yet.", actions: [] };
+                }
+                statsArray.sort((a, b) => b.totalTimeSecs - a.totalTimeSecs);
+                const topPlaytime = statsArray[0];
+
+                let response = `### ⏱️ Most Active Players (Playtime) Across All Teams:\n\n`;
+                response += `- **Player Name:** **${topPlaytime.name}**\n`;
+                response += `- **Team Roster:** ${topPlaytime.teamName}\n`;
+                response += `- **Total Court Time:** **${formatTime(topPlaytime.totalTimeSecs)}**\n`;
+                response += `- **Games Logged:** ${topPlaytime.gamesCount} game(s) played\n`;
+                response += `- **Avg Time Per Game:** ${formatTime(Math.round(topPlaytime.totalTimeSecs / topPlaytime.gamesCount))}\n\n`;
+                response += `*Protect their recovery cycle to keep them at peak performance!*`;
+                return { text: response, actions: [] };
+            }
+
+            if (isHighestScoringTeam) {
+                let teamPoints = {};
+                clubGameRecords.forEach(game => {
+                    const tName = game.teamName;
+                    if (!teamPoints[tName]) {
+                        teamPoints[tName] = { teamName: tName, totalPoints: 0, gamesCount: 0 };
+                    }
+                    game.players.forEach(p => {
+                        teamPoints[tName].totalPoints += parseInt(p.points) || 0;
+                    });
+                    teamPoints[tName].gamesCount++;
+                });
+
+                const teamsArray = Object.values(teamPoints);
+                if (teamsArray.length === 0) {
+                    return { text: "No team-level points data has been recorded yet.", actions: [] };
+                }
+                const teamPPGArray = teamsArray.map(t => ({
+                    ...t,
+                    ppg: t.gamesCount > 0 ? (t.totalPoints / t.gamesCount) : 0
+                })).sort((a, b) => b.ppg - a.ppg);
+
+                let response = `### 🏀 Team Scoring Performance Rankings:\n\n`;
+                teamPPGArray.forEach((t, i) => {
+                    const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : "▪️";
+                    response += `${medal} **${t.teamName}**\n`;
+                    response += `   - **Average Points Per Game:** ${t.ppg.toFixed(1)} PPG\n`;
+                    response += `   - **Total Points Scored:** ${t.totalPoints} points across ${t.gamesCount} match(es)\n\n`;
+                });
+                return { text: response, actions: [] };
+            }
+
+            if (isClubAverages) {
+                let totalClubPoints = 0;
+                let totalUniquePlayers = new Set();
+                
+                clubGameRecords.forEach(g => {
+                    g.players.forEach(p => {
+                        totalClubPoints += parseInt(p.points) || 0;
+                        totalUniquePlayers.add(p.name);
+                    });
+                });
+
+                const avgGameScore = clubGameRecords.length > 0 ? (totalClubPoints / clubGameRecords.length).toFixed(1) : 0;
+
+                let response = `### 📊 Club Analytics Overview:\n\n`;
+                response += `- **Total Games Logged**: ${clubGameRecords.length} match(es)\n`;
+                response += `- **Combined points scored**: ${totalClubPoints} points\n`;
+                response += `- **Club Average Game Score**: ${avgGameScore} points/game\n`;
+                response += `- **Active Rostered Base**: ${totalUniquePlayers.size} unique players synced`;
+                return { text: response, actions: [] };
+            }
+        }
+
+        // --- CLUB ACCOUNT ADMIN INTENTS ---
+        if (context.role === "CLUB_ACCOUNT_ADMIN") {
+            const isClubSummary = /(summary|overview|status|progress|stats|club)/i.test(query);
+            const isCoachesList = /(coach|coaches|members|staff)/i.test(query);
+            const isPendingRequests = /(pending|request|join request|applications)/i.test(query);
+            const isRecentGames = /(recent game|latest game|match|last play)/i.test(query);
+            
+            if (isClubSummary) {
+                let summary = `### Club Summary: ${context.clubName || "Your Club"}\n\n`;
+                summary += `- **Total Verified Coaches**: ${context.coaches ? context.coaches.length : 0}\n`;
+                summary += `- **Active Managed Teams**: ${context.teams ? context.teams.length : 0}\n`;
+                summary += `- **Pending Join Requests**: ${context.pendingRequests ? context.pendingRequests.length : 0}\n`;
+                if (context.recentGames && context.recentGames.length > 0) {
+                    summary += `- **Games Recorded**: ${context.recentGames.length} recent match(es) loaded.\n`;
+                }
+                return { text: summary, actions: [] };
+            }
+            if (isCoachesList) {
+                if (!context.coaches || context.coaches.length === 0) {
+                    return { text: "There are currently no active coaches registered in your club.", actions: [] };
+                }
+                let text = `### Coaches in ${context.clubName || "your club"}:\n\n`;
+                context.coaches.forEach(c => {
+                    const roleBadge = c.role === 'ADMIN' ? '👑 Admin' : 'Coach';
+                    text += `- **${c.email}** (${roleBadge})\n`;
+                });
+                return { text: text, actions: [] };
+            }
+            if (isPendingRequests) {
+                if (!context.pendingRequests || context.pendingRequests.length === 0) {
+                    return { text: "You have no pending coach join requests at this time.", actions: [] };
+                }
+                let text = `### Pending Join Requests (${context.pendingRequests.length}):\n\n`;
+                context.pendingRequests.forEach(r => {
+                    text += `- **${r.coachEmail}** (Requested: ${new Date(r.requestedAt).toLocaleDateString()})\n`;
+                });
+                return { text: text, actions: [] };
+            }
+            if (isRecentGames) {
+                if (!context.recentGames || context.recentGames.length === 0) {
+                    return { text: "No recent games recorded by any teams in this club yet.", actions: [] };
+                }
+                let text = `### Recent Games in ${context.clubName || "your club"}:\n\n`;
+                context.recentGames.forEach(g => {
+                    text += `**${g.teamName}** (${g.date})\n`;
+                    text += `- Duration: ${g.duration} | Notes: ${g.notes || "None"}\n`;
+                    
+                    // Fixed potential sub-spread crash if game players array is ever null
+                    if (g.players && Array.isArray(g.players) && g.players.length > 0) {
+                        const topScorer = [...g.players].sort((a,b)=>parseInt(b.points)-parseInt(a.points))[0];
+                        text += `- Top Scorer: ${topScorer.name} (#${topScorer.number}) with ${topScorer.points} points\n`;
+                    }
+                    text += `\n`;
+                });
+                return { text: text, actions: [] };
+            }
+        }
+
+        // --- MOTIVATIONAL SIDEKICK TALK GENERATOR ---
+        if (/(pep\s+talk|motivate|pep|inspiration|inspiring|losing|speech|morale|talk\s+to\s+the\s+team)/i.test(query)) {
+            let pepTalk = "";
+            if (currentSport === 'soccer') {
+                pepTalk = "**Pep Talk (Soccer Focus)**:\n\"Alright team, look at me. The pitch is wide open, but we need to own the midfield! Protect our keeper, talk to each other on switches, and make those overlapping runs count. If they press, release the ball in two touches. Keep your heads up and fight for every possession. Let's make this pitch ours! Go get 'em!\"";
+            } else if (currentSport === 'footy') {
+                pepTalk = "**Pep Talk (AFL Footy Focus)**:\n\"Listen up! This oval is a battleground today. Ruckmen, I need big taps to our midfielders. Midfielders, hit the ground running, scoop up the ground balls under pressure, and spear those drop punts straight to our leading forwards. No hesitation, stay low, and back each other up. Let's show them what real footy is! Let's go!\"";
+            } else if (currentSport === 'netball') {
+                pepTalk = "**Pep Talk (Netball Focus)**:\n\"Bring it in! We need to sharpen our court thirds right now. WA and GA, work the circle edge with fast crossing leads. Shooter, dodge and create space—make sure you're holding your ground. Defence, I want heavy hands in their passing lanes, read the chest passes, and leap for those flying intercepts. Play clean, stay focused, and own this court. Squad on three! One, two, three, SQUAD!\"";
+            } else {
+                pepTalk = "**Pep Talk (Basketball Focus)**:\n\"Bring it in! We are beating them on paper, now let's beat them on the hardwood. Keep your floor spacing wide, drive hard, and kick it out to our shooters if the key collapses. On defense, box out, seal the space, and pull down every board. Play as one unit. Let's win this game on three! One, two, three, WIN!\"";
+            }
+            return { text: pepTalk, actions: [] };
+        }
+
+        // --- GAME STATE EXPLAINER ---
+        if (/(why|explain|reason|how\s+did\s+you|why\s+those)/i.test(query) && aiConversationState.lastSuggestionDetails) {
+            const d = aiConversationState.lastSuggestionDetails;
+            return {
+                text: `I recommended subbing **${d.out.join(', ')}** out for **${d.in.join(', ')}** because:\n\n` +
+                      d.reasons.map(r => `- ${r}`).join('\n') +
+                      `\n\nThis keeps your rotations balanced for the current strategy goal (**${aiConversationState.lastSubGoal.toUpperCase()}**).`,
+                actions: []
+            };
+        }
+
+        // --- SIDELINE FATIGUE & CARD MONITOR PARSER ---
+        const tiredMatch = query.match(/([a-z0-9\s#]+)\s+(?:is|are)?\s*(tired|exhausted|gasping|fatigued|needs?\s+a\s+rest|resting)/i);
+        if (tiredMatch && !query.includes('sub') && !query.includes('swap')) {
+            const target = tiredMatch[1].trim();
+            const p = findPlayer(target, allCurrentPlayers);
+            if (p) {
+                if (!aiConversationState.tiredPlayers.includes(p.name)) {
+                    aiConversationState.tiredPlayers.push(p.name);
+                }
+                const strategy = generateRotationStrategy(context, query, onField, offField, players, recentSubs);
+                return {
+                    text: `Flagged **${p.name}** as tired on the sideline. Generating rotation strategy to rest them:\n\n${strategy.text}`,
+                    actions: strategy.actions
+                };
+            }
+        }
+
+        const injuryMatch = query.match(/([a-z0-9\s#]+)\s+(?:is|are)?\s*(injured|hurt|sick|late|absent|unwell|sore|sprained)/i);
+        if (injuryMatch && !query.includes('sub') && !query.includes('swap')) {
+            const target = injuryMatch[1].trim();
+            const p = findPlayer(target, allCurrentPlayers);
+            if (p) {
+                if (!aiConversationState.injuredPlayers.includes(p.name)) {
+                    aiConversationState.injuredPlayers.push(p.name);
+                }
+                const strategy = generateRotationStrategy(context, query, onField, offField, players, recentSubs);
+                return {
+                    text: `Flagged **${p.name}** as injured. Removing them from rotation pool:\n\n${strategy.text}`,
+                    actions: strategy.actions
+                };
+            }
+        }
+
+        const recoverMatch = query.match(/([a-z0-9\s#]+)\s+(?:is|are)?\s*(good\s+to\s+go|recovered|healthy|fine|cleared)/i);
+        if (recoverMatch) {
+            const target = recoverMatch[1].trim();
+            const p = findPlayer(target, allCurrentPlayers);
+            if (p) {
+                aiConversationState.tiredPlayers = aiConversationState.tiredPlayers.filter(n => n !== p.name);
+                aiConversationState.injuredPlayers = aiConversationState.injuredPlayers.filter(n => n !== p.name);
+                if (aiConversationState.cardedPlayers[p.name] === 'red') {
+                    delete aiConversationState.cardedPlayers[p.name];
+                }
+                return { text: `Cleared **${p.name}** to healthy status. They are now fully available in rotation selections.`, actions: [] };
+            }
+        }
+
+        const cardMatch = query.match(/([a-z0-9\s#]+)\s+(?:got\s+a|has\s+a|is\s+on)?\s*(yellow\s+card|red\s+card|foul\s+trouble)/i);
+        const countFoulMatch = query.match(/([a-z0-9\s#]+)\s+(?:is\s+on|has)\s+(\d+)\s+fouls?/i);
+
+        if (cardMatch) {
+            const target = cardMatch[1].trim();
+            const type = cardMatch[2].toLowerCase();
+            const p = findPlayer(target, allCurrentPlayers);
+            if (p) {
+                if (type.includes('red')) {
+                    aiConversationState.cardedPlayers[p.name] = 'red';
+                    const strategy = generateRotationStrategy(context, query, onField, offField, players, recentSubs);
+                    return {
+                        text: `Flagged **${p.name}** with a red card. Ejecting them and calling rotation adjustments:\n\n${strategy.text}`,
+                        actions: strategy.actions
+                    };
+                } else if (type.includes('yellow')) {
+                    aiConversationState.cardedPlayers[p.name] = 'yellow';
+                    return { text: `Recorded a yellow card on **${p.name}**. I will manage their minutes conservatively in upcoming suggestions.`, actions: [] };
+                } else if (type.includes('foul')) {
+                    aiConversationState.cardedPlayers[p.name] = 'foul trouble';
+                    return { text: `Recorded foul trouble warning on **${p.name}**. Keeping a close eye on their court time.`, actions: [] };
+                }
+            }
+        } else if (countFoulMatch) {
+            const target = countFoulMatch[1].trim();
+            const fouls = parseInt(countFoulMatch[2], 10);
+            const p = findPlayer(target, allCurrentPlayers);
+            if (p) {
+                if (fouls >= 4) {
+                    aiConversationState.cardedPlayers[p.name] = 'foul trouble';
+                    const strategy = generateRotationStrategy(context, query, onField, offField, players, recentSubs);
+                    return {
+                        text: `Flagged **${p.name}** with foul trouble (${fouls} fouls). Generating rotation strategy to protect them:\n\n${strategy.text}`,
+                        actions: strategy.actions
+                    };
+                } else {
+                    return { text: `Recorded ${fouls} fouls on **${p.name}**. Status is safe.`, actions: [] };
+                }
+            }
+        }
 
         if (query.includes("what can you do") || query.includes("what you can do") || query.includes("features") || query === "help") {
+            if (context.role === "CLUB_ACCOUNT_ADMIN") {
+                return {
+                    text: "**Here is what I can do for you as a Club Admin:**\n\n" +
+                          "1. **Club Overview**: Ask for \"club summary\" or \"club overview\" to get stats on coaches, teams, and requests.\n" +
+                          "2. **Staff Tracking**: Ask \"who are my coaches\" or \"list coaches\" to see verified members.\n" +
+                          "3. **Pending Approvals**: Ask \"do I have join requests\" or \"pending requests\" to monitor applicants.\n" +
+                          "4. **Live Match Feed**: Ask \"show recent games\" or \"latest matches\" to review recently logged game statistics across all club teams.\n" +
+                          "5. **Global Standings**: Ask \"who is the best player across all teams\" or \"highest scoring team\" to get analytical performance leaderboards.",
+                    actions: []
+                };
+            }
             return {
                 text: "**Here is what I can do for you on the sidelines:**\n\n" +
                       "1. **Lineup & Rotation Strategy**: Ask for \"subs suggestion\" or say \"we need defence/shooters\" to get instant player rotations.\n" +
@@ -284,22 +742,61 @@ window.GuahhAI = (() => {
             return responseObj;
         }
 
-        if (/(?:finish|save|end|complete|stop)\s+(?:the\s+)?game/i.test(query)) {
+        if (/(?:finish|save|end|complete|stop|wrap\s+up)\s+(?:the\s+)?game/i.test(query)) {
             responseObj.text = "Opening the save confirmation modal to finish this game.";
             responseObj.actions.push({ type: 'FINISH_GAME' });
             return responseObj;
         }
 
-        const timerMatch = query.match(/(start|resume|pause|stop|reset)\s+(?:the\s+)?(timer|game|clock|match)/i);
+        const timerMatch = query.match(/(start|resume|pause|stop|reset|freeze|unpause)\s+(?:the\s+)?(timer|game|clock|match)/i);
         if (timerMatch) {
             const actionType = timerMatch[1].toLowerCase();
             let aiAction = "";
-            if (['start', 'resume'].includes(actionType)) { aiAction = "TIMER_START"; responseObj.text = "Starting the game timer."; }
-            else if (['pause', 'stop'].includes(actionType)) { aiAction = "TIMER_PAUSE"; responseObj.text = "Pausing the game timer."; }
+            if (['start', 'resume', 'unpause'].includes(actionType)) { aiAction = "TIMER_START"; responseObj.text = "Starting the game timer."; }
+            else if (['pause', 'stop', 'freeze'].includes(actionType)) { aiAction = "TIMER_PAUSE"; responseObj.text = "Pausing the game timer."; }
             else if (['reset'].includes(actionType)) { aiAction = "TIMER_RESET"; responseObj.text = "Resetting the game timer."; }
             
             if (aiAction) responseObj.actions.push({ type: aiAction });
             return responseObj;
+        }
+
+        // --- SUB THE BENCH FOR ... COMMAND HANDLER ---
+        const benchSwapMatch = query.match(/sub\s+(?:the\s+)?bench\s+for\s+(.+)/i);
+        if (benchSwapMatch) {
+            let outgoingRaw = benchSwapMatch[1].trim();
+            let outgoingTokens = outgoingRaw.split(/(?:,|\band\b|&)+/).map(s => s.trim()).filter(s => s.length > 0);
+            
+            let outPlayersResolved = [];
+            let unresolvedOut = [];
+            
+            outgoingTokens.forEach(tok => {
+                const p = findPlayer(tok, onField);
+                if (p) {
+                    outPlayersResolved.push(p);
+                } else {
+                    unresolvedOut.push(tok);
+                }
+            });
+            
+            let inPlayers = offField; 
+            let inNames = inPlayers.map(p => p.name);
+            let outNames = outPlayersResolved.map(p => p.name);
+            
+            if (inNames.length > 0) {
+                let textParts = [];
+                textParts.push(`Substituting the entire bench (**${inNames.join(', ')}**) ON.`);
+                if (outNames.length > 0) {
+                    textParts.push(`Substituting **${outNames.join(', ')}** OFF.`);
+                }
+                if (unresolvedOut.length > 0) {
+                    textParts.push(`Could not find active court players matching: "${unresolvedOut.join(', ')}".`);
+                }
+                responseObj.text = textParts.join('\n');
+                responseObj.actions.push({ type: 'SUB_PLAYERS', out: outNames, in: inNames });
+                return responseObj;
+            } else {
+                return { text: "There are currently no resting bench players to sub in.", actions: [] };
+            }
         }
 
         // --- ROBUST MULTI-PLAYER SWAP PARSER ---
@@ -326,22 +823,20 @@ window.GuahhAI = (() => {
             let unresolvedIn = [];
             let unresolvedOut = [];
 
-            // Resolve incoming bench players (should currently be resting)
             incomingTokens.forEach(tok => {
-                const p = findPlayer(tok, context.offField);
+                const p = findPlayer(tok, offField);
                 if (p) {
                     inPlayersResolved.push(p);
                 } else {
-                    const alreadyOn = findPlayer(tok, context.onField);
+                    const alreadyOn = findPlayer(tok, onField);
                     if (!alreadyOn) {
                         unresolvedIn.push(tok);
                     }
                 }
             });
 
-            // Resolve outgoing court players (should currently be playing)
             outgoingTokens.forEach(tok => {
-                const p = findPlayer(tok, context.onField);
+                const p = findPlayer(tok, onField);
                 if (p) {
                     outPlayersResolved.push(p);
                 } else {
@@ -380,12 +875,12 @@ window.GuahhAI = (() => {
 
         if (subInMatch && !query.includes('for') && !query.includes('with') && !query.includes('and')) {
             const target = subInMatch[1].trim();
-            const p = findPlayer(target, context.offField);
+            const p = findPlayer(target, offField);
             if (p) {
                 responseObj.text = `Substituting **${p.name}** ON.`;
                 responseObj.actions.push({ type: 'SUB_PLAYERS', out: [], in: [p.name] });
             } else {
-                const alreadyOn = findPlayer(target, context.onField);
+                const alreadyOn = findPlayer(target, onField);
                 responseObj.text = alreadyOn ? `**${alreadyOn.name}** is already on the field.` : `I couldn't locate an available bench player matching "${target}".`;
             }
             return responseObj;
@@ -393,41 +888,73 @@ window.GuahhAI = (() => {
 
         if (subOutMatch && !query.includes('for') && !query.includes('with') && !query.includes('and')) {
             const target = subOutMatch[1].trim();
-            const p = findPlayer(target, context.onField);
+            const p = findPlayer(target, onField);
             if (p) {
                 responseObj.text = `Substituting **${p.name}** OFF.`;
                 responseObj.actions.push({ type: 'SUB_PLAYERS', out: [p.name], in: [] });
             } else {
-                const alreadyOff = findPlayer(target, context.offField);
+                const alreadyOff = findPlayer(target, offField);
                 responseObj.text = alreadyOff ? `**${alreadyOff.name}** is already resting on the bench.` : `I couldn't locate an active court player matching "${target}".`;
             }
             return responseObj;
         }
 
+        // --- DYNAMIC SPORT-SPECIFIC POINTS PARSER CONTROLLER ---
         let pointsAmount = 0;
         let targetNameRaw = "";
         let naturalActionLabel = "";
 
-        const pointsMatch = query.match(/(add|give|award|plus|subtract|remove|minus|take away)\s+(\d+)\s*(?:pts|points|point)?\s*(?:to|for|from)?\s+([a-zA-Z0-9\s#]+)/i);
-        const bballActionMatch = query.match(/([a-z0-9\s#]+)\s+(scored|got|made|hit)\s+(?:a\s+)?(layup|basket|jumper|shot|free\s*throw|three|3-pointer|3\s*pointer|3|2|1)/i);
-
-        if (pointsMatch) {
-            const operation = /(subtract|remove|minus|take away)/i.test(pointsMatch[1]) ? -1 : 1;
-            pointsAmount = parseInt(pointsMatch[2], 10) * operation;
-            targetNameRaw = pointsMatch[3].trim();
-        } else if (bballActionMatch) {
-            targetNameRaw = bballActionMatch[1].trim();
-            const actionText = bballActionMatch[3].toLowerCase();
-            
-            if (actionText.includes('free') || actionText === '1') {
+        if (currentSport === 'footy') {
+            const footyGoalMatch = query.match(/([a-z0-9\s#]+)\s+(?:kicked|scored|got)\s+(?:a\s+)?goal/i);
+            const footyBehindMatch = query.match(/([a-z0-9\s#]+)\s+(?:kicked|scored|got)\s+(?:a\s+)?behind/i);
+            if (footyGoalMatch) {
+                targetNameRaw = footyGoalMatch[1].trim();
+                pointsAmount = 6;
+                naturalActionLabel = "goal (6 points)";
+            } else if (footyBehindMatch) {
+                targetNameRaw = footyBehindMatch[1].trim();
                 pointsAmount = 1;
-                naturalActionLabel = "free throw";
-            } else if (actionText.includes('three') || actionText.includes('3')) {
-                pointsAmount = 3;
-                naturalActionLabel = "three-pointer";
-            } else {
-                pointsAmount = 2;
-                naturalActionLabel = actionText;
+                naturalActionLabel = "behind (1 point)";
+            }
+        } else if (currentSport === 'soccer') {
+            const soccerGoalMatch = query.match(/([a-z0-9\s#]+)\s+(?:scored|kicked|headed|got)\s+(?:a\s+)?goal/i);
+            if (soccerGoalMatch) {
+                targetNameRaw = soccerGoalMatch[1].trim();
+                pointsAmount = 1;
+                naturalActionLabel = "goal (1 point)";
+            }
+        } else if (currentSport === 'netball') {
+            const netballGoalMatch = query.match(/([a-z0-9\s#]+)\s+(?:scored|shot|sunk|got)\s+(?:a\s+)?goal/i);
+            if (netballGoalMatch) {
+                targetNameRaw = netballGoalMatch[1].trim();
+                pointsAmount = 1;
+                naturalActionLabel = "goal (1 point)";
+            }
+        }
+
+        // If no sport-specific overrides were triggered, fall back to standard/basketball notation
+        if (pointsAmount === 0 && targetNameRaw === "") {
+            const pointsMatch = query.match(/(add|give|award|plus|subtract|remove|minus|take\s+away)\s+(\d+)\s*(?:pts|points|point)?\s*(?:to|for|from)?\s+([a-zA-Z0-9\s#]+)/i);
+            const bballActionMatch = query.match(/([a-z0-9\s#]+)\s+(scored|got|made|hit)\s+(?:a\s+)?(layup|basket|jumper|shot|free\s*throw|three|3-pointer|3\s*pointer|3|2|1)/i);
+
+            if (pointsMatch) {
+                const operation = /(subtract|remove|minus|take\s+away)/i.test(pointsMatch[1]) ? -1 : 1;
+                pointsAmount = parseInt(pointsMatch[2], 10) * operation;
+                targetNameRaw = pointsMatch[3].trim();
+            } else if (bballActionMatch) {
+                targetNameRaw = bballActionMatch[1].trim();
+                const actionText = bballActionMatch[3].toLowerCase();
+                
+                if (actionText.includes('free') || actionText === '1') {
+                    pointsAmount = 1;
+                    naturalActionLabel = "free throw";
+                } else if (actionText.includes('three') || actionText.includes('3')) {
+                    pointsAmount = 3;
+                    naturalActionLabel = "three-pointer";
+                } else {
+                    pointsAmount = 2;
+                    naturalActionLabel = actionText;
+                }
             }
         }
 
@@ -436,7 +963,7 @@ window.GuahhAI = (() => {
 
             if (targetPlayer) {
                 if (naturalActionLabel) {
-                    responseObj.text = `Nice basket! Added **${pointsAmount}** points to **${targetPlayer.name}** for making that ${naturalActionLabel}.`;
+                    responseObj.text = `Nice! Added **${pointsAmount}** points to **${targetPlayer.name}** for scoring that ${naturalActionLabel}.`;
                 } else {
                     responseObj.text = `${pointsAmount > 0 ? 'Added' : 'Subtracted'} ${Math.abs(pointsAmount)} points ${pointsAmount > 0 ? 'to' : 'from'} **${targetPlayer.name}**.`;
                 }
@@ -448,26 +975,26 @@ window.GuahhAI = (() => {
         }
 
         // --- COURT & BENCH LINEUP DETECTORS ---
-        if (/(who's\s+on\s+(?:the\s+)?court|who\s+is\s+on\s+(?:the\s+)?court|court\s+players|who\s+is\s+playing|who's\s+playing|current\s+lineup|active\s+lineup|who's\s+on\s+field|who\s+is\s+on\s+field)/i.test(query)) {
-            if (context.onField.length === 0) {
+        if (/(who's\s+on\s+(?:the\s+)?court|who\s+is\s+on\s+(?:the\s+)?court|court\s+players|who\s+is\s+playing|who's\s+playing|current\s+lineup|active\s+lineup|who\s+is\s+on\s+field|who's\s+on\s+field)/i.test(query)) {
+            if (onField.length === 0) {
                 return { text: "No players are currently assigned on the court.", actions: [] };
             }
-            const activeLineup = context.onField.map(p => `#${p.number || p.playerNumber || ''} ${p.name}`.trim()).join('\n- ');
-            return { text: `**Active Court Lineup (${context.onField.length} active):**\n\n- ${activeLineup}`, actions: [] };
+            const activeLineup = onField.map(p => `#${p.number || p.playerNumber || ''} ${p.name}`.trim()).join('\n- ');
+            return { text: `**Active Court Lineup (${onField.length} active):**\n\n- ${activeLineup}`, actions: [] };
         }
 
         if (/(who's\s+on\s+(?:the\s+)?bench|who\s+is\s+on\s+(?:the\s+)?bench|bench\s+players|who's\s+benched|who\s+is\s+benched|who\s+is\s+resting|who's\s+resting|show\s+(?:the\s+)?bench)/i.test(query)) {
-            if (context.offField.length === 0) {
+            if (offField.length === 0) {
                 return { text: "No players are currently sitting on the bench.", actions: [] };
             }
-            const benchLineup = context.offField.map(p => `#${p.number || p.playerNumber || ''} ${p.name}`.trim()).join('\n- ');
-            return { text: `**Bench Lineup (${context.offField.length} resting):**\n\n- ${benchLineup}`, actions: [] };
+            const benchLineup = offField.map(p => `#${p.number || p.playerNumber || ''} ${p.name}`.trim()).join('\n- ');
+            return { text: `**Bench Lineup (${offField.length} resting):**\n\n- ${benchLineup}`, actions: [] };
         }
 
         const statsQueryMatch = query.match(/(?:stats?\s+(?:for|of)\s+([a-zA-Z0-9\s#]+))|(([a-zA-Z0-9\s#]+)\s+stats?)/i);
         if (statsQueryMatch) {
             const rawTarget = (statsQueryMatch[1] || statsQueryMatch[2] || "").replace(/\bstats?\b/g, "").trim();
-            const playerProfile = findPlayer(rawTarget, context.players);
+            const playerProfile = findPlayer(rawTarget, players);
             
             if (playerProfile) {
                 let statSummary = `### Player Profile: ${playerProfile.playerName}\n`;
@@ -497,7 +1024,7 @@ window.GuahhAI = (() => {
                                 statSummary += `**Server Statistics (across ${matchesCount} recorded matches):**\n`;
                                 statSummary += `- **Total Points Scored**: ${totalPoints}\n`;
                                 statSummary += `- **Avg PPG**: ${(totalPoints / matchesCount).toFixed(1)}\n`;
-                                statSummary += `- **Total Playground Minutes**: ${formatTime(totalMinutesSecs)}`;
+                                statSummary += `- **Total Playing Minutes**: ${formatTime(totalMinutesSecs)}`;
                             } else {
                                 statSummary += `*No matches recorded for this player yet.*`;
                             }
@@ -509,7 +1036,7 @@ window.GuahhAI = (() => {
         }
 
         if (/(tallest|highest\s+height|who\s+is\s+the\s+tallest|tallest\s+player)/i.test(query)) {
-            const validHeightPlayers = context.players.filter(p => p.height && parseInt(p.height) > 0);
+            const validHeightPlayers = players.filter(p => p.height && parseInt(p.height) > 0);
             if (validHeightPlayers.length > 0) {
                 validHeightPlayers.sort((a, b) => parseInt(b.height) - parseInt(a.height));
                 const tallest = validHeightPlayers[0];
@@ -567,7 +1094,7 @@ window.GuahhAI = (() => {
                 if (!res.stats || res.stats.length === 0) return { text: "There are no past games recorded on the server for this team yet.", actions: [] };
 
                 let aggregate = {};
-                context.players.forEach(p => {
+                players.forEach(p => {
                     aggregate[p.playerName] = { name: p.playerName, rank: parseInt(p.rank)||5, skill: p.skill||'', totalTime: 0, totalPoints: 0, games: 0 };
                 });
 
@@ -675,7 +1202,7 @@ window.GuahhAI = (() => {
                     summary += `- **Games Recorded**: ${res.stats.length} matches\n`;
                     summary += `- **Offensive Efficiency**: ${avgPPG} PPG\n`;
                     summary += `- **Leading Scorer**: ${topScorer.name} (${topScorer.totalPoints} total points)\n`;
-                    summary += `- **Active Roster Base**: ${context.players.length} players registered`;
+                    summary += `- **Active Roster Base**: ${players.length} players registered`;
                     return { text: summary, actions: [] };
                 }
 
@@ -731,10 +1258,10 @@ window.GuahhAI = (() => {
             }
         }
 
-        if (/(sub|substitution|rotation|lineup|bench|roster|field|court|on-field|off-field|fair play|playtime|game state|tactics|situation|who should|bring in|put in|take off|rest|exhausted|foul|win|balanced|shooters|shooter|defense|defence)/i.test(query)) {
+        if (/(sub|substitution|rotation|lineup|bench|roster|field|court|on-field|off-field|fair play|playtime|game state|tactics|situation|who should|bring in|put in|take off|rest|exhausted|foul|win|balanced|shooters|shooter|defense|defence|swap)/i.test(query)) {
             aiConversationState.lastQueryType = 'subs';
             
-            if (allCurrentPlayers.length < 2 || context.onField.length === 0) {
+            if (allCurrentPlayers.length < 2 || onField.length === 0) {
                 let fallbackTactics = "";
                 if (/(shoot|scoring|3pt|three|points|shooter)/i.test(query)) {
                     fallbackTactics = `\n\n**Sideline Shooting Tactics:**\n${coachingDatabase.tactics.shooting}`;
@@ -753,7 +1280,7 @@ window.GuahhAI = (() => {
                 aiConversationState.excludedInPlayers = [];
             }
             
-            const strategyResult = generateRotationStrategy(context, query);
+            const strategyResult = generateRotationStrategy(context, query, onField, offField, players, recentSubs);
             responseObj.text = strategyResult.text;
             responseObj.actions = strategyResult.actions;
             return responseObj;
