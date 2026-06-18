@@ -196,12 +196,10 @@
     .pt-btn:active { background-color: #424242; transform: scale(0.95); }
     .pt-display { font-size: 12px; font-weight: bold; min-width: 14px; text-align: center; color: #FFF; font-variant-numeric: tabular-nums; }
 
-    
     body.hide-points-tracking .points-controls, body.hide-points-tracking .pts-label {
         display: none !important;
     }
 
-    
     body.dragging-active .player-item * {
         pointer-events: none !important;
     }
@@ -300,7 +298,6 @@
         cursor: pointer;
     }
 
-    
     #ai-floating-panel.collapsed::before {
         height: 80px;
         bottom: -20px;
@@ -313,7 +310,6 @@
         z-index: 1;
     }
 
-    
     #ai-floating-panel .timer-btn {
         font-size: 15px !important;
         min-height: 44px;
@@ -339,7 +335,6 @@
         animation: textFlowUpBlur 1s cubic-bezier(0.15, 0.85, 0.15, 1) forwards;
     }
 
-    
     #ai-expanded-content {
         transition: opacity 0.3s ease, transform 0.3s ease;
         opacity: 1;
@@ -379,7 +374,6 @@
         pointer-events: none;
     }
     
-    
     .material-icons {
         user-select: none;
         pointer-events: none;
@@ -418,8 +412,8 @@
         <div id="login-view" style="display: none;">
             <h2 style="text-align: center; margin-bottom: 30px; font-size: 2rem;">Coachbuddy</h2>
             <div id="login-form">
-                <input type="email" id="login-email" placeholder="Email Address" style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 16px;">
-                <input type="password" id="login-password" placeholder="Password" style="width: 100%; margin-bottom: 15px; padding: 12px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 16px;">
+                <input type="email" id="login-email" placeholder="Email Address" style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 16px;" autocomplete="email">
+                <input type="password" id="login-password" placeholder="Password" style="width: 100%; margin-bottom: 15px; padding: 12px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 16px;" autocomplete="current-password">
                 <button id="login-btn" class="timer-btn primary" style="width: 100%; margin-bottom: 10px;">Log In</button>
                 <div style="text-align: center; margin-top: 15px;">
                     <a href="#" id="go-to-signup" style="color: #64B5F6; text-decoration: none; font-size: 14px;">Don't have an account? Sign up</a>
@@ -431,10 +425,10 @@
         <div id="signup-view" style="display: none;">
             <h2 style="text-align: center; margin-bottom: 30px; font-size: 2rem;">Create Account</h2>
             <div id="signup-form">
-                <input type="text" id="signup-firstname" placeholder="First Name" style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 16px;">
-                <input type="email" id="signup-email" placeholder="Email Address" style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 16px;">
-                <input type="tel" id="signup-phone" placeholder="Phone Number (Optional)" style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 16px;">
-                <input type="password" id="signup-password" placeholder="Create Password (Min 6 chars)" style="width: 100%; margin-bottom: 15px; padding: 12px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 16px;">
+                <input type="text" id="signup-firstname" placeholder="First Name" style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 16px;" autocomplete="given-name">
+                <input type="email" id="signup-email" placeholder="Email Address" style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 16px;" autocomplete="email">
+                <input type="tel" id="signup-phone" placeholder="Phone Number (Optional)" style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 16px;" autocomplete="tel">
+                <input type="password" id="signup-password" placeholder="Create Password (Min 6 chars)" style="width: 100%; margin-bottom: 15px; padding: 12px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 16px;" autocomplete="new-password">
                 <button id="signup-btn" class="timer-btn primary" style="width: 100%; margin-bottom: 10px;">Sign Up</button>
                 <div style="text-align: center; margin-top: 15px;">
                     <a href="#" id="go-to-login" style="color: #64B5F6; text-decoration: none; font-size: 14px;">Already have an account? Log in</a>
@@ -444,10 +438,17 @@
 
         <!-- SUBSCRIPTION BLOCK VIEW -->
         <div id="sub-block-view" style="display: none; text-align: center; background-color: #121212; padding: 20px; border-radius: 13px;">
-            <h2 style="color: #FF9800;">Subscription Required</h2>
+            <h2 style="color: #FF9800; margin-top: 0;">Subscription Required</h2>
             <p style="color: #B0B0B0; font-size: 15px; line-height: 1.5;">Your account currently does not have an active subscription to use Coachbuddy.</p>
-            <p style="color: #B0B0B0; font-size: 15px; line-height: 1.5;">Please contact support to activate your account.</p>
-            <button id="refresh-sub-btn" class="timer-btn primary" style="width: 100%; margin-top: 20px; margin-bottom: 10px;">Check Status Again</button>
+            <p style="color: #B0B0B0; font-size: 15px; line-height: 1.5; margin-bottom: 25px;">Please contact support to activate your account.</p>
+            
+            <!-- CLUB INTEGRATION (SUB BLOCK) -->
+            <div style="margin-top: 15px; padding-top: 20px; border-top: 1px solid #222; text-align: left;">
+                <span style="font-size: 15px; margin-bottom: 8px; font-weight: bold; color: #E0E0E0; display: block;">Coachboard Club Affiliation</span>
+                <div id="sub-club-content"></div>
+            </div>
+
+            <button id="refresh-sub-btn" class="timer-btn primary" style="width: 100%; margin-top: 10px; margin-bottom: 10px;">Check Status Again</button>
             <button id="logout-btn-sub" class="timer-btn secondary" style="width: 100%;">Log Out</button>
         </div>
 
@@ -622,6 +623,12 @@
             <div style="background-color: #121212; padding: 12px; border-radius: 13px; margin-bottom: 10px;">
                 <h3 style="margin-top: 0; color: #E0E0E0;">Settings</h3>
 
+                <!-- CLUB INTEGRATION (SETTINGS) -->
+                <div style="display: flex; flex-direction: column; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #222;">
+                    <span style="font-size: 14px; margin-bottom: 8px; font-weight: bold; color: #E0E0E0;">Club Affiliation</span>
+                    <div id="settings-club-content"></div>
+                </div>
+
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #222;">
                     <span style="font-size: 14px;">Guahh AI</span>
                     <label class="switch">
@@ -708,7 +715,7 @@
             <div id="ai-results-text"></div>
             <div id="ai-results-followup-container" style="display: flex; gap: 8px; margin-bottom: 12px; background: #2D2D2D !important; padding: 4px; border-radius: 14px; border: none !important; height: 50px; align-items: center; box-sizing: border-box; box-shadow: none !important;">
                 <input type="text" id="ai-results-followup-input" placeholder="Ask anything" style="flex: 1; padding: 0 14px; border-radius: 10px; background-color: transparent; color: white; border: none !important; outline: none !important; font-size: 15px; box-sizing: border-box; height: 100%; box-shadow: none !important;">
-                <button id="ai-results-voice-btn" class="timer-btn secondary" style="width: 42px; height: 42px; padding: 0; border-radius: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin-right: 2px;"><span class="material-icons" style="font-size: 20px;">mic</span></button>
+                <button id="ai-results-voice-btn" class="timer-btn secondary" style="width: 42px; height: 42px; padding: 0; border-radius: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin-right: 2px;"><span class="material-icons">mic</span></button>
                 <button id="ai-results-followup-btn" class="timer-btn primary" style="padding: 0 20px; height: 100%; font-size: 14px; border: none !important; outline: none !important; border-radius: 10px; flex-shrink: 0; box-shadow: none !important; font-weight: 700;">Ask</button>
             </div>
             <div id="ai-voice-wave-results" style="display: none; width: 100%; height: 90px; margin: 5px auto; text-align: center;"></div>
@@ -741,7 +748,7 @@
     console.log = console.warn = console.error = console.info = console.debug = function() {};
     
     // --- CONSTANTS & CONFIG ---
-    const _U = "\x68\x74\x74\x70\x73\x3a\x2f\x2f\x73\x63\x72\x69\x70\x74\x2e\x67\x6f\x6f\x67\x6c\x65\x2e\x63\x6f\x6d\x2f\x6d\x61\x63\x72\x6f\x73\x2f\x73\x2f\x41\x4b\x66\x79\x63\x62\x78\x32\x4a\x78\x46\x4f\x5f\x37\x68\x64\x38\x74\x6a\x62\x43\x47\x36\x6d\x30\x68\x45\x34\x2d\x36\x53\x6d\x38\x6c\x2d\x68\x42\x41\x79\x79\x32\x31\x62\x66\x77\x44\x70\x64\x59\x77\x38\x32\x74\x35\x6d\x59\x66\x37\x72\x55\x71\x70\x53\x6e\x39\x71\x4b\x77\x2d\x30\x76\x51\x71\x67\x2f\x65\x78\x65\x63";
+    const _U = "\x68\x74\x74\x70\x73\x3a\x2f\x2f\x73\x63\x72\x69\x70\x74\x2e\x67\x6f\x6f\x67\x6c\x65\x2e\x63\x6f\x6d\x2f\x6d\x61\x63\x72\x6f\x73\x2f\x73\x2f\x41\x4b\x66\x79\x63\x62\x77\x65\x68\x57\x33\x76\x71\x71\x33\x36\x7a\x42\x65\x74\x79\x59\x58\x64\x34\x45\x6b\x39\x63\x6b\x62\x7a\x43\x78\x4f\x37\x78\x73\x56\x41\x76\x43\x34\x36\x59\x4c\x46\x4e\x64\x71\x47\x78\x63\x57\x6c\x66\x6e\x34\x5a\x48\x2d\x61\x61\x78\x78\x72\x45\x56\x62\x6e\x46\x49\x36\x51\x2f\x65\x78\x65\x63";
     const _V = "0.3";
     const _TK = "\x5f\x63\x62\x5f\x74\x6b"; const _EM = "\x5f\x63\x62\x5f\x65\x6d"; const _PW = "\x5f\x63\x62\x5f\x70\x77"; 
     const _ST = "\x5f\x63\x62\x5f\x73\x74"; const _S1 = "\x5f\x63\x62\x5f\x73\x31"; const _S2 = "\x5f\x63\x62\x5f\x73\x32"; 
@@ -751,6 +758,12 @@
     const MIN_GAME_TIME_FOR_WARNINGS = 180; const LOW_TIME_RATIO = 0.65; const SIGNIFICANT_TIME_GAP = 240; 
     const INITIAL_STOPWATCH_SECONDS = 0; const DEFAULT_COUNTDOWN_SECONDS = 2400;
     const views = ['login-view', 'signup-view', 'sub-block-view', 'app-view', 'manage-view', 'stats-view', 'settings-view'];
+
+    // --- SAFARI REFRESH PASSWORD PROMPT STRIPPER ---
+    if (localStorage.getItem(_TK)) {
+        const p1 = document.getElementById('login-password'); if (p1) p1.remove();
+        const p2 = document.getElementById('signup-password'); if (p2) p2.remove();
+    }
 
     // --- DOM ELEMENTS ---
     const timeDisplay = document.getElementById('time-display');
@@ -776,7 +789,7 @@
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     let recognition = null; let isListening = false; let activeVoiceInput = null; let activeVoiceButton = null; let voiceSiriWave = null; 
     let authToken = localStorage.getItem(_TK); let currentUser = null; let subscriptionStatus = "NONE";
-    let appData = { teams: [], players: [] }; let editingPlayerId = null;
+    let appData = { teams: [], players: [], clubStatus: "NONE", clubName: "" }; let editingPlayerId = null;
     let recentSubs = []; let pendingSubChanges = []; let subDebounceTimer = null;
     let countdownInterval = null; let totalSeconds = INITIAL_STOPWATCH_SECONDS; let isRunning = false; let isCountdownMode = false;
     let miniTimerInterval = null; let miniTotalSeconds = 180; let isMiniTimerRunning = false;
@@ -850,6 +863,127 @@
         showCustomModal(title, `<p>${message}</p>`, buttons);
     }
 
+    // --- DYNAMIC CLUB AFFILIATION ENGINE ---
+    function renderClubStatus() {
+        const status = appData.clubStatus || 'NONE';
+        const clubName = appData.clubName || '';
+        const cSub = document.getElementById('sub-club-content');
+        const cSet = document.getElementById('settings-club-content');
+        
+        let html = '';
+        if (status === 'NONE') {
+            html = `
+                <span style="font-size: 12px; color: #B0B0B0; margin-bottom: 10px; display: block;">Search and request to join a Coachboard club to link your team data.</span>
+                <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+                    <input type="text" class="club-search-input" placeholder="Search for your club..." style="flex: 1; padding: 10px; border-radius: 9px; background: #1A1A1A; color: #E0E0E0; border: 1px solid #222; font-size: 14px;">
+                    <button class="timer-btn primary club-search-btn" style="padding: 10px 15px; min-height: 0;">Search</button>
+                </div>
+                <div class="club-search-results" style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px;"></div>
+            `;
+        } else if (status === 'PENDING') {
+            html = `
+                <div style="background: #1A1A1A; padding: 12px; border-radius: 9px; border: 1px solid #222; margin-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="font-weight: bold; color: #E0E0E0; font-size: 15px;">${clubName}</span>
+                        <span style="background: #007bff; color: white; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">PENDING</span>
+                    </div>
+                    <span style="font-size: 12px; color: #B0B0B0; display: block; margin-bottom: 12px;">Waiting for club administrator approval.</span>
+                    <button class="timer-btn secondary leave-club-btn" style="width: 100%; font-size: 13px; color: #D32F2F;">Cancel Request</button>
+                </div>
+            `;
+        } else if (status === 'APPROVED') {
+            html = `
+                <div style="background: #1A1A1A; padding: 12px; border-radius: 9px; border: 1px solid #222; margin-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="font-weight: bold; color: #E0E0E0; font-size: 15px;">${clubName}</span>
+                        <span style="background: #4CAF50; color: white; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">APPROVED</span>
+                    </div>
+                    <span style="font-size: 12px; color: #B0B0B0; display: block; margin-bottom: 12px;">Your account is linked to this club.</span>
+                    <button class="timer-btn secondary leave-club-btn" style="width: 100%; font-size: 13px; color: #D32F2F;">Leave Club</button>
+                </div>
+            `;
+        }
+
+        if (cSub) { cSub.innerHTML = html; attachClubListeners(cSub); }
+        if (cSet) { cSet.innerHTML = html; attachClubListeners(cSet); }
+    }
+    
+    function attachClubListeners(container) {
+        const searchBtn = container.querySelector('.club-search-btn');
+        const searchInput = container.querySelector('.club-search-input');
+        const resultsDiv = container.querySelector('.club-search-results');
+        const leaveBtn = container.querySelector('.leave-club-btn');
+        
+        if (searchBtn && searchInput) {
+            searchBtn.onclick = () => performClubSearch(searchInput, resultsDiv);
+        }
+        if (leaveBtn) {
+            leaveBtn.onclick = () => {
+                const isPending = appData.clubStatus === 'PENDING';
+                const msg = isPending ? 'Cancel your request to join this club?' : 'Are you sure you want to leave this club?';
+                showConfirmation('Confirm', msg, async (c) => {
+                    if (c) {
+                        document.getElementById('action-loading-overlay').style.display = 'flex';
+                        try {
+                            await apiCall('leave_club');
+                            appData.clubStatus = 'NONE';
+                            appData.clubName = '';
+                            renderClubStatus();
+                            showConfirmation('Success', isPending ? 'Request cancelled.' : 'You have left the club.');
+                        } catch (e) { showConfirmation('Error', e.message); } 
+                        finally { document.getElementById('action-loading-overlay').style.display = 'none'; }
+                    }
+                });
+            }
+        }
+    }
+
+    async function performClubSearch(inputEl, resultsContainer) {
+        const query = inputEl ? inputEl.value.trim() : '';
+        if (!query) {
+            if (resultsContainer) resultsContainer.innerHTML = '';
+            return showConfirmation('Error', 'Please enter a club name to search.');
+        }
+        document.getElementById('action-loading-overlay').style.display = 'flex';
+        try {
+            const res = await apiCall('search_clubs', { query });
+            if (resultsContainer) {
+                resultsContainer.innerHTML = '';
+                if (!res.clubs || res.clubs.length === 0) {
+                    resultsContainer.innerHTML = `<div style="color:#B0B0B0; font-size:13px; text-align:center; padding:10px;">No clubs found matching "${query}"</div>`;
+                    return;
+                }
+                res.clubs.forEach(club => {
+                    const div = document.createElement('div');
+                    div.style.cssText = "display: flex; justify-content: space-between; align-items: center; background: #222; padding: 10px; border-radius: 9px; margin-bottom: 6px;";
+                    div.innerHTML = `
+                        <span style="font-weight: 600; color: #E0E0E0; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 10px;">${club.clubName}</span>
+                        <button class="timer-btn secondary" style="padding: 6px 12px; font-size: 12px; min-height: 0; background-color: #4CAF50; color: white; flex-shrink: 0;" onclick="window._reqJoin('${club.clubId}')">Request</button>
+                    `;
+                    resultsContainer.appendChild(div);
+                });
+            }
+        } catch(e) { showConfirmation('Search Failed', e.message); } 
+        finally { document.getElementById('action-loading-overlay').style.display = 'none'; }
+    }
+
+    window._reqJoin = function(clubId) {
+        showConfirmation('Join Club', 'Send a request to join this club? The club administrator will need to approve it.', async (c) => {
+            if(c) {
+                document.getElementById('action-loading-overlay').style.display = 'flex';
+                try {
+                    await apiCall('request_join_club', { clubId });
+                    const dataRes = await apiCall('load_data');
+                    appData.clubStatus = dataRes.clubStatus;
+                    appData.clubName = dataRes.clubName;
+                    renderClubStatus();
+                    showConfirmation('Success', 'Request sent! Your data will sync once the club approves you.');
+                } catch(e) { showConfirmation('Request Failed', e.message); } 
+                finally { document.getElementById('action-loading-overlay').style.display = 'none'; }
+            }
+        });
+    };
+
     // --- TIMERS ---
     function resetMiniTimer() {
         clearInterval(miniTimerInterval); isMiniTimerRunning = false; 
@@ -906,53 +1040,145 @@
         }); updateSubstitutionWarnings(); 
     }
 
-    // --- DRAG & DROP ENGINE ---
+    // --- DRAG & DROP ENGINE (WITH LONG PRESS TOUCH HOLD DELAY) ---
     function clearDragStyles() {
         document.querySelectorAll('.player-item').forEach(item => { item.style.backgroundColor = ''; });
         const cDrop = document.getElementById('court-dropzone'); const bDrop = document.getElementById('bench-dropzone');
         if (cDrop) cDrop.style.backgroundColor = ''; if (bDrop) bDrop.style.backgroundColor = ''; lastTouchTarget = null;
     }
     function setupTouchDrag(playerItem) {
+        let holdTimeout = null;
+        let startX = 0;
+        let startY = 0;
+        let isTouchDraggingStarted = false;
+        const HOLD_DELAY = 250; // Milliseconds to hold down card before dragging activates
+        const MOVE_THRESHOLD = 8; // Max px boundary before clearing the drag sequence
+
         playerItem.addEventListener('touchstart', (e) => {
             if (e.target.closest('button, input, select, textarea')) return;
-            touchDragItem = playerItem; playerItem.style.opacity = '0.5'; document.body.classList.add('dragging-active');
-            const rect = playerItem.getBoundingClientRect(); touchClone = playerItem.cloneNode(true);
-            touchClone.style.position = 'fixed'; touchClone.style.left = rect.left + 'px'; touchClone.style.top = rect.top + 'px';
-            touchClone.style.width = rect.width + 'px'; touchClone.style.height = rect.height + 'px'; touchClone.style.opacity = '0.8';
-            touchClone.style.pointerEvents = 'none'; touchClone.style.zIndex = '10000'; touchClone.style.boxShadow = '0 8px 16px rgba(0,0,0,0.5)';
-            touchClone.style.background = '#121212'; document.body.appendChild(touchClone);
+            const touch = e.touches[0];
+            startX = touch.clientX;
+            startY = touch.clientY;
+            isTouchDraggingStarted = false;
+
+            if (holdTimeout) clearTimeout(holdTimeout);
+            holdTimeout = setTimeout(() => {
+                isTouchDraggingStarted = true;
+                touchDragItem = playerItem; 
+                playerItem.style.opacity = '0.5'; 
+                document.body.classList.add('dragging-active');
+                
+                const rect = playerItem.getBoundingClientRect(); 
+                touchClone = playerItem.cloneNode(true);
+                touchClone.style.position = 'fixed'; 
+                touchClone.style.left = rect.left + 'px'; 
+                touchClone.style.top = rect.top + 'px';
+                touchClone.style.width = rect.width + 'px'; 
+                touchClone.style.height = rect.height + 'px'; 
+                touchClone.style.opacity = '0.8';
+                touchClone.style.pointerEvents = 'none'; 
+                touchClone.style.zIndex = '10000'; 
+                touchClone.style.boxShadow = '0 8px 16px rgba(0,0,0,0.5)';
+                touchClone.style.background = '#121212'; 
+                document.body.appendChild(touchClone);
+                
+                if (navigator.vibrate) navigator.vibrate(15);
+            }, HOLD_DELAY);
         }, { passive: true });
+
         playerItem.addEventListener('touchmove', (e) => {
-            if (!touchDragItem || !touchClone) return; if (e.cancelable) e.preventDefault();
-            const touch = e.touches[0]; touchClone.style.left = (touch.clientX - touchClone.offsetWidth / 2) + 'px'; touchClone.style.top = (touch.clientY - touchClone.offsetHeight / 2) + 'px';
+            const touch = e.touches[0];
+            const diffX = Math.abs(touch.clientX - startX);
+            const diffY = Math.abs(touch.clientY - startY);
+
+            if (!isTouchDraggingStarted) {
+                if (diffX > MOVE_THRESHOLD || diffY > MOVE_THRESHOLD) {
+                    if (holdTimeout) {
+                        clearTimeout(holdTimeout);
+                        holdTimeout = null;
+                    }
+                }
+                return; // Gracefully permit native browser scrolls
+            }
+
+            if (e.cancelable) e.preventDefault();
+            if (!touchDragItem || !touchClone) return;
+            
+            touchClone.style.left = (touch.clientX - touchClone.offsetWidth / 2) + 'px'; 
+            touchClone.style.top = (touch.clientY - touchClone.offsetHeight / 2) + 'px';
+            
             const element = document.elementFromPoint(touch.clientX, touch.clientY);
             if (element) {
                 const targetPlayerItem = element.closest('.player-item');
                 if (targetPlayerItem && targetPlayerItem !== touchDragItem) {
                     if (lastTouchTarget && lastTouchTarget !== targetPlayerItem) lastTouchTarget.style.backgroundColor = '';
-                    targetPlayerItem.style.backgroundColor = 'rgba(255, 255, 255, 0.08)'; lastTouchTarget = targetPlayerItem;
+                    targetPlayerItem.style.backgroundColor = 'rgba(255, 255, 255, 0.08)'; 
+                    lastTouchTarget = targetPlayerItem;
                 } else {
                     if (lastTouchTarget && lastTouchTarget.classList.contains('player-item')) lastTouchTarget.style.backgroundColor = '';
                     const targetZone = element.closest('#court-dropzone, #bench-dropzone');
                     if (targetZone) {
                         if (lastTouchTarget && lastTouchTarget !== targetZone) lastTouchTarget.style.backgroundColor = '';
-                        targetZone.style.backgroundColor = 'rgba(255, 255, 255, 0.04)'; lastTouchTarget = targetZone;
-                    } else if (lastTouchTarget && !lastTouchTarget.classList.contains('player-item')) { lastTouchTarget.style.backgroundColor = ''; lastTouchTarget = null; }
+                        targetZone.style.backgroundColor = 'rgba(255, 255, 255, 0.04)'; 
+                        lastTouchTarget = targetZone;
+                    } else if (lastTouchTarget && !lastTouchTarget.classList.contains('player-item')) { 
+                        lastTouchTarget.style.backgroundColor = ''; 
+                        lastTouchTarget = null; 
+                    }
                 }
-            } else if (lastTouchTarget) { lastTouchTarget.style.backgroundColor = ''; lastTouchTarget = null; }
+            } else if (lastTouchTarget) { 
+                lastTouchTarget.style.backgroundColor = ''; 
+                lastTouchTarget = null; 
+            }
         }, { passive: false });
+
         playerItem.addEventListener('touchend', (e) => {
+            if (holdTimeout) {
+                clearTimeout(holdTimeout);
+                holdTimeout = null;
+            }
+
+            if (!isTouchDraggingStarted) return;
+
             if (!touchDragItem) return;
-            playerItem.style.opacity = ''; document.body.classList.remove('dragging-active');
-            if (touchClone) { document.body.removeChild(touchClone); touchClone = null; }
+            playerItem.style.opacity = ''; 
+            document.body.classList.remove('dragging-active');
+            if (touchClone) { 
+                document.body.removeChild(touchClone); 
+                touchClone = null; 
+            }
             clearDragStyles();
-            const touch = e.changedTouches[0]; const element = document.elementFromPoint(touch.clientX, touch.clientY);
+            
+            const touch = e.changedTouches[0]; 
+            const element = document.elementFromPoint(touch.clientX, touch.clientY);
             if (element) {
                 const targetPlayerItem = element.closest('.player-item');
                 if (targetPlayerItem && targetPlayerItem !== touchDragItem) swapPlayers(touchDragItem, targetPlayerItem);
-                else { const targetZone = element.closest('#court-dropzone, #bench-dropzone'); if (targetZone) movePlayerToStatus(touchDragItem, targetZone.id === 'court-dropzone' ? '1' : '0'); }
+                else { 
+                    const targetZone = element.closest('#court-dropzone, #bench-dropzone'); 
+                    if (targetZone) movePlayerToStatus(touchDragItem, targetZone.id === 'court-dropzone' ? '1' : '0'); 
+                }
             }
             touchDragItem = null;
+            isTouchDraggingStarted = false;
+        });
+
+        playerItem.addEventListener('touchcancel', () => {
+            if (holdTimeout) {
+                clearTimeout(holdTimeout);
+                holdTimeout = null;
+            }
+            if (isTouchDraggingStarted) {
+                playerItem.style.opacity = ''; 
+                document.body.classList.remove('dragging-active');
+                if (touchClone) { 
+                    document.body.removeChild(touchClone); 
+                    touchClone = null; 
+                }
+                clearDragStyles();
+                touchDragItem = null;
+                isTouchDraggingStarted = false;
+            }
         });
     }
     function setupDesktopDrag(playerItem) {
@@ -1118,9 +1344,601 @@
         const nav = document.getElementById('app-nav'); if (viewId === 'login-view' || viewId === 'signup-view' || viewId === 'sub-block-view') { if(nav) nav.style.display = 'none'; } else { if(nav) nav.style.display = 'flex'; }
         ['app-view', 'manage-view', 'stats-view', 'settings-view'].forEach(v => { const btn = document.getElementById('nav-' + v.split('-')[0] + '-btn'); if (btn) { btn.className = v === viewId ? 'timer-btn primary' : 'timer-btn secondary'; if (v === 'app-view') btn.style.flex = '1'; } });
     }
-    function clearLocalAuth() { authToken = null; localStorage.removeItem(_TK); localStorage.removeItem(_EM); localStorage.removeItem(_PW); appData = { teams: [], players: [] }; }
-    function promptLogoutStandard() { showConfirmation('Log Out', 'Are you sure you want to log out?', (c) => { if (c) { apiCall('logout').catch(e => {}); clearLocalAuth(); showView('login-view'); } }); }
-    function promptLogoutAll() { showConfirmation('Log Out All Sessions', 'Are you sure you want to log out of all your devices? You will need to log in again.', (c) => { if (c) { apiCall('logout_all').catch(e => {}); clearLocalAuth(); showView('login-view'); } }); }
+    function clearLocalAuth() { authToken = null; localStorage.removeItem(_TK); localStorage.removeItem(_EM); localStorage.removeItem(_PW); appData = { teams: [], players: [], clubStatus: 'NONE', clubName: '' }; }
+    function promptLogoutStandard() { showConfirmation('Log Out', 'Are you sure you want to log out?', (c) => { if (c) { apiCall('logout').catch(e => {}); clearLocalAuth(); window.location.reload(); } }); }
+    function promptLogoutAll() { showConfirmation('Log Out All Sessions', 'Are you sure you want to log out of all your devices? You will need to log in again.', (c) => { if (c) { apiCall('logout_all').catch(e => {}); clearLocalAuth(); window.location.reload(); } }); }
+
+    // --- AI ENGINE ---
+    function loadStepConfigSuggestions() {
+        const container = document.getElementById('ai-step-suggestions-stacked'); if (!container) return; container.innerHTML = '';
+        const mandatory = "Subs suggestion"; const rest = SUGGESTION_POOL.filter(item => item !== mandatory);
+        const shuffledRest = [...rest].sort(() => 0.5 - Math.random()); const selected = [mandatory, ...shuffledRest.slice(0, 2)];
+        selected.forEach(text => {
+            const btn = document.createElement('button'); btn.className = 'timer-btn secondary'; btn.style.cssText = 'width: 100%; min-height: 38px; text-align: left; font-size: 13px; font-weight: 600; border-radius: 9px; margin-bottom: 2px; border: none; outline: none; display: flex; align-items: center; justify-content: flex-start; padding: 0 14px;'; btn.textContent = text;
+            btn.onclick = (e) => { e.stopPropagation(); const textInput = document.getElementById('ai-chat-input'); if (textInput) { textInput.value = text; const submitBtn = document.getElementById('ai-submit-btn'); if (submitBtn) submitBtn.click(); } }; container.appendChild(btn);
+        });
+    }
+    function runSiriWave() {
+        const container = document.getElementById('siri-container'); if (!container) return; container.innerHTML = ''; const width = container.clientWidth || 320;
+        siriWave = new SiriWave({ container: container, width: width, height: 110, style: 'ios9', speed: 0.15, amplitude: 1.5, autostart: true, curveDefinition: [ { color: "255, 255, 255", supportLine: true }, { color: "240, 240, 240" }, { color: "215, 220, 225" }, { color: "190, 195, 200" } ] });
+    }
+    function stopSiriWave() { if (siriWave) { siriWave.stop(); siriWave = null; } }
+    function runVoiceSiriWave(containerId) {
+        const container = document.getElementById(containerId); if (!container) return; container.innerHTML = ''; const width = container.clientWidth || 320;
+        voiceSiriWave = new SiriWave({ container: container, width: width, height: 90, style: 'ios9', speed: 0, amplitude: 0.01, autostart: true, curveDefinition: [ { color: "255, 255, 255", supportLine: true }, { color: "240, 240, 240" }, { color: "215, 220, 225" }, { color: "190, 195, 200" } ] });
+    }
+    function stopVoiceSiriWave() { if (voiceSiriWave) { voiceSiriWave.stop(); voiceSiriWave = null; } }
+    function handleInputChange(inputEl, buttonEl) {
+        const iconEl = buttonEl.querySelector('.material-icons');
+        if (inputEl.value.trim().length > 0) { buttonEl.style.backgroundColor = '#007bff'; buttonEl.style.color = '#FFFFFF'; if (iconEl) iconEl.textContent = 'send'; buttonEl.dataset.mode = 'send'; } 
+        else { buttonEl.style.backgroundColor = ''; buttonEl.style.color = ''; if (iconEl) iconEl.textContent = 'mic'; buttonEl.dataset.mode = 'mic'; }
+    }
+    async function startVoiceRecognition(inputEl, buttonEl, isFollowUp) {
+        if (!SpeechRecognition) return showConfirmation('Not Supported', 'Voice recognition is not supported in this browser. Please use Google Chrome or Safari.');
+        if (isListening) return stopVoiceRecognition();
+        try { const stream = await navigator.mediaDevices.getUserMedia({ audio: true }); stream.getTracks().forEach(track => track.stop()); } catch (err) { return showConfirmation('Microphone Access Blocked', 'Please allow microphone access in your browser settings to speak to the assistant.'); }
+        isListening = true; activeVoiceInput = inputEl; activeVoiceButton = buttonEl;
+        if (inputEl) { inputEl.placeholder = 'Listening... Speak now.'; inputEl.value = ''; }
+        if (!isFollowUp) {
+            const voiceBtn = document.getElementById('ai-voice-btn'); const submitBtn = document.getElementById('ai-submit-btn'); const cancelBtn = document.getElementById('ai-cancel-btn'); const waveContainer = document.getElementById('ai-voice-wave-config');
+            if (voiceBtn) voiceBtn.style.display = 'none'; if (submitBtn) submitBtn.style.display = 'none'; if (cancelBtn) cancelBtn.style.display = 'none'; if (waveContainer) { waveContainer.style.display = 'block'; runVoiceSiriWave('ai-voice-wave-config'); }
+        } else {
+            const resultsVoiceBtn = document.getElementById('ai-results-voice-btn'); const applyBtn = document.getElementById('ai-apply-btn'); const dismissBtn = document.getElementById('ai-dismiss-btn'); const waveContainer = document.getElementById('ai-voice-wave-results');
+            if (resultsVoiceBtn) resultsVoiceBtn.style.display = 'none'; if (applyBtn) applyBtn.style.display = 'none'; if (dismissBtn) dismissBtn.style.display = 'none'; if (waveContainer) { waveContainer.style.display = 'block'; runVoiceSiriWave('ai-voice-wave-results'); }
+        }
+        recognition = new SpeechRecognition(); recognition.continuous = false; recognition.interimResults = true; recognition.lang = 'en-AU';
+        recognition.onstart = () => { if (voiceSiriWave) { voiceSiriWave.setSpeed(0); voiceSiriWave.setAmplitude(0.01); } };
+        recognition.onspeechstart = () => { if (voiceSiriWave) { voiceSiriWave.setSpeed(0.2); voiceSiriWave.setAmplitude(1.5); } };
+        recognition.onspeechend = () => { if (voiceSiriWave) { voiceSiriWave.setSpeed(0); voiceSiriWave.setAmplitude(0.01); } };
+        recognition.onresult = (event) => {
+            let interimTranscript = ''; let finalTranscript = '';
+            for (let i = event.resultIndex; i < event.results.length; ++i) { if (event.results[i].isFinal) finalTranscript += event.results[i][0].transcript; else interimTranscript += event.results[i][0].transcript; }
+            if (inputEl) inputEl.value = finalTranscript || interimTranscript;
+            if (finalTranscript.trim().length > 0) { stopVoiceRecognition(); executeQuerySubmission(finalTranscript.trim()); }
+        };
+        recognition.onerror = (event) => { stopVoiceRecognition(); };
+        recognition.onend = () => { if (isListening) stopVoiceRecognition(); };
+        try { recognition.start(); } catch (e) { stopVoiceRecognition(); }
+    }
+    function stopVoiceRecognition() {
+        isListening = false; if (recognition) { try { recognition.stop(); } catch (e) {} recognition = null; }
+        const voiceBtn = document.getElementById('ai-voice-btn'); const submitBtn = document.getElementById('ai-submit-btn'); const cancelBtn = document.getElementById('ai-cancel-btn'); const waveConfig = document.getElementById('ai-voice-wave-config');
+        if (voiceBtn) { voiceBtn.style.display = ''; voiceBtn.style.backgroundColor = ''; voiceBtn.style.color = ''; const iconEl = voiceBtn.querySelector('.material-icons'); if (iconEl) iconEl.textContent = 'mic'; }
+        if (submitBtn) submitBtn.style.display = ''; if (cancelBtn) cancelBtn.style.display = ''; if (waveConfig) waveConfig.style.display = 'none';
+        const resultsVoiceBtn = document.getElementById('ai-results-voice-btn'); const applyBtn = document.getElementById('ai-apply-btn'); const dismissBtn = document.getElementById('ai-dismiss-btn'); const waveResults = document.getElementById('ai-voice-wave-results');
+        if (resultsVoiceBtn) { resultsVoiceBtn.style.display = ''; resultsVoiceBtn.style.backgroundColor = ''; resultsVoiceBtn.style.color = ''; const iconEl = resultsVoiceBtn.querySelector('.material-icons'); if (iconEl) iconEl.textContent = 'mic'; }
+        if (applyBtn) applyBtn.style.display = ''; if (dismissBtn) dismissBtn.style.display = ''; if (waveResults) waveResults.style.display = 'none';
+        if (activeVoiceInput) activeVoiceInput.placeholder = 'Ask anything';
+        stopVoiceSiriWave(); activeVoiceInput = null; activeVoiceButton = null;
+    }
+    async function executeQuerySubmission(queryText) {
+        if (!queryText) return; stopVoiceRecognition();
+        const configStep = document.getElementById('ai-step-config'); const loadingStep = document.getElementById('ai-step-loading'); const resultsStep = document.getElementById('ai-step-results');
+        configStep.style.display = 'none'; resultsStep.style.display = 'none'; loadingStep.style.display = 'block'; runSiriWave(); 
+        await new Promise(resolve => setTimeout(resolve, 1500)); 
+        try {
+            const onField = []; const offField = [];
+            document.querySelectorAll('.player-item').forEach(item => {
+                const baseName = item.querySelector('.player-name')?.textContent || 'Unnamed';
+                const playerObj = { name: baseName, fullName: `${item.querySelector('.player-number')?.textContent || ''} ${baseName}`.trim(), time: parseInt(item.dataset.totalTime), isOnField: item.dataset.isOnField === '1', points: parseInt(item.dataset.points) || 0 };
+                (playerObj.isOnField ? onField : offField).push(playerObj);
+            });
+            const contextPayload = { teamId: teamSelect ? teamSelect.value : null, players: appData.players.filter(p => p.teamId === (teamSelect ? teamSelect.value : "")), onField: onField, offField: offField, gameTimeSecs: totalSeconds, recentSubs: recentSubs, notes: document.getElementById('game-notes') ? document.getElementById('game-notes').value.trim() : "", apiCall: apiCall };
+            const result = await GuahhAI.processQuery(queryText, contextPayload);
+            stopSiriWave();
+            const formattedText = result.text.replace(/\*\*([\s\S]+?)\*\*/g, '<strong>$1</strong>');
+            const resText = document.getElementById('ai-results-text'); resText.innerHTML = formattedText;
+            const resTitle = document.getElementById('ai-results-title'); if (resTitle) resTitle.textContent = queryText;
+            loadingStep.style.display = 'none'; resultsStep.style.display = 'block';
+            resText.classList.remove('ai-text-flow'); void resText.offsetWidth; resText.classList.add('ai-text-flow');
+            const followupInput = document.getElementById('ai-results-followup-input');
+            const aiResultsVoiceBtn = document.getElementById('ai-results-voice-btn');
+            if (followupInput && aiResultsVoiceBtn) { followupInput.value = ''; handleInputChange(followupInput, aiResultsVoiceBtn); }
+            const applyBtn = document.getElementById('ai-apply-btn'); applyBtn.style.display = 'none';
+            if (result.actions && result.actions.length > 0) {
+                result.actions.forEach(action => {
+                    if (action.type === 'SUB_PLAYERS') { applyBtn.style.display = 'block'; applyBtn.onclick = (e) => { e.stopPropagation(); const allPlayers = Array.from(document.querySelectorAll('.player-item')); const togglePlayer = (name, targetState) => { const p = allPlayers.find(item => (item.querySelector('.player-name')?.textContent || '').toLowerCase().includes(name.toLowerCase())); if (p && p.dataset.isOnField === targetState) { const toggle = p.querySelector('.toggle-btn'); if (toggle) toggle.click(); } }; action.out.forEach(name => togglePlayer(name, '1')); action.in.forEach(name => togglePlayer(name, '0')); closeAiPanel(); }; } 
+                    else if (action.type === 'UPDATE_POINTS') { const allPlayers = Array.from(document.querySelectorAll('.player-item')); const p = allPlayers.find(item => (item.querySelector('.player-name')?.textContent || '').toLowerCase().includes(action.targetName.toLowerCase())); if (p) { let pts = parseInt(p.dataset.points) || 0; pts += action.amount; if (pts < 0) pts = 0; p.dataset.points = pts; const ptDisplay = p.querySelector('.pt-display'); if (ptDisplay) ptDisplay.textContent = pts; } } 
+                    else if (action.type === 'TIMER_START') { startTimer(); } 
+                    else if (action.type === 'TIMER_PAUSE') { pauseTimer(); } 
+                    else if (action.type === 'TIMER_RESET') { resetTimer(); } 
+                    else if (action.type === 'ADD_DEFAULT_PLAYERS') { closeAiPanel(); const addDefPlayersBtn = document.getElementById('add-default-players-btn'); if (addDefPlayersBtn) addDefPlayersBtn.click(); } 
+                    else if (action.type === 'FINISH_GAME') { closeAiPanel(); const saveToSheetsBtn = document.getElementById('save-to-sheets-btn'); if (saveToSheetsBtn) saveToSheetsBtn.click(); }
+                });
+            }
+        } catch (error) { stopSiriWave(); showConfirmation('Error', `Failed: ${error.message || error}`); closeAiPanel(); }
+    }
+    function collapseAiPanel() { isAiCollapsed = true; panel.classList.add('collapsed'); panel.style.transform = 'translateX(-50%)'; }
+    function expandAiPanel() { isAiCollapsed = false; panel.classList.remove('collapsed'); panel.style.transform = 'translateX(-50%)'; }
+    function closeAiPanel() { panel.style.display = 'none'; isAiCollapsed = false; panel.classList.remove('collapsed'); stopSiriWave(); stopVoiceRecognition(); }
+    function dragStart(e) { startY = (e.clientY !== undefined) ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : 0); isDragging = true; panel.style.transition = 'none'; }
+    function dragMove(e) { if (!isDragging) return; if (e.cancelable) e.preventDefault(); const currentY = (e.clientY !== undefined) ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : 0); dragOffset = currentY - startY; if (!isAiCollapsed) { if (dragOffset > 0) panel.style.transform = `translate3d(-50%, ${dragOffset}px, 0)`; } else { if (dragOffset < 0) panel.style.transform = `translate3d(-50%, ${dragOffset}px, 0)`; } }
+    function dragEnd() { if (!isDragging) return; isDragging = false; panel.style.transition = 'max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1), width 0.4s cubic-bezier(0.25, 1, 0.5, 1), max-width 0.4s cubic-bezier(0.25, 1, 0.5, 1), padding 0.4s cubic-bezier(0.25, 1, 0.5, 1), border-radius 0.4s cubic-bezier(0.25, 1, 0.5, 1), transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2), opacity 0.4s ease, bottom 0.4s cubic-bezier(0.25, 1, 0.5, 1)'; panel.style.transform = 'translateX(-50%)'; if (!isAiCollapsed) { if (dragOffset > 25) collapseAiPanel(); else expandAiPanel(); } else { if (dragOffset < -60) expandAiPanel(); else collapseAiPanel(); } dragOffset = 0; }
+
+    // --- DYNAMIC CLUB AFFILIATION ENGINE ---
+    function renderClubStatus() {
+        const status = appData.clubStatus || 'NONE';
+        const clubName = appData.clubName || '';
+        const cSub = document.getElementById('sub-club-content');
+        const cSet = document.getElementById('settings-club-content');
+        
+        let html = '';
+        if (status === 'NONE') {
+            html = `
+                <span style="font-size: 12px; color: #B0B0B0; margin-bottom: 10px; display: block;">Search and request to join a Coachboard club to link your team data.</span>
+                <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+                    <input type="text" class="club-search-input" placeholder="Search for your club..." style="flex: 1; padding: 10px; border-radius: 9px; background: #1A1A1A; color: #E0E0E0; border: 1px solid #222; font-size: 14px;">
+                    <button class="timer-btn primary club-search-btn" style="padding: 10px 15px; min-height: 0;">Search</button>
+                </div>
+                <div class="club-search-results" style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px;"></div>
+            `;
+        } else if (status === 'PENDING') {
+            html = `
+                <div style="background: #1A1A1A; padding: 12px; border-radius: 9px; border: 1px solid #222; margin-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="font-weight: bold; color: #E0E0E0; font-size: 15px;">${clubName}</span>
+                        <span style="background: #007bff; color: white; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">PENDING</span>
+                    </div>
+                    <span style="font-size: 12px; color: #B0B0B0; display: block; margin-bottom: 12px;">Waiting for club administrator approval.</span>
+                    <button class="timer-btn secondary leave-club-btn" style="width: 100%; font-size: 13px; color: #D32F2F;">Cancel Request</button>
+                </div>
+            `;
+        } else if (status === 'APPROVED') {
+            html = `
+                <div style="background: #1A1A1A; padding: 12px; border-radius: 9px; border: 1px solid #222; margin-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="font-weight: bold; color: #E0E0E0; font-size: 15px;">${clubName}</span>
+                        <span style="background: #4CAF50; color: white; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">APPROVED</span>
+                    </div>
+                    <span style="font-size: 12px; color: #B0B0B0; display: block; margin-bottom: 12px;">Your account is linked to this club.</span>
+                    <button class="timer-btn secondary leave-club-btn" style="width: 100%; font-size: 13px; color: #D32F2F;">Leave Club</button>
+                </div>
+            `;
+        }
+
+        if (cSub) { cSub.innerHTML = html; attachClubListeners(cSub); }
+        if (cSet) { cSet.innerHTML = html; attachClubListeners(cSet); }
+    }
+    
+    function attachClubListeners(container) {
+        const searchBtn = container.querySelector('.club-search-btn');
+        const searchInput = container.querySelector('.club-search-input');
+        const resultsDiv = container.querySelector('.club-search-results');
+        const leaveBtn = container.querySelector('.leave-club-btn');
+        
+        if (searchBtn && searchInput) {
+            searchBtn.onclick = () => performClubSearch(searchInput, resultsDiv);
+        }
+        if (leaveBtn) {
+            leaveBtn.onclick = () => {
+                const isPending = appData.clubStatus === 'PENDING';
+                const msg = isPending ? 'Cancel your request to join this club?' : 'Are you sure you want to leave this club?';
+                showConfirmation('Confirm', msg, async (c) => {
+                    if (c) {
+                        document.getElementById('action-loading-overlay').style.display = 'flex';
+                        try {
+                            await apiCall('leave_club');
+                            appData.clubStatus = 'NONE';
+                            appData.clubName = '';
+                            renderClubStatus();
+                            showConfirmation('Success', isPending ? 'Request cancelled.' : 'You have left the club.');
+                        } catch (e) { showConfirmation('Error', e.message); } 
+                        finally { document.getElementById('action-loading-overlay').style.display = 'none'; }
+                    }
+                });
+            }
+        }
+    }
+
+    async function performClubSearch(inputEl, resultsContainer) {
+        const query = inputEl ? inputEl.value.trim() : '';
+        if (!query) {
+            if (resultsContainer) resultsContainer.innerHTML = '';
+            return showConfirmation('Error', 'Please enter a club name to search.');
+        }
+        document.getElementById('action-loading-overlay').style.display = 'flex';
+        try {
+            const res = await apiCall('search_clubs', { query });
+            if (resultsContainer) {
+                resultsContainer.innerHTML = '';
+                if (!res.clubs || res.clubs.length === 0) {
+                    resultsContainer.innerHTML = `<div style="color:#B0B0B0; font-size:13px; text-align:center; padding:10px;">No clubs found matching "${query}"</div>`;
+                    return;
+                }
+                res.clubs.forEach(club => {
+                    const div = document.createElement('div');
+                    div.style.cssText = "display: flex; justify-content: space-between; align-items: center; background: #222; padding: 10px; border-radius: 9px; margin-bottom: 6px;";
+                    div.innerHTML = `
+                        <span style="font-weight: 600; color: #E0E0E0; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 10px;">${club.clubName}</span>
+                        <button class="timer-btn secondary" style="padding: 6px 12px; font-size: 12px; min-height: 0; background-color: #4CAF50; color: white; flex-shrink: 0;" onclick="window._reqJoin('${club.clubId}')">Request</button>
+                    `;
+                    resultsContainer.appendChild(div);
+                });
+            }
+        } catch(e) { showConfirmation('Search Failed', e.message); } 
+        finally { document.getElementById('action-loading-overlay').style.display = 'none'; }
+    }
+
+    window._reqJoin = function(clubId) {
+        showConfirmation('Join Club', 'Send a request to join this club? The club administrator will need to approve it.', async (c) => {
+            if(c) {
+                document.getElementById('action-loading-overlay').style.display = 'flex';
+                try {
+                    await apiCall('request_join_club', { clubId });
+                    const dataRes = await apiCall('load_data');
+                    appData.clubStatus = dataRes.clubStatus;
+                    appData.clubName = dataRes.clubName;
+                    renderClubStatus();
+                    showConfirmation('Success', 'Request sent! Your data will sync once the club approves you.');
+                } catch(e) { showConfirmation('Request Failed', e.message); } 
+                finally { document.getElementById('action-loading-overlay').style.display = 'none'; }
+            }
+        });
+    };
+
+    // --- TIMERS ---
+    function resetMiniTimer() {
+        clearInterval(miniTimerInterval); isMiniTimerRunning = false; 
+        if (miniStartPauseBtn) { miniStartPauseBtn.style.display = ''; miniStartPauseBtn.textContent = 'Start'; miniStartPauseBtn.classList.remove('pause'); }
+        miniTotalSeconds = getMiniTimerSeconds(); 
+        if (miniTimeDisplay) { miniTimeDisplay.textContent = formatTime(miniTotalSeconds); miniTimeDisplay.classList.remove('countdown-ended'); }
+    }
+    function startMiniTimer() {
+        if (isMiniTimerRunning || miniTotalSeconds <= 0) return; isMiniTimerRunning = true; 
+        if (miniStartPauseBtn) { miniStartPauseBtn.textContent = 'Pause'; miniStartPauseBtn.classList.add('pause'); }
+        miniTimerInterval = setInterval(() => {
+            if (miniTotalSeconds > 0) { miniTotalSeconds--; if (miniTimeDisplay) miniTimeDisplay.textContent = formatTime(miniTotalSeconds); } 
+            else { clearInterval(miniTimerInterval); isMiniTimerRunning = false; if (miniStartPauseBtn) { miniStartPauseBtn.style.display = 'none'; miniStartPauseBtn.classList.remove('pause'); } if (miniTimeDisplay) miniTimeDisplay.classList.add('countdown-ended'); }
+        }, 1000);
+    }
+    function pauseMiniTimer() {
+        clearInterval(miniTimerInterval); isMiniTimerRunning = false; 
+        if (miniStartPauseBtn) { miniStartPauseBtn.textContent = 'Resume'; miniStartPauseBtn.classList.remove('pause'); }
+    }
+    function startTimer() {
+        if (isRunning || (isCountdownMode && totalSeconds <= 0)) return; isRunning = true; 
+        if(startPauseBtn) { startPauseBtn.textContent = 'Pause'; startPauseBtn.classList.add('pause'); startPauseBtn.classList.remove('resume-flash'); }
+        countdownInterval = setInterval(() => {
+            if (isCountdownMode) { if (totalSeconds > 0) totalSeconds--; else { clearInterval(countdownInterval); isRunning = false; if(startPauseBtn) { startPauseBtn.textContent = 'Done!'; startPauseBtn.classList.remove('pause'); } if(timeDisplay) timeDisplay.classList.add('countdown-ended'); } } 
+            else totalSeconds++;
+            if(timeDisplay) { timeDisplay.textContent = formatTime(totalSeconds); timeDisplay.classList.toggle('countdown-ended', isCountdownMode && totalSeconds <= 60 && totalSeconds > 0); }
+            document.querySelectorAll('.player-item[data-is-on-field="1"]').forEach(item => { let time = parseInt(item.dataset.totalTime) + 1; item.dataset.totalTime = time; const pt = item.querySelector('.player-time'); if(pt) pt.textContent = formatTime(time); });
+            updateSubstitutionWarnings();
+        }, 1000);
+    }
+    function pauseTimer() { 
+        clearInterval(countdownInterval); isRunning = false; 
+        if(startPauseBtn) { startPauseBtn.textContent = 'Resume'; startPauseBtn.classList.remove('pause'); startPauseBtn.classList.add('resume-flash'); }
+    }
+    function resetTimer() {
+        clearInterval(countdownInterval); isRunning = false; 
+        if(startPauseBtn) { startPauseBtn.textContent = 'Start'; startPauseBtn.classList.remove('pause'); startPauseBtn.classList.remove('resume-flash'); }
+        if(timeDisplay) timeDisplay.classList.remove('countdown-ended'); 
+        totalSeconds = isCountdownMode ? DEFAULT_COUNTDOWN_SECONDS : INITIAL_STOPWATCH_SECONDS;
+        if(timeDisplay) timeDisplay.textContent = formatTime(totalSeconds);
+        document.querySelectorAll('.player-item').forEach(item => {
+            item.dataset.totalTime = 0; const pt = item.querySelector('.player-time'); if(pt) pt.textContent = formatTime(0); 
+            item.dataset.isOnField = '0'; const btn = item.querySelector('.toggle-btn'); if (btn) { btn.textContent = 'OFF'; btn.classList.add('status-off'); btn.classList.remove('status-on'); }
+            appendPlayerToCorrectList(item);
+        });
+        updateSubstitutionWarnings();
+    }
+    function adjustTime(s) { 
+        if (totalSeconds + s < 0) s = -totalSeconds; totalSeconds += s; 
+        if(timeDisplay) timeDisplay.textContent = formatTime(totalSeconds); 
+        document.querySelectorAll('.player-item[data-is-on-field="1"]').forEach(item => {
+            let time = parseInt(item.dataset.totalTime) + s; if (time < 0) time = 0; item.dataset.totalTime = time; 
+            const pt = item.querySelector('.player-time'); if(pt) pt.textContent = formatTime(time);
+        }); updateSubstitutionWarnings(); 
+    }
+
+    // --- DRAG & DROP ENGINE (WITH LONG PRESS TOUCH HOLD DELAY) ---
+    function clearDragStyles() {
+        document.querySelectorAll('.player-item').forEach(item => { item.style.backgroundColor = ''; });
+        const cDrop = document.getElementById('court-dropzone'); const bDrop = document.getElementById('bench-dropzone');
+        if (cDrop) cDrop.style.backgroundColor = ''; if (bDrop) bDrop.style.backgroundColor = ''; lastTouchTarget = null;
+    }
+    function setupTouchDrag(playerItem) {
+        let holdTimeout = null;
+        let startX = 0;
+        let startY = 0;
+        let isTouchDraggingStarted = false;
+        const HOLD_DELAY = 250; // Milliseconds to hold down card before dragging activates
+        const MOVE_THRESHOLD = 8; // Max px boundary before clearing the drag sequence
+
+        playerItem.addEventListener('touchstart', (e) => {
+            if (e.target.closest('button, input, select, textarea')) return;
+            const touch = e.touches[0];
+            startX = touch.clientX;
+            startY = touch.clientY;
+            isTouchDraggingStarted = false;
+
+            if (holdTimeout) clearTimeout(holdTimeout);
+            holdTimeout = setTimeout(() => {
+                isTouchDraggingStarted = true;
+                touchDragItem = playerItem; 
+                playerItem.style.opacity = '0.5'; 
+                document.body.classList.add('dragging-active');
+                
+                const rect = playerItem.getBoundingClientRect(); 
+                touchClone = playerItem.cloneNode(true);
+                touchClone.style.position = 'fixed'; 
+                touchClone.style.left = rect.left + 'px'; 
+                touchClone.style.top = rect.top + 'px';
+                touchClone.style.width = rect.width + 'px'; 
+                touchClone.style.height = rect.height + 'px'; 
+                touchClone.style.opacity = '0.8';
+                touchClone.style.pointerEvents = 'none'; 
+                touchClone.style.zIndex = '10000'; 
+                touchClone.style.boxShadow = '0 8px 16px rgba(0,0,0,0.5)';
+                touchClone.style.background = '#121212'; 
+                document.body.appendChild(touchClone);
+                
+                if (navigator.vibrate) navigator.vibrate(15);
+            }, HOLD_DELAY);
+        }, { passive: true });
+
+        playerItem.addEventListener('touchmove', (e) => {
+            const touch = e.touches[0];
+            const diffX = Math.abs(touch.clientX - startX);
+            const diffY = Math.abs(touch.clientY - startY);
+
+            if (!isTouchDraggingStarted) {
+                if (diffX > MOVE_THRESHOLD || diffY > MOVE_THRESHOLD) {
+                    if (holdTimeout) {
+                        clearTimeout(holdTimeout);
+                        holdTimeout = null;
+                    }
+                }
+                return; // Gracefully permit native browser scrolls
+            }
+
+            if (e.cancelable) e.preventDefault();
+            if (!touchDragItem || !touchClone) return;
+            
+            touchClone.style.left = (touch.clientX - touchClone.offsetWidth / 2) + 'px'; 
+            touchClone.style.top = (touch.clientY - touchClone.offsetHeight / 2) + 'px';
+            
+            const element = document.elementFromPoint(touch.clientX, touch.clientY);
+            if (element) {
+                const targetPlayerItem = element.closest('.player-item');
+                if (targetPlayerItem && targetPlayerItem !== touchDragItem) {
+                    if (lastTouchTarget && lastTouchTarget !== targetPlayerItem) lastTouchTarget.style.backgroundColor = '';
+                    targetPlayerItem.style.backgroundColor = 'rgba(255, 255, 255, 0.08)'; 
+                    lastTouchTarget = targetPlayerItem;
+                } else {
+                    if (lastTouchTarget && lastTouchTarget.classList.contains('player-item')) lastTouchTarget.style.backgroundColor = '';
+                    const targetZone = element.closest('#court-dropzone, #bench-dropzone');
+                    if (targetZone) {
+                        if (lastTouchTarget && lastTouchTarget !== targetZone) lastTouchTarget.style.backgroundColor = '';
+                        targetZone.style.backgroundColor = 'rgba(255, 255, 255, 0.04)'; 
+                        lastTouchTarget = targetZone;
+                    } else if (lastTouchTarget && !lastTouchTarget.classList.contains('player-item')) { 
+                        lastTouchTarget.style.backgroundColor = ''; 
+                        lastTouchTarget = null; 
+                    }
+                }
+            } else if (lastTouchTarget) { 
+                lastTouchTarget.style.backgroundColor = ''; 
+                lastTouchTarget = null; 
+            }
+        }, { passive: false });
+
+        playerItem.addEventListener('touchend', (e) => {
+            if (holdTimeout) {
+                clearTimeout(holdTimeout);
+                holdTimeout = null;
+            }
+
+            if (!isTouchDraggingStarted) return;
+
+            if (!touchDragItem) return;
+            playerItem.style.opacity = ''; 
+            document.body.classList.remove('dragging-active');
+            if (touchClone) { 
+                document.body.removeChild(touchClone); 
+                touchClone = null; 
+            }
+            clearDragStyles();
+            
+            const touch = e.changedTouches[0]; 
+            const element = document.elementFromPoint(touch.clientX, touch.clientY);
+            if (element) {
+                const targetPlayerItem = element.closest('.player-item');
+                if (targetPlayerItem && targetPlayerItem !== touchDragItem) swapPlayers(touchDragItem, targetPlayerItem);
+                else { 
+                    const targetZone = element.closest('#court-dropzone, #bench-dropzone'); 
+                    if (targetZone) movePlayerToStatus(touchDragItem, targetZone.id === 'court-dropzone' ? '1' : '0'); 
+                }
+            }
+            touchDragItem = null;
+            isTouchDraggingStarted = false;
+        });
+
+        playerItem.addEventListener('touchcancel', () => {
+            if (holdTimeout) {
+                clearTimeout(holdTimeout);
+                holdTimeout = null;
+            }
+            if (isTouchDraggingStarted) {
+                playerItem.style.opacity = ''; 
+                document.body.classList.remove('dragging-active');
+                if (touchClone) { 
+                    document.body.removeChild(touchClone); 
+                    touchClone = null; 
+                }
+                clearDragStyles();
+                touchDragItem = null;
+                isTouchDraggingStarted = false;
+            }
+        });
+    }
+    function setupDesktopDrag(playerItem) {
+        playerItem.draggable = true;
+        playerItem.addEventListener('dragstart', (e) => { desktopDragItem = playerItem; playerItem.style.opacity = '0.5'; document.body.classList.add('dragging-active'); e.dataTransfer.effectAllowed = 'move'; });
+        playerItem.addEventListener('dragend', () => { playerItem.style.opacity = ''; document.body.classList.remove('dragging-active'); desktopDragItem = null; clearDragStyles(); });
+        playerItem.addEventListener('dragenter', (e) => { e.preventDefault(); playerItem.style.backgroundColor = 'rgba(255, 255, 255, 0.08)'; });
+        playerItem.addEventListener('dragleave', () => { playerItem.style.backgroundColor = ''; });
+        playerItem.addEventListener('dragover', (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; });
+        playerItem.addEventListener('drop', (e) => { e.preventDefault(); e.stopPropagation(); clearDragStyles(); if (desktopDragItem && desktopDragItem !== playerItem) swapPlayers(desktopDragItem, playerItem); });
+    }
+    function appendPlayerToCorrectList(playerItem) { const listId = playerItem.dataset.isOnField === '1' ? 'court-list' : 'bench-list'; const listEl = document.getElementById(listId); if (listEl) listEl.appendChild(playerItem); }
+    function movePlayerToStatus(playerItem, targetStatus) {
+        const currentStatus = playerItem.dataset.isOnField; if (currentStatus === targetStatus) { appendPlayerToCorrectList(playerItem); return; }
+        if (targetStatus === '1') { const currentOnCount = document.querySelectorAll('#court-list .player-item').length; const maxPlayersLimit = getMaxPlayers(); if (currentOnCount >= maxPlayersLimit) { showConfirmation('Substitution Limit Reached', `Maximum ${maxPlayersLimit} players allowed on field.`); return; } }
+        playerItem.dataset.isOnField = targetStatus; const toggleBtn = playerItem.querySelector('.toggle-btn');
+        if (targetStatus === '1') { if (toggleBtn) { toggleBtn.textContent = 'ON'; toggleBtn.classList.remove('status-off'); toggleBtn.classList.add('status-on'); } recordSubChange(playerItem.querySelector('.player-name').textContent, 'on'); } 
+        else { if (toggleBtn) { toggleBtn.textContent = 'OFF'; toggleBtn.classList.add('status-off'); toggleBtn.classList.remove('status-on'); } recordSubChange(playerItem.querySelector('.player-name').textContent, 'off'); }
+        appendPlayerToCorrectList(playerItem); updateSubstitutionWarnings();
+    }
+    function swapPlayers(playerA, playerB) {
+        const statusA = playerA.dataset.isOnField; const statusB = playerB.dataset.isOnField;
+        const parentA = playerA.parentNode; const parentB = playerB.parentNode;
+        if (!parentA || !parentB) return;
+        const nextA = playerA.nextSibling; const nextB = playerB.nextSibling;
+        if (statusA === statusB) {
+            if (parentA === parentB) {
+                if (nextA === playerB) parentA.insertBefore(playerB, playerA);
+                else if (nextB === playerA) parentA.insertBefore(playerA, playerB);
+                else { parentA.insertBefore(playerA, nextB); parentB.insertBefore(playerB, nextA); }
+            }
+        } else {
+            playerA.dataset.isOnField = statusB; playerB.dataset.isOnField = statusA;
+            const toggleBtnA = playerA.querySelector('.toggle-btn'); const toggleBtnB = playerB.querySelector('.toggle-btn');
+            if (statusB === '1') { if (toggleBtnA) { toggleBtnA.textContent = 'ON'; toggleBtnA.classList.remove('status-off'); toggleBtnA.classList.add('status-on'); } recordSubChange(playerA.querySelector('.player-name').textContent, 'on'); } 
+            else { if (toggleBtnA) { toggleBtnA.textContent = 'OFF'; toggleBtnA.classList.add('status-off'); toggleBtnA.classList.remove('status-on'); } recordSubChange(playerA.querySelector('.player-name').textContent, 'off'); }
+            if (statusA === '1') { if (toggleBtnB) { toggleBtnB.textContent = 'ON'; toggleBtnB.classList.remove('status-off'); toggleBtnB.classList.add('status-on'); } recordSubChange(playerB.querySelector('.player-name').textContent, 'on'); } 
+            else { if (toggleBtnB) { toggleBtnB.textContent = 'OFF'; toggleBtnB.classList.add('status-off'); toggleBtnB.classList.remove('status-on'); } recordSubChange(playerB.querySelector('.player-name').textContent, 'off'); }
+            if (nextB) parentB.insertBefore(playerA, nextB); else parentB.appendChild(playerA);
+            if (nextA) parentA.insertBefore(playerB, nextA); else parentA.appendChild(playerB);
+        }
+        updateSubstitutionWarnings();
+    }
+
+    // --- GAME ROTATION ENGINE ---
+    function updateRecentSubsUI() {
+        const container = document.getElementById('recent-subs-section'); const list = document.getElementById('recent-subs-list'); if(!container || !list) return;
+        const justOn = recentSubs.filter(sub => sub.state === 'on'); if (justOn.length === 0) { container.style.display = 'none'; return; }
+        container.style.display = 'block'; list.innerHTML = '';
+        justOn.forEach(sub => {
+            const badge = document.createElement('span'); badge.style.cssText = `padding: 4px 8px; border-radius: 7px; font-size: 11px; font-weight: 600; color: white; background-color: #4CAF50;`; badge.textContent = sub.name; list.appendChild(badge);
+        });
+    }
+    function commitSubs() { recentSubs = [...pendingSubChanges]; pendingSubChanges = []; subDebounceTimer = null; updateRecentSubsUI(); resetMiniTimer(); if (autoTimerCheckbox && autoTimerCheckbox.checked) startMiniTimer(); }
+    function recordSubChange(name, state) { pendingSubChanges = pendingSubChanges.filter(p => p.name !== name); pendingSubChanges.push({ name, state }); if (subDebounceTimer) clearTimeout(subDebounceTimer); subDebounceTimer = setTimeout(commitSubs, 4000); }
+    function updateSubstitutionWarnings() {
+        const items = document.querySelectorAll('.player-item'); if (items.length === 0) return;
+        let totalTime = 0, onFieldTime = 0, onFieldCount = 0;
+        const players = Array.from(items).map(item => { const time = parseInt(item.dataset.totalTime); totalTime += time; if (item.dataset.isOnField === '1') { onFieldTime += time; onFieldCount++; } return { element: item, time }; });
+        players.sort((a, b) => b.time - a.time);
+        let rank = 0, prevTime = -1;
+        players.forEach(p => {
+            const rankDisplay = p.element.querySelector('[data-role="player-rank-display"]');
+            if (p.time !== prevTime) rank++; prevTime = p.time; p.element.dataset.rank = rank;
+            if (rankDisplay) { rankDisplay.textContent = rank; rankDisplay.className = 'player-rank'; if (rank === 1) rankDisplay.classList.add('rank-color-1'); else if (rank === 2) rankDisplay.classList.add('rank-color-2'); else if (rank === 3) rankDisplay.classList.add('rank-color-3'); else if (rank === 4) rankDisplay.classList.add('rank-color-4'); }
+        });
+        if (players.length < 2 || totalSeconds < MIN_GAME_TIME_FOR_WARNINGS || totalTime === 0) { items.forEach(i => { const icon = i.querySelector('[data-role="low-warning-icon"]'); if(icon) icon.style.display = 'none'; }); return; }
+        const avgTime = onFieldCount > 0 ? onFieldTime / onFieldCount : 0;
+        items.forEach(item => {
+            const icon = item.querySelector('[data-role="low-warning-icon"]'); if(!icon) return;
+            const time = parseInt(item.dataset.totalTime); const isOn = item.dataset.isOnField === '1';
+            if (!isOn && avgTime > 0 && (time < (avgTime * LOW_TIME_RATIO) || (avgTime - time) > SIGNIFICANT_TIME_GAP)) icon.style.display = 'inline'; else icon.style.display = 'none';
+        });
+    }
+    function createPlayerItem(name, number = null, playerId = '') {
+        const playerItem = document.createElement('div'); playerItem.className = 'player-item'; playerItem.dataset.totalTime = 0; playerItem.dataset.isOnField = '0'; playerItem.dataset.rank = '0'; playerItem.dataset.playerId = playerId; playerItem.dataset.points = '0';
+        const playerInfoGroup = document.createElement('div'); playerInfoGroup.className = 'player-info-group'; 
+        const playerRankDisplay = document.createElement('span'); playerRankDisplay.className = 'player-rank'; playerRankDisplay.textContent = '-'; playerRankDisplay.dataset.role = 'player-rank-display'; playerInfoGroup.appendChild(playerRankDisplay);
+        const nameWrapper = document.createElement('div'); nameWrapper.className = 'player-name-wrapper';
+        if (number !== null) { const playerNumber = document.createElement('span'); playerNumber.className = 'player-number'; playerNumber.textContent = `#${number}`; nameWrapper.appendChild(playerNumber); }
+        const playerName = document.createElement('span'); playerName.className = 'player-name'; playerName.textContent = name; nameWrapper.appendChild(playerName); playerInfoGroup.appendChild(nameWrapper);
+        const lowWarningIcon = document.createElement('span'); lowWarningIcon.className = 'warning-icon low'; lowWarningIcon.textContent = '⚠️'; lowWarningIcon.title = 'Low play time - Consider subbing on'; lowWarningIcon.dataset.role = 'low-warning-icon'; playerInfoGroup.appendChild(lowWarningIcon);
+        const playerControlsGroup = document.createElement('div'); playerControlsGroup.className = 'player-controls-group';
+        const pointsGroup = document.createElement('div'); pointsGroup.className = 'points-controls';
+        const ptMinus = document.createElement('button'); ptMinus.className = 'pt-btn minus'; ptMinus.textContent = '-';
+        const ptDisplay = document.createElement('span'); ptDisplay.className = 'pt-display'; ptDisplay.textContent = '0';
+        const ptPlus = document.createElement('button'); ptPlus.className = 'pt-btn plus'; ptPlus.textContent = '+';
+        ptMinus.onclick = () => { let pts = parseInt(playerItem.dataset.points) || 0; if (pts > 0) { pts--; playerItem.dataset.points = pts; ptDisplay.textContent = pts; } };
+        ptPlus.onclick = () => { let pts = parseInt(playerItem.dataset.points) || 0; pts++; playerItem.dataset.points = pts; ptDisplay.textContent = pts; };
+        pointsGroup.appendChild(ptMinus); pointsGroup.appendChild(ptDisplay); pointsGroup.appendChild(ptPlus);
+        const timeOnFieldDisplay = document.createElement('span'); timeOnFieldDisplay.className = 'player-time'; timeOnFieldDisplay.textContent = formatTime(0);
+        const toggleBtn = document.createElement('button'); toggleBtn.className = 'toggle-btn status-off'; toggleBtn.textContent = 'OFF';
+        toggleBtn.onclick = () => {
+            const isOn = playerItem.dataset.isOnField === '1';
+            if (isOn) { playerItem.dataset.isOnField = '0'; toggleBtn.textContent = 'OFF'; toggleBtn.classList.add('status-off'); toggleBtn.classList.remove('status-on'); recordSubChange(name, 'off'); appendPlayerToCorrectList(playerItem); } 
+            else { const currentOnCount = document.querySelectorAll('#court-list .player-item').length; const maxPlayersLimit = getMaxPlayers(); if (currentOnCount >= maxPlayersLimit) { showConfirmation('Substitution Limit Reached', `Maximum ${maxPlayersLimit} players allowed on field.`); return; } playerItem.dataset.isOnField = '1'; toggleBtn.textContent = 'ON'; toggleBtn.classList.remove('status-off'); toggleBtn.classList.add('status-on'); if (lowWarningIcon) lowWarningIcon.style.display = 'none'; recordSubChange(name, 'on'); appendPlayerToCorrectList(playerItem); }
+            updateSubstitutionWarnings();
+        };
+        const deleteBtn = document.createElement('button'); deleteBtn.className = 'delete-btn'; deleteBtn.textContent = '×';
+        deleteBtn.onclick = () => { showConfirmation('Remove Player', `Remove ${name} from this game?`, (confirmed) => { if (confirmed) { const courtList = document.getElementById('court-list'); const benchList = document.getElementById('bench-list'); if (courtList && courtList.contains(playerItem)) courtList.removeChild(playerItem); if (benchList && benchList.contains(playerItem)) benchList.removeChild(playerItem); updateSubstitutionWarnings(); } }); };
+        playerControlsGroup.appendChild(timeOnFieldDisplay); playerControlsGroup.appendChild(pointsGroup); playerControlsGroup.appendChild(toggleBtn); playerControlsGroup.appendChild(deleteBtn);
+        playerItem.appendChild(playerInfoGroup); playerItem.appendChild(playerControlsGroup);
+        setupTouchDrag(playerItem); setupDesktopDrag(playerItem);
+        return playerItem;
+    }
+    function addPlayerByName(name, number = null, playerId = '') { const effectiveName = name || (number !== null ? `Player #${number}` : 'Unnamed'); const playerItem = createPlayerItem(effectiveName, number, playerId); appendPlayerToCorrectList(playerItem); updateSubstitutionWarnings(); }
+    function autoAddDefaultPlayers(teamId) {
+        const teamPlayers = appData.players.filter(p => p.teamId === teamId); teamPlayers.sort((a, b) => (parseInt(b.rank) || 0) - (parseInt(a.rank) || 0)); 
+        teamPlayers.forEach(p => { const existing = Array.from(document.querySelectorAll('.player-item')).find(item => item.dataset.playerId === p.playerId); if (!existing) addPlayerByName(p.playerName, p.playerNumber, p.playerId); });
+        updateSubstitutionWarnings();
+    }
+    function sortRoster() {
+        const courtList = document.getElementById('court-list'); const benchList = document.getElementById('bench-list');
+        if (courtList) { const courtItems = Array.from(courtList.children); courtItems.sort((a, b) => parseInt(b.dataset.totalTime) - parseInt(a.dataset.totalTime)); courtItems.forEach(item => courtList.appendChild(item)); }
+        if (benchList) { const benchItems = Array.from(benchList.children); benchItems.sort((a, b) => parseInt(b.dataset.totalTime) - parseInt(a.dataset.totalTime)); benchItems.forEach(item => benchList.appendChild(item)); }
+    }
+
+    // --- APP CORE & VIEWS ---
+    function applyGlobalTeamChange(teamId) {
+        localStorage.setItem(_ST, teamId); if(teamSelect) teamSelect.value = teamId; const mt = document.getElementById('manage-team-select'); const st = document.getElementById('stats-team-select'); if(mt) mt.value = teamId; if(st) st.value = teamId;
+        resetTimer(); resetMiniTimer();
+        const courtList = document.getElementById('court-list'); const benchList = document.getElementById('bench-list');
+        if(courtList) courtList.innerHTML = ''; if(benchList) benchList.innerHTML = '';
+        if (autoAddCheckbox && autoAddCheckbox.checked) autoAddDefaultPlayers(teamId);
+        resetPlayerForm(); renderManagePlayers(); const statsContent = document.getElementById('stats-content'); if(statsContent) statsContent.innerHTML = '';
+    }
+    function handleGlobalTeamChange(newTeamId, sourceSelect) {
+        const currentSaved = localStorage.getItem(_ST) || ""; if (newTeamId === currentSaved) return;
+        if (totalSeconds > 0) { showConfirmation('Change Team?', 'Changing teams will reset the current game timer and clear the roster. Proceed?', (confirmed) => { if (confirmed) applyGlobalTeamChange(newTeamId); else sourceSelect.value = currentSaved; }); } 
+        else applyGlobalTeamChange(newTeamId);
+    }
+    function renderTeams() {
+        const mt = document.getElementById('manage-team-select'); const st = document.getElementById('stats-team-select'); const finalSelects = [teamSelect, mt, st].filter(el => el !== null);
+        finalSelects.forEach(s => s.innerHTML = '<option value="" disabled selected>Select a Team...</option>');
+        appData.teams.forEach(t => { const opt = `<option value="${t.teamId}">${t.teamName}</option>`; finalSelects.forEach(s => s.innerHTML += opt); });
+        const savedTeam = localStorage.getItem(_ST); let selectedId = null;
+        if (savedTeam && appData.teams.some(t => t.teamId === savedTeam)) selectedId = savedTeam; else if (appData.teams.length > 0) selectedId = appData.teams[0].teamId;
+        if (selectedId) { localStorage.setItem(_ST, selectedId); finalSelects.forEach(s => s.value = selectedId); const countPlayers = document.querySelectorAll('.player-item').length; if (autoAddCheckbox && autoAddCheckbox.checked && countPlayers === 0) autoAddDefaultPlayers(selectedId); renderManagePlayers(); }
+    }
+    function renderManageTeams() {
+        const list = document.getElementById('manage-team-list'); if(!list) return; list.innerHTML = '';
+        appData.teams.forEach(t => { list.innerHTML += `<div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #121212; margin-bottom: 5px; border-radius: 9px;"><div style="display: flex; flex-direction: column;"><span style="font-weight: 500; font-size: 15px; color: #E0E0E0;">${t.teamName}</span><span style="font-size: 11px; color: #B0B0B0; margin-top: 2px;">Sport: ${t.sport || 'N/A'}</span></div><button class="timer-btn secondary" style="padding: 5px 10px; font-size: 11px; min-height: 0; background-color: #D32F2F; color: white;" onclick="window._dt('${t.teamId}')">Delete</button></div>`; });
+    }
+    function renderManagePlayers() {
+        const list = document.getElementById('manage-player-list'); const mt = document.getElementById('manage-team-select'); if(!list || !mt) return; list.innerHTML = '';
+        const teamId = mt.value; if (!teamId) return;
+        const teamPlayers = appData.players.filter(p => p.teamId === teamId); teamPlayers.sort((a, b) => (parseInt(b.rank) || 0) - (parseInt(a.rank) || 0)); 
+        teamPlayers.forEach(p => {
+            const div = document.createElement('div'); div.style.cssText = "display: flex; justify-content: space-between; padding: 10px; background: #121212; margin-bottom: 5px; border-radius: 9px; align-items: center;";
+            let details = `(Rating: ${p.rank || '-'})`; if(p.height) details += ` | ${p.height}cm`; if(p.skill) details += ` | ${p.skill}`;
+            div.innerHTML = `<div style="display: flex; flex-direction: column;"><div style="display: flex; align-items: center; gap: 6px;"><span style="font-weight: 700; color: #64B5F6; font-size: 15px;">#${p.playerNumber || '-'}</span><span style="font-weight: 500; font-size: 15px; color: #E0E0E0;">${p.playerName}</span></div><span style="color: #B0B0B0; font-size: 11px; margin-top: 3px;">${details}</span></div><div style="display: flex; gap: 5px;"><button class="timer-btn secondary" style="padding: 5px 10px; font-size: 11px; min-height: 0;" onclick="window._ep('${p.playerId}')">Edit</button><button class="timer-btn secondary" style="padding: 5px 10px; font-size: 11px; min-height: 0; background-color: #D32F2F; color: white;" onclick="window._rp('${p.playerId}')">Remove</button></div>`;
+            list.appendChild(div);
+        });
+    }
+    function resetPlayerForm() {
+        const nName = document.getElementById('new-player-name'); const nNum = document.getElementById('new-player-number'); const nRank = document.getElementById('new-player-rank'); const nHeight = document.getElementById('new-player-height'); const btn = document.getElementById('create-player-btn');
+        if(nName) nName.value = ''; if(nNum) nNum.value = ''; if(nRank) nRank.value = ''; if(nHeight) nHeight.value = ''; setSelectedSkills('');
+        if(btn) { btn.textContent = 'Add Player'; btn.style.backgroundColor = ''; btn.classList.replace('secondary', 'primary'); } editingPlayerId = null;
+    }
+    function showView(viewId) {
+        views.forEach(v => { const el = document.getElementById(v); if(el) el.style.display = 'none'; });
+        const activeView = document.getElementById(viewId); if(activeView) activeView.style.display = 'block';
+        const nav = document.getElementById('app-nav'); if (viewId === 'login-view' || viewId === 'signup-view' || viewId === 'sub-block-view') { if(nav) nav.style.display = 'none'; } else { if(nav) nav.style.display = 'flex'; }
+        ['app-view', 'manage-view', 'stats-view', 'settings-view'].forEach(v => { const btn = document.getElementById('nav-' + v.split('-')[0] + '-btn'); if (btn) { btn.className = v === viewId ? 'timer-btn primary' : 'timer-btn secondary'; if (v === 'app-view') btn.style.flex = '1'; } });
+    }
+    function clearLocalAuth() { authToken = null; localStorage.removeItem(_TK); localStorage.removeItem(_EM); localStorage.removeItem(_PW); appData = { teams: [], players: [], clubStatus: 'NONE', clubName: '' }; }
+    function promptLogoutStandard() { showConfirmation('Log Out', 'Are you sure you want to log out?', (c) => { if (c) { apiCall('logout').catch(e => {}); clearLocalAuth(); window.location.reload(); } }); }
+    function promptLogoutAll() { showConfirmation('Log Out All Sessions', 'Are you sure you want to log out of all your devices? You will need to log in again.', (c) => { if (c) { apiCall('logout_all').catch(e => {}); clearLocalAuth(); window.location.reload(); } }); }
 
     // --- AI ENGINE ---
     function loadStepConfigSuggestions() {
@@ -1242,6 +2060,8 @@
         if (authToken) {
             try {
                 const res = await apiCall('load_data'); currentUser = res.email; subscriptionStatus = res.subscriptionStatus; appData.teams = res.teams || []; appData.players = res.players || [];
+                appData.clubStatus = res.clubStatus || "NONE"; appData.clubName = res.clubName || "";
+                renderClubStatus();
                 if (subscriptionStatus !== 'ACTIVE') showView('sub-block-view'); else { renderTeams(); showView('app-view'); }
             } catch (e) { clearLocalAuth(); if(e.message && e.message.includes("version out of date")) showConfirmation('Update Required', e.message); showView('login-view'); }
         } else { showView('login-view'); }
@@ -1320,10 +2140,63 @@
     const logoutBtnSub = document.getElementById('logout-btn-sub'); if(logoutBtnSub) logoutBtnSub.onclick = promptLogoutStandard;
 
     const loginBtn = document.getElementById('login-btn');
-    if(loginBtn) { loginBtn.onclick = async () => { const email = document.getElementById('login-email').value.trim(); const password = document.getElementById('login-password').value.trim(); if (!email || !password) return showConfirmation('Error', 'Please enter your email and password'); loginBtn.textContent = 'Logging in...'; loginBtn.disabled = true; try { const res = await apiCall('login', { email, password }); authToken = res.token; localStorage.setItem(_TK, authToken); localStorage.setItem(_EM, email); localStorage.setItem(_PW, password); document.getElementById('action-loading-overlay').style.display = 'flex'; await initApp(); } catch (e) { showConfirmation('Error', e.message); const actionOverlay = document.getElementById('action-loading-overlay'); if (actionOverlay) actionOverlay.style.display = 'none'; } finally { loginBtn.textContent = 'Log In'; loginBtn.disabled = false; } }; }
+    if(loginBtn) { 
+        loginBtn.onclick = async () => { 
+            const emailEl = document.getElementById('login-email'); 
+            const passEl = document.getElementById('login-password'); 
+            const email = emailEl.value.trim(); 
+            const password = passEl.value.trim(); 
+            if (!email || !password) return showConfirmation('Error', 'Please enter your email and password'); 
+            loginBtn.textContent = 'Logging in...'; 
+            loginBtn.disabled = true; 
+            try { 
+                const res = await apiCall('login', { email, password }); 
+                authToken = res.token; 
+                localStorage.setItem(_TK, authToken); 
+                localStorage.setItem(_EM, email); 
+                localStorage.setItem(_PW, password); 
+                
+                if (emailEl) emailEl.value = '';
+                if (passEl) passEl.value = '';
+
+                document.getElementById('action-loading-overlay').style.display = 'flex'; 
+                await initApp(); 
+            } catch (e) { showConfirmation('Error', e.message); const actionOverlay = document.getElementById('action-loading-overlay'); if (actionOverlay) actionOverlay.style.display = 'none'; } 
+            finally { loginBtn.textContent = 'Log In'; loginBtn.disabled = false; } 
+        }; 
+    }
 
     const signupBtn = document.getElementById('signup-btn');
-    if(signupBtn) { signupBtn.onclick = async () => { const firstName = document.getElementById('signup-firstname').value.trim(); const email = document.getElementById('signup-email').value.trim(); const phone = document.getElementById('signup-phone').value.trim(); const password = document.getElementById('signup-password').value.trim(); if (!firstName || !email || !password) return showConfirmation('Error', 'First Name, Email, and Password are required.'); const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; if (!emailRegex.test(email)) return showConfirmation('Error', 'Please enter a valid email address.'); if (password.length < 6) return showConfirmation('Error', 'Password must be at least 6 characters.'); signupBtn.textContent = 'Signing up...'; signupBtn.disabled = true; try { const res = await apiCall('signup', { firstName, email, phone, password }); authToken = res.token; localStorage.setItem(_TK, authToken); localStorage.setItem(_EM, email); localStorage.setItem(_PW, password); document.getElementById('action-loading-overlay').style.display = 'flex'; await initApp(); } catch (e) { showConfirmation('Error', e.message); const actionOverlay = document.getElementById('action-loading-overlay'); if (actionOverlay) actionOverlay.style.display = 'none'; } finally { signupBtn.textContent = 'Sign Up'; signupBtn.disabled = false; } }; }
+    if(signupBtn) { 
+        signupBtn.onclick = async () => { 
+            const firstName = document.getElementById('signup-firstname').value.trim(); 
+            const email = document.getElementById('signup-email').value.trim(); 
+            const phone = document.getElementById('signup-phone').value.trim(); 
+            const password = document.getElementById('signup-password').value.trim(); 
+            if (!firstName || !email || !password) return showConfirmation('Error', 'First Name, Email, and Password are required.'); 
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; 
+            if (!emailRegex.test(email)) return showConfirmation('Error', 'Please enter a valid email address.'); 
+            if (password.length < 6) return showConfirmation('Error', 'Password must be at least 6 characters.'); 
+            signupBtn.textContent = 'Signing up...'; 
+            signupBtn.disabled = true; 
+            try { 
+                const res = await apiCall('signup', { firstName, email, phone, password }); 
+                authToken = res.token; 
+                localStorage.setItem(_TK, authToken); 
+                localStorage.setItem(_EM, email); 
+                localStorage.setItem(_PW, password); 
+                
+                document.getElementById('signup-firstname').value = '';
+                document.getElementById('signup-email').value = '';
+                const pInput = document.getElementById('signup-password');
+                if (pInput) pInput.value = '';
+
+                document.getElementById('action-loading-overlay').style.display = 'flex'; 
+                await initApp(); 
+            } catch (e) { showConfirmation('Error', e.message); const actionOverlay = document.getElementById('action-loading-overlay'); if (actionOverlay) actionOverlay.style.display = 'none'; } 
+            finally { signupBtn.textContent = 'Sign Up'; signupBtn.disabled = false; } 
+        }; 
+    }
 
     const refreshSubBtn = document.getElementById('refresh-sub-btn');
     if(refreshSubBtn) { refreshSubBtn.onclick = async () => { refreshSubBtn.textContent = 'Checking...'; refreshSubBtn.disabled = true; document.getElementById('action-loading-overlay').style.display = 'flex'; await initApp(); refreshSubBtn.textContent = 'Check Status Again'; refreshSubBtn.disabled = false; }; }

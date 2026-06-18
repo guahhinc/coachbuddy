@@ -108,7 +108,7 @@
         #ai-dashboard-panel {
             background: linear-gradient(90deg, rgba(249,162,56,0.1), rgba(253,78,147,0.1), rgba(172,161,253,0.1), rgba(78,180,252,0.1));
             border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 13px; padding: 20px; margin-bottom: 20px;
-            cursor: pointer; transition: transform 0.2s, border-color 0.2s;
+            cursor: pointer; transition: transform 0.2s, border-color 0.2s; position: relative; z-index: 10;
         }
         #ai-dashboard-panel:hover {
             transform: scale(1.01);
@@ -131,7 +131,8 @@
             position: fixed;
             bottom: 24px;
             right: 24px;
-            width: 380px !important; 
+            width: 440px !important; 
+            max-width: calc(100vw - 48px); 
             background: rgba(10, 10, 10, 0.72) !important;
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 24px; 
@@ -143,7 +144,7 @@
             color: #FFFFFF;
             backdrop-filter: blur(12px) saturate(1.5);
             -webkit-backdrop-filter: blur(12px) saturate(1.5);
-            transition: max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1), width 0.4s cubic-bezier(0.25, 1, 0.5, 1), max-width 0.4s cubic-bezier(0.25, 1, 0.5, 1), padding 0.4s cubic-bezier(0.25, 1, 0.5, 1), border-radius 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease;
+            transition: max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1), width 0.4s cubic-bezier(0.25, 1, 0.5, 1), max-width 0.4s cubic-bezier(0.25, 1, 0.5, 1), padding 0.4s cubic-bezier(0.25, 1, 0.5, 1), border-radius 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease, transform 0.3s ease;
             max-height: 92vh;
             overflow: hidden;
             touch-action: none;
@@ -367,7 +368,7 @@
                     <div id="ai-insight-text" style="font-size: 14px; line-height: 1.5; color: #E0E0E0;">
                         Gathering intelligence across all coaches...
                     </div>
-                    <div id="ai-wave-container" style="height: 50px; width: 100%; margin-top: 10px;"></div>
+                    <div id="ai-wave-container" style="height: 50px; width: 100%; margin-top: 10px; pointer-events: none;"></div>
                 </div>
 
                 <div class="grid-cards">
@@ -499,7 +500,7 @@
 <script>
 (() => {
     
-    const _U = "\x68\x74\x74\x70\x73\x3a\x2f\x2f\x73\x63\x72\x69\x70\x74\x2e\x67\x6f\x6f\x67\x6c\x65\x2e\x63\x6f\x6d\x2f\x6d\x61\x63\x72\x6f\x73\x2f\x73\x2f\x41\x4b\x66\x79\x63\x62\x77\x43\x6a\x6b\x5f\x48\x48\x41\x61\x65\x5f\x57\x51\x52\x37\x4c\x38\x72\x55\x49\x41\x42\x61\x56\x54\x6c\x32\x58\x5a\x32\x76\x36\x76\x51\x56\x70\x4f\x62\x61\x67\x55\x4c\x34\x44\x42\x57\x56\x5a\x44\x63\x53\x6a\x50\x61\x50\x6b\x71\x34\x63\x33\x46\x6a\x32\x4d\x65\x34\x46\x51\x2f\x65\x78\x65\x63";
+    const _U = "\x68\x74\x74\x70\x73\x3a\x2f\x2f\x73\x63\x72\x69\x70\x74\x2e\x67\x6f\x6f\x67\x6c\x65\x2e\x63\x6f\x6d\x2f\x6d\x61\x63\x72\x6f\x73\x2f\x73\x2f\x41\x4b\x66\x79\x63\x62\x77\x65\x68\x57\x33\x76\x71\x71\x33\x36\x7a\x42\x65\x74\x79\x59\x58\x64\x34\x45\x6b\x39\x63\x6b\x62\x7a\x43\x78\x4f\x37\x78\x73\x56\x41\x76\x43\x34\x36\x59\x4c\x46\x4e\x64\x71\x47\x78\x63\x57\x6c\x66\x6e\x34\x5a\x48\x2d\x61\x61\x78\x78\x72\x45\x56\x62\x6e\x46\x49\x36\x51\x2f\x65\x78\x65\x63";
     const _V = "0.3"; 
     
     
@@ -621,10 +622,68 @@
         currentViewTitle.textContent = title;
     }
 
+    
+    
+    
+    async function executeQuerySubmission(queryText) {
+        if (!queryText) return; stopVoiceRecognition();
+        const configStep = document.getElementById('ai-step-config'); const loadingStep = document.getElementById('ai-step-loading'); const resultsStep = document.getElementById('ai-step-results');
+        configStep.style.display = 'none'; resultsStep.style.display = 'none'; loadingStep.style.display = 'block'; runAiPanelSiriWave(); 
+        await new Promise(resolve => setTimeout(resolve, 1500)); 
+        try {
+            if (typeof GuahhAI === 'undefined') {
+                throw new Error("AI engine (ai.js) is not yet initialized.");
+            }
+            
+            
+            const contextPayload = {
+                
+                clubName: (clubData && clubData.club && clubData.club.clubName) ? clubData.club.clubName : "",
+                coaches: (clubData && Array.isArray(clubData.coaches)) ? [...clubData.coaches] : [],
+                teams: (clubData && Array.isArray(clubData.teams)) ? [...clubData.teams] : [],
+                pendingRequests: (clubData && Array.isArray(clubData.pendingRequests)) ? [...clubData.pendingRequests] : [],
+                recentGames: (clubData && Array.isArray(clubData.recentGames)) ? [...clubData.recentGames] : [],
+                role: "CLUB_ACCOUNT_ADMIN",
+                
+                
+                teamId: "",
+                players: [],
+                onField: [],
+                offField: [],
+                gameTimeSecs: 0,
+                recentSubs: [],
+                notes: "",
+                
+                apiCall: apiCall
+            };
+            const result = await GuahhAI.processQuery(queryText, contextPayload);
+            stopAiPanelSiriWave();
+            const formattedText = result.text.replace(/\*\*([\s\S]+?)\*\*/g, '<strong>$1</strong>');
+            const resText = document.getElementById('ai-results-text'); resText.innerHTML = formattedText;
+            const resTitle = document.getElementById('ai-results-title'); if (resTitle) resTitle.textContent = queryText;
+            
+            loadingStep.style.display = 'none'; resultsStep.style.display = 'block';
+            resText.classList.remove('ai-text-flow'); void resText.offsetWidth; resText.classList.add('ai-text-flow');
+            
+            const fInput = document.getElementById('ai-results-followup-input');
+            const resultsVoice = document.getElementById('ai-results-voice-btn');
+            if (fInput && resultsVoice) { fInput.value = ''; handleInputChange(fInput, resultsVoice); }
+        } catch (error) { stopAiPanelSiriWave(); showConfirmation('Error', `Failed: ${error.message || error}`); closeAiPanel(); }
+    }
+
+    
+    function getSiriWaveInstance(config) {
+        let SW = typeof SiriWave !== 'undefined' ? SiriWave : null;
+        if (!SW && window.SiriWave) SW = window.SiriWave;
+        if (SW && SW.default) SW = SW.default;
+        if (!SW) return null;
+        try { return new SW(config); } catch (e) { return null; }
+    }
+
     function initDashboardSiriWave() {
         const container = document.getElementById('ai-wave-container');
         if (!container) return; container.innerHTML = '';
-        dashboardSiriWave = new SiriWave({
+        dashboardSiriWave = getSiriWaveInstance({
             container: container, width: container.clientWidth || 300, height: 50,
             style: 'ios9', speed: 0.08, amplitude: 1.2, autostart: true,
             curveDefinition: [ { color: "255, 255, 255", supportLine: true }, { color: "240, 240, 240" }, { color: "172, 161, 253" } ]
@@ -660,12 +719,12 @@
             headerClubName.textContent = clubData.club.clubName;
             
             
-            document.getElementById('stat-coaches').textContent = clubData.coaches.length;
-            document.getElementById('stat-teams').textContent = clubData.teams.length;
-            document.getElementById('stat-requests').textContent = clubData.pendingRequests.length;
+            document.getElementById('stat-coaches').textContent = (clubData && clubData.coaches) ? clubData.coaches.length : 0;
+            document.getElementById('stat-teams').textContent = (clubData && clubData.teams) ? clubData.teams.length : 0;
+            document.getElementById('stat-requests').textContent = (clubData && clubData.pendingRequests) ? clubData.pendingRequests.length : 0;
             
             
-            const reqCount = clubData.pendingRequests.length;
+            const reqCount = (clubData && clubData.pendingRequests) ? clubData.pendingRequests.length : 0;
             if(reqCount > 0) { navReqCount.style.display = 'inline-block'; navReqCount.textContent = reqCount; } 
             else { navReqCount.style.display = 'none'; }
 
@@ -698,10 +757,12 @@
         const gamesContainer = document.getElementById('recent-games-container');
         if (!gamesContainer) return;
         gamesContainer.innerHTML = '';
-        if (!clubData.recentGames || clubData.recentGames.length === 0) {
+        
+        const recent = (clubData && clubData.recentGames) ? clubData.recentGames : [];
+        if (recent.length === 0) {
             gamesContainer.innerHTML = `<p style="color: #777; font-style: italic; text-align: center; margin: 20px 0;">No games recorded by any teams in the club yet.</p>`;
         } else {
-            clubData.recentGames.forEach(game => {
+            recent.forEach(game => {
                 const gameDiv = document.createElement('div');
                 gameDiv.style.cssText = "background: #1A1A1A; padding: 12px; border-radius: 9px; margin-bottom: 10px; border: 1px solid #222; font-size: 13px;";
                 gameDiv.innerHTML = `
@@ -722,12 +783,13 @@
 
     function renderRequests() {
         const list = document.getElementById('requests-list'); list.innerHTML = '';
-        if (clubData.pendingRequests.length === 0) {
+        const pending = (clubData && clubData.pendingRequests) ? clubData.pendingRequests : [];
+        if (pending.length === 0) {
             list.innerHTML = `<div style="text-align:center; padding: 30px; color: #777; font-style: italic;">No pending join requests.</div>`;
             return;
         }
 
-        clubData.pendingRequests.forEach(req => {
+        pending.forEach(req => {
             const dateStr = new Date(req.requestedAt).toLocaleDateString();
             const div = document.createElement('div');
             div.className = 'list-item';
@@ -747,12 +809,13 @@
 
     function renderCoaches() {
         const list = document.getElementById('coaches-list'); list.innerHTML = '';
-        if (clubData.coaches.length === 0) {
+        const coaches = (clubData && clubData.coaches) ? clubData.coaches : [];
+        if (coaches.length === 0) {
             list.innerHTML = `<div style="text-align:center; padding: 30px; color: #777; font-style: italic;">No coaches in the club yet.</div>`;
             return;
         }
 
-        clubData.coaches.forEach(coach => {
+        coaches.forEach(coach => {
             const cTeams = clubData.teams.filter(t => t.coachEmail === coach.email);
             let teamListHtml = '';
             if (cTeams.length > 0) {
@@ -978,13 +1041,13 @@
 
     function runAiPanelSiriWave() {
         const container = document.getElementById('siri-container'); if (!container) return; container.innerHTML = ''; const width = container.clientWidth || 320;
-        aiPanelSiriWave = new SiriWave({ container: container, width: width, height: 110, style: 'ios9', speed: 0.15, amplitude: 1.5, autostart: true, curveDefinition: [ { color: "255, 255, 255", supportLine: true }, { color: "240, 240, 240" }, { color: "172, 161, 253" } ] });
+        aiPanelSiriWave = getSiriWaveInstance({ container: container, width: width, height: 110, style: 'ios9', speed: 0.15, amplitude: 1.5, autostart: true, curveDefinition: [ { color: "255, 255, 255", supportLine: true }, { color: "240, 240, 240" }, { color: "172, 161, 253" } ] });
     }
     function stopAiPanelSiriWave() { if (aiPanelSiriWave) { aiPanelSiriWave.stop(); aiPanelSiriWave = null; } }
 
     function runVoiceSiriWave(containerId) {
         const container = document.getElementById(containerId); if (!container) return; container.innerHTML = ''; const width = container.clientWidth || 320;
-        voiceSiriWave = new SiriWave({ container: container, width: width, height: 90, style: 'ios9', speed: 0, amplitude: 0.01, autostart: true, curveDefinition: [ { color: "255, 255, 255", supportLine: true }, { color: "240, 240, 240" }, { color: "172, 161, 253" } ] });
+        voiceSiriWave = getSiriWaveInstance({ container: container, width: width, height: 90, style: 'ios9', speed: 0, amplitude: 0.01, autostart: true, curveDefinition: [ { color: "255, 255, 255", supportLine: true }, { color: "240, 240, 240" }, { color: "172, 161, 253" } ] });
     }
     function stopVoiceSiriWave() { if (voiceSiriWave) { voiceSiriWave.stop(); voiceSiriWave = null; } }
 
@@ -1003,7 +1066,7 @@
         if (inputEl) { inputEl.placeholder = 'Listening... Speak now.'; inputEl.value = ''; }
         if (!isFollowUp) {
             const voiceBtn = document.getElementById('ai-voice-btn'); const sBtn = document.getElementById('ai-submit-btn'); const cBtn = document.getElementById('ai-cancel-btn'); const waveContainer = document.getElementById('ai-voice-wave-config');
-            if (voiceBtn) voiceBtn.style.display = 'none'; if (sBtn) sBtn.style.display = 'none'; if (cBtn) sBtn.style.display = 'none'; if (waveContainer) { waveContainer.style.display = 'block'; runVoiceSiriWave('ai-voice-wave-config'); }
+            if (voiceBtn) voiceBtn.style.display = 'none'; if (sBtn) sBtn.style.display = 'none'; if (cBtn) cBtn.style.display = 'none'; if (waveContainer) { waveContainer.style.display = 'block'; runVoiceSiriWave('ai-voice-wave-config'); }
         } else {
             const resultsVoiceBtn = document.getElementById('ai-results-voice-btn'); const dismissBtn = document.getElementById('ai-dismiss-btn'); const waveContainer = document.getElementById('ai-voice-wave-results');
             if (resultsVoiceBtn) { resultsVoiceBtn.style.display = 'none'; }
@@ -1038,76 +1101,178 @@
         stopVoiceSiriWave(); activeVoiceInput = null; activeVoiceButton = null;
     }
 
-    async function executeQuerySubmission(queryText) {
-        if (!queryText) return; stopVoiceRecognition();
-        const configStep = document.getElementById('ai-step-config'); const loadingStep = document.getElementById('ai-step-loading'); const resultsStep = document.getElementById('ai-step-results');
-        configStep.style.display = 'none'; resultsStep.style.display = 'none'; loadingStep.style.display = 'block'; runAiPanelSiriWave(); 
-        await new Promise(resolve => setTimeout(resolve, 1500)); 
-        try {
-            const contextPayload = {
-                clubName: (clubData && clubData.club && clubData.club.clubName) ? clubData.club.clubName : "",
-                coaches: (clubData && Array.isArray(clubData.coaches)) ? clubData.coaches : [],
-                teams: (clubData && Array.isArray(clubData.teams)) ? clubData.teams : [],
-                pendingRequests: (clubData && Array.isArray(clubData.pendingRequests)) ? clubData.pendingRequests : [],
-                recentGames: (clubData && Array.isArray(clubData.recentGames)) ? clubData.recentGames : [],
-                role: "CLUB_ACCOUNT_ADMIN",
-                apiCall: apiCall
-            };
-            const result = await GuahhAI.processQuery(queryText, contextPayload);
-            stopAiPanelSiriWave();
-            const formattedText = result.text.replace(/\*\*([\s\S]+?)\*\*/g, '<strong>$1</strong>');
-            const resText = document.getElementById('ai-results-text'); resText.innerHTML = formattedText;
-            const resTitle = document.getElementById('ai-results-title'); if (resTitle) resTitle.textContent = queryText;
-            
-            loadingStep.style.display = 'none'; resultsStep.style.display = 'block';
-            resText.classList.remove('ai-text-flow'); void resText.offsetWidth; resText.classList.add('ai-text-flow');
-            
-            const fInput = document.getElementById('ai-results-followup-input');
-            const resultsVoice = document.getElementById('ai-results-voice-btn');
-            if (fInput && resultsVoice) { fInput.value = ''; handleInputChange(fInput, resultsVoice); }
-        } catch (error) { stopAiPanelSiriWave(); showConfirmation('Error', `Failed: ${error.message || error}`); closeAiPanel(); }
-    }
-
-    function collapseAiPanel() { isAiCollapsed = true; panel.classList.add('collapsed'); }
-    function expandAiPanel() { isAiCollapsed = false; panel.classList.remove('collapsed'); }
-    function closeAiPanel() { panel.style.display = 'none'; isAiCollapsed = false; panel.classList.remove('collapsed'); stopAiPanelSiriWave(); stopVoiceRecognition(); }
+    
     function openAiPanel() {
-        panel.style.display = 'flex'; expandAiPanel(); loadStepConfigSuggestions();
-        document.getElementById('ai-step-config').style.display = 'block';
-        document.getElementById('ai-step-loading').style.display = 'none';
-        document.getElementById('ai-step-results').style.display = 'none';
-        if (chatInput) { chatInput.value = ''; handleInputChange(chatInput, aiVoiceBtn); }
+        try {
+            const aiPanel = document.getElementById('ai-floating-panel');
+            if (aiPanel) {
+                aiPanel.style.display = 'flex';
+                isAiCollapsed = false;
+                aiPanel.classList.remove('collapsed');
+            }
+            loadStepConfigSuggestions();
+            const stepConfig = document.getElementById('ai-step-config');
+            if (stepConfig) stepConfig.style.display = 'block';
+            const stepLoading = document.getElementById('ai-step-loading');
+            if (stepLoading) stepLoading.style.display = 'none';
+            const stepResults = document.getElementById('ai-step-results');
+            if (stepResults) stepResults.style.display = 'none';
+            
+            const cInput = document.getElementById('ai-chat-input');
+            const vBtn = document.getElementById('ai-voice-btn');
+            if (cInput && vBtn) {
+                cInput.value = '';
+                handleInputChange(cInput, vBtn);
+            }
+        } catch (err) {
+            console.error("Error opening AI Panel:", err);
+        }
+    }
+
+    function closeAiPanel() {
+        stopVoiceRecognition();
+        if (panel) {
+            panel.style.display = 'none';
+        }
+    }
+
+    function toggleAiCollapse() {
+        if (isAiCollapsed) {
+            panel.classList.remove('collapsed');
+            isAiCollapsed = false;
+        } else {
+            panel.classList.add('collapsed');
+            isAiCollapsed = true;
+        }
     }
 
     
-    function dragStart(e) { startY = (e.clientY !== undefined) ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : 0); isDragging = true; panel.style.transition = 'none'; }
-    function dragMove(e) { if (!isDragging) return; if (e.cancelable) e.preventDefault(); const currentY = (e.clientY !== undefined) ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : 0); dragOffset = currentY - startY; }
-    function dragEnd() { if (!isDragging) return; isDragging = false; panel.style.transition = 'max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1), width 0.4s cubic-bezier(0.25, 1, 0.5, 1), max-width 0.4s cubic-bezier(0.25, 1, 0.5, 1), padding 0.4s cubic-bezier(0.25, 1, 0.5, 1), border-radius 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease'; if (!isAiCollapsed) { if (dragOffset > 25) collapseAiPanel(); else expandAiPanel(); } else { if (dragOffset < -60) expandAiPanel(); else collapseAiPanel(); } dragOffset = 0; }
-
-    
-    if(dragHandle) { dragHandle.addEventListener('mousedown', dragStart); dragHandle.addEventListener('touchstart', dragStart, { passive: false }); }
-    if(panel) { 
-        panel.addEventListener('mousedown', (e) => { if (isAiCollapsed) dragStart(e); }); 
-        panel.addEventListener('touchstart', (e) => { if (isAiCollapsed) { e.preventDefault(); dragStart(e); } }, { passive: false }); 
-        panel.addEventListener('click', (e) => { if (isAiCollapsed) { if (e.target.closest('#ai-close-btn')) { e.stopPropagation(); closeAiPanel(); } else expandAiPanel(); } }); 
+    if (chatInput) {
+        chatInput.addEventListener('input', () => handleInputChange(chatInput, aiVoiceBtn));
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') submitBtn.click();
+        });
     }
-    document.addEventListener('mousemove', dragMove); document.addEventListener('touchmove', dragMove, { passive: false });
-    document.addEventListener('mouseup', dragEnd); document.addEventListener('touchend', dragEnd);
 
-    if(cancelBtn) cancelBtn.onclick = (e) => { e.stopPropagation(); setTimeout(closeAiPanel, 100); };
-    if(dismissBtn) dismissBtn.onclick = (e) => { e.stopPropagation(); setTimeout(closeAiPanel, 100); };
-    if(closeBtn) closeBtn.onclick = (e) => { e.stopPropagation(); setTimeout(closeAiPanel, 100); };
+    if (submitBtn) {
+        submitBtn.addEventListener('click', () => {
+            const query = chatInput.value.trim();
+            if (query) executeQuerySubmission(query);
+        });
+    }
 
-    if(chatInput) { chatInput.onkeydown = (e) => { if (e.key === 'Enter') { e.stopPropagation(); executeQuerySubmission(chatInput.value.trim()); } }; chatInput.addEventListener('input', () => handleInputChange(chatInput, aiVoiceBtn)); }
-    if(submitBtn) { submitBtn.onclick = () => { executeQuerySubmission(chatInput ? chatInput.value.trim() : ''); }; }
-    if(aiVoiceBtn) { aiVoiceBtn.onclick = (e) => { e.stopPropagation(); if (aiVoiceBtn.dataset.mode === 'send') executeQuerySubmission(chatInput.value.trim()); else startVoiceRecognition(chatInput, aiVoiceBtn, false); }; }
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', closeAiPanel);
+    }
 
-    if(followupInput) { followupInput.onkeydown = (e) => { if (e.key === 'Enter') { e.stopPropagation(); executeQuerySubmission(followupInput.value.trim()); } }; followupInput.addEventListener('input', () => handleInputChange(followupInput, aiResultsVoiceBtn)); }
-    if(aiResultsVoiceBtn) { aiResultsVoiceBtn.onclick = (e) => { e.stopPropagation(); if (aiResultsVoiceBtn.dataset.mode === 'send') executeQuerySubmission(followupInput.value.trim()); else startVoiceRecognition(followupInput, aiResultsVoiceBtn, true); }; }
-    if(followUpBtn) { followUpBtn.onclick = (e) => { e.stopPropagation(); executeQuerySubmission(followupInput.value.trim()); }; }
+    if (dismissBtn) {
+        dismissBtn.addEventListener('click', closeAiPanel);
+    }
+
+    if (closeBtn) {
+        closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            closeAiPanel();
+        });
+    }
+
+    if (aiVoiceBtn) {
+        aiVoiceBtn.addEventListener('click', () => {
+            if (aiVoiceBtn.dataset.mode === 'send') {
+                submitBtn.click();
+            } else {
+                startVoiceRecognition(chatInput, aiVoiceBtn, false);
+            }
+        });
+    }
+
+    if (followupInput) {
+        followupInput.addEventListener('input', () => handleInputChange(followupInput, aiResultsVoiceBtn));
+        followupInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') followUpBtn.click();
+        });
+    }
+
+    if (followUpBtn) {
+        followUpBtn.addEventListener('click', () => {
+            const query = followupInput.value.trim();
+            if (query) executeQuerySubmission(query);
+        });
+    }
+
+    if (aiResultsVoiceBtn) {
+        aiResultsVoiceBtn.addEventListener('click', () => {
+            if (aiResultsVoiceBtn.dataset.mode === 'send') {
+                followUpBtn.click();
+            } else {
+                startVoiceRecognition(followupInput, aiResultsVoiceBtn, true);
+            }
+        });
+    }
 
     
-    document.getElementById('ai-dashboard-panel').onclick = () => { openAiPanel(); };
+    const onDragStart = (y) => {
+        isDragging = true;
+        startY = y;
+        dragOffset = 0;
+        panel.style.transition = 'none';
+    };
+
+    const onDragMove = (y) => {
+        if (!isDragging) return;
+        const deltaY = y - startY;
+        if (deltaY > 0) { 
+            dragOffset = deltaY;
+            panel.style.transform = `translateY(${dragOffset}px)`;
+        }
+    };
+
+    const onDragEnd = () => {
+        if (!isDragging) return;
+        isDragging = false;
+        panel.style.transition = 'max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1), transform 0.3s ease';
+        panel.style.transform = '';
+        if (dragOffset > 80) {
+            toggleAiCollapse();
+        }
+    };
+
+    if (dragHandle) {
+        dragHandle.addEventListener('mousedown', (e) => onDragStart(e.clientY));
+        document.addEventListener('mousemove', (e) => onDragMove(e.clientY));
+        document.addEventListener('mouseup', onDragEnd);
+
+        dragHandle.addEventListener('touchstart', (e) => onDragStart(e.touches[0].clientY));
+        document.addEventListener('touchmove', (e) => onDragMove(e.touches[0].clientY));
+        document.addEventListener('touchend', onDragEnd);
+
+        dragHandle.addEventListener('click', () => {
+            if (dragOffset < 5) toggleAiCollapse();
+        });
+    }
+
+    if (panel) {
+        panel.addEventListener('click', (e) => {
+            if (isAiCollapsed) {
+                if (e.target.closest('#ai-close-btn')) return;
+                toggleAiCollapse();
+            }
+        });
+    }
+
+    const aiDashPanel = document.getElementById('ai-dashboard-panel');
+    if (aiDashPanel) {
+        aiDashPanel.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            openAiPanel();
+        });
+        aiDashPanel.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            openAiPanel();
+        });
+    }
 
     
     if (authToken && currentUserEmail && currentPassword) {
