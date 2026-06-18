@@ -500,16 +500,13 @@
 <script>
 (() => {
     
-    const _U = "\x68\x74\x74\x70\x73\x3a\x2f\x2f\x73\x63\x72\x69\x70\x74\x2e\x67\x6f\x6f\x67\x6c\x65\x2e\x63\x6f\x6d\x2f\x6d\x61\x63\x72\x6f\x73\x2f\x73\x2f\x41\x4b\x66\x79\x63\x62\x77\x65\x68\x57\x33\x76\x71\x71\x33\x36\x7a\x42\x65\x74\x79\x59\x58\x64\x34\x45\x6b\x39\x63\x6b\x62\x7a\x43\x78\x4f\x37\x78\x73\x56\x41\x76\x43\x34\x36\x59\x4c\x46\x4e\x64\x71\x47\x78\x63\x57\x6c\x66\x6e\x34\x5a\x48\x2d\x61\x61\x78\x78\x72\x45\x56\x62\x6e\x46\x49\x36\x51\x2f\x65\x78\x65\x63";
-    const _V = "0.3"; 
+    const _U = "\x68\x74\x74\x70\x73\x3a\x2f\x2f\x73\x63\x72\x69\x70\x74\x2e\x67\x6f\x6f\x67\x6c\x65\x2e\x63\x6f\x6d\x2f\x6d\x61\x63\x72\x6f\x73\x2f\x73\x2f\x41\x4b\x66\x79\x63\x62\x7a\x34\x64\x63\x61\x57\x71\x52\x59\x37\x6f\x73\x4a\x73\x53\x76\x4f\x7a\x6d\x53\x70\x4c\x78\x58\x43\x46\x52\x76\x34\x4e\x4b\x67\x34\x43\x31\x43\x77\x78\x73\x42\x52\x6a\x69\x76\x59\x52\x46\x51\x31\x6a\x79\x4c\x75\x6e\x4f\x6e\x2d\x6b\x46\x6e\x39\x58\x73\x33\x6f\x57\x33\x51\x2f\x65\x78\x65\x63";
+    const _V = "0.4"; 
     
     
     const _TK = "_cbrd_tk"; const _EM = "_cbrd_em"; const _PW = "_cbrd_pw";
     const SUGGESTION_POOL = ["Summary of club", "Pending join requests", "Help me build a drill", "What is my role?", "Who are my coaches?"];
 
-    
-    
-    
     
     if (localStorage.getItem(_TK)) {
         const p1 = document.getElementById('login-password'); if (p1) p1.remove();
@@ -631,13 +628,18 @@
         configStep.style.display = 'none'; resultsStep.style.display = 'none'; loadingStep.style.display = 'block'; runAiPanelSiriWave(); 
         await new Promise(resolve => setTimeout(resolve, 1500)); 
         try {
-            if (typeof GuahhAI === 'undefined') {
-                throw new Error("AI engine (ai.js) is not yet initialized.");
-            }
             
+            let engine = window.GuahhAI || (typeof GuahhAI !== 'undefined' ? GuahhAI : null);
+            if (!engine) {
+                await new Promise(r => setTimeout(r, 1000));
+                engine = window.GuahhAI || (typeof GuahhAI !== 'undefined' ? GuahhAI : null);
+                if (!engine) {
+                    throw new Error("AI engine connection timeout. Please check your network and refresh the page.");
+                }
+            }
+
             
             const contextPayload = {
-                
                 clubName: (clubData && clubData.club && clubData.club.clubName) ? clubData.club.clubName : "",
                 coaches: (clubData && Array.isArray(clubData.coaches)) ? [...clubData.coaches] : [],
                 teams: (clubData && Array.isArray(clubData.teams)) ? [...clubData.teams] : [],
@@ -646,17 +648,10 @@
                 role: "CLUB_ACCOUNT_ADMIN",
                 
                 
-                teamId: "",
-                players: [],
-                onField: [],
-                offField: [],
-                gameTimeSecs: 0,
-                recentSubs: [],
-                notes: "",
-                
-                apiCall: apiCall
+                teamId: "", players: [], onField: [], offField: [], gameTimeSecs: 0, recentSubs: [], notes: "", apiCall: apiCall
             };
-            const result = await GuahhAI.processQuery(queryText, contextPayload);
+            
+            const result = await engine.processQuery(queryText, contextPayload);
             stopAiPanelSiriWave();
             const formattedText = result.text.replace(/\*\*([\s\S]+?)\*\*/g, '<strong>$1</strong>');
             const resText = document.getElementById('ai-results-text'); resText.innerHTML = formattedText;
@@ -671,7 +666,6 @@
         } catch (error) { stopAiPanelSiriWave(); showConfirmation('Error', `Failed: ${error.message || error}`); closeAiPanel(); }
     }
 
-    
     function getSiriWaveInstance(config) {
         let SW = typeof SiriWave !== 'undefined' ? SiriWave : null;
         if (!SW && window.SiriWave) SW = window.SiriWave;
@@ -708,6 +702,7 @@
                 return;
             }
 
+            
             const res = await apiCall('get_club_dashboard');
             clubData = res;
             
@@ -731,14 +726,31 @@
             document.getElementById('ai-insight-text').innerHTML = generateAIInsight();
             if(!dashboardSiriWave) initDashboardSiriWave();
 
-            renderRecentGames();
             renderRequests();
             renderCoaches();
+
+            
+            renderRecentGames(true);
+            apiCall('get_recent_games').then(gamesRes => {
+                if (clubData) {
+                    clubData.recentGames = gamesRes.recentGames || [];
+                    renderRecentGames(false);
+                }
+            }).catch(err => {
+                if (clubData) {
+                    clubData.recentGames = [];
+                    renderRecentGames(false);
+                    const gc = document.getElementById('recent-games-container');
+                    if (gc) gc.innerHTML = '<p style="color:#D32F2F; text-align:center; font-size: 13px;">Failed to load recent games due to sheet overload limit.</p>';
+                }
+            });
 
         } catch (e) {
             if (e.message.includes("not an admin")) {
                 loginForm.style.display = 'none'; signupForm.style.display = 'none'; createClubForm.style.display = 'block'; subBlockView.style.display = 'none';
                 authView.style.display = 'flex'; appView.style.display = 'none';
+            } else if (e.message.includes("Subscription required") || e.message.includes("Subscription")) {
+                showSubscriptionBlock();
             } else { showConfirmation('Error', e.message); logoutLocally(); }
         } finally {
             actionOverlay.style.display = 'none';
@@ -753,11 +765,16 @@
         actionOverlay.style.display = 'none';
     }
 
-    function renderRecentGames() {
+    function renderRecentGames(isLoading = false) {
         const gamesContainer = document.getElementById('recent-games-container');
         if (!gamesContainer) return;
-        gamesContainer.innerHTML = '';
         
+        if (isLoading) {
+            gamesContainer.innerHTML = `<div style="text-align: center; padding: 20px;"><svg class="spinner" viewBox="25 25 50 50" style="width: 32px; height: 32px; stroke: #64B5F6;"><circle cx="50" cy="50" r="20"></circle></svg><p style="color:#B0B0B0; font-size: 12px; margin-top: 10px;">Syncing latest games in background...</p></div>`;
+            return;
+        }
+
+        gamesContainer.innerHTML = '';
         const recent = (clubData && clubData.recentGames) ? clubData.recentGames : [];
         if (recent.length === 0) {
             gamesContainer.innerHTML = `<p style="color: #777; font-style: italic; text-align: center; margin: 20px 0;">No games recorded by any teams in the club yet.</p>`;
@@ -819,19 +836,21 @@
             const cTeams = clubData.teams.filter(t => t.coachEmail === coach.email);
             let teamListHtml = '';
             if (cTeams.length > 0) {
-                teamListHtml = cTeams.map(t => `
-                    <div style="display: inline-flex; align-items: center; background:#222; padding:4px 8px; border-radius:6px; font-size:11px; margin-right:6px; margin-bottom:4px; border: 1px solid #333;">
-                        <span style="margin-right: 6px; color: #E0E0E0; font-weight:500;">${t.teamName}</span>
-                        <button class="timer-btn primary" style="min-height:20px; padding: 2px 6px; font-size: 10px; border-radius: 4px;" onclick="window.viewTeamStats('${t.teamId}', '${t.teamName}')">Stats</button>
-                    </div>
-                `).join('');
+                teamListHtml = cTeams.map(t => {
+                    
+                    const safeEncName = encodeURIComponent(t.teamName).replace(/'/g, "%27");
+                    return `
+                        <div style="display: inline-flex; align-items: center; background:#222; padding:4px 8px; border-radius:6px; font-size:11px; margin-right:6px; margin-bottom:4px; border: 1px solid #333;">
+                            <span style="margin-right: 6px; color: #E0E0E0; font-weight:500;">${t.teamName}</span>
+                            <button class="timer-btn primary" style="min-height:20px; padding: 2px 6px; font-size: 10px; border-radius: 4px;" onclick="window.viewTeamStats('${t.teamId}', decodeURIComponent('${safeEncName}'))">Stats</button>
+                        </div>
+                    `;
+                }).join('');
             } else {
                 teamListHtml = '<span style="color:#777; font-size:12px;">No teams linked</span>';
             }
             
             const badgeClass = coach.role === 'ADMIN' ? 'badge-admin' : 'badge-coach';
-            
-            
             const actionHtml = coach.role === 'ADMIN' ? 
                 `<button class="timer-btn secondary" style="padding: 6px 12px; font-size: 12px; margin-left: auto; visibility: hidden;">Remove</button>` :
                 `<button class="timer-btn secondary" style="padding: 6px 12px; font-size: 12px; margin-left: auto; background-color: #D32F2F; color: white;" onclick="window.removeCoach('${coach.email}')">Remove</button>`;
@@ -854,7 +873,7 @@
         });
     }
 
-    
+    // --- ACTIONS ---
     window.respondReq = function(requestId, status) {
         showConfirmation('Confirm Action', `Are you sure you want to ${status === 'APPROVED' ? 'approve' : 'deny'} this coach?`, async (c) => {
             if(c) {
@@ -930,16 +949,16 @@
         }
     };
 
-    
+    // --- AUTH FLOW ---
     function logoutLocally() {
         authToken = null; currentUserEmail = null; currentPassword = null; clubData = null;
         localStorage.removeItem(_TK); localStorage.removeItem(_EM); localStorage.removeItem(_PW);
         
-        
+        // Clear DOM password inputs immediately on logout
         const pInput = document.getElementById('login-password');
         if (pInput) pInput.value = '';
         
-        
+        // Refresh page completely on logout to rebuild/reload DOM cleanly
         window.location.reload();
     }
 
@@ -963,15 +982,11 @@
             authToken = res.token; currentUserEmail = res.email; currentPassword = p;
             localStorage.setItem(_TK, authToken); localStorage.setItem(_EM, currentUserEmail); localStorage.setItem(_PW, currentPassword);
             
-            
+            // Clear inputs dynamically on success so Safari registers form completion
             if (emailEl) emailEl.value = '';
             if (passEl) passEl.value = '';
 
-            if (res.subscriptionStatus !== 'ACTIVE') {
-                showSubscriptionBlock();
-            } else {
-                await loadDashboardData();
-            }
+            await loadDashboardData();
         } catch(err) { showConfirmation('Login Failed', err.message); actionOverlay.style.display = 'none'; }
     };
 
@@ -991,11 +1006,7 @@
             const pInput = document.getElementById('signup-password');
             if (pInput) pInput.value = '';
 
-            if (res.subscriptionStatus !== 'ACTIVE') {
-                showSubscriptionBlock();
-            } else {
-                await loadDashboardData(); 
-            }
+            await loadDashboardData(); 
         } catch(err) { showConfirmation('Signup Failed', err.message); actionOverlay.style.display = 'none'; }
     };
 
@@ -1016,7 +1027,7 @@
         } catch(err) { showConfirmation('Error', err.message); actionOverlay.style.display = 'none'; }
     };
 
-    
+    // --- NAVIGATION EVENTS ---
     navItems.forEach(item => {
         item.addEventListener('click', () => {
             let title = "Dashboard";
@@ -1027,9 +1038,9 @@
         });
     });
 
-    
-    
-    
+    // ==========================================
+    // 🧠 GUAHH AI CONVERSATIONAL DRIVER
+    // ==========================================
     function loadStepConfigSuggestions() {
         const container = document.getElementById('ai-step-suggestions-stacked'); if (!container) return; container.innerHTML = '';
         const selected = [SUGGESTION_POOL[0], SUGGESTION_POOL[1], SUGGESTION_POOL[2]];
@@ -1052,9 +1063,7 @@
     function stopVoiceSiriWave() { if (voiceSiriWave) { voiceSiriWave.stop(); voiceSiriWave = null; } }
 
     function handleInputChange(inputEl, buttonEl) {
-        const iconEl = buttonEl.querySelector('.material-icons');
-        if (inputEl.value.trim().length > 0) { buttonEl.style.backgroundColor = '#007bff'; buttonEl.style.color = '#FFFFFF'; if (iconEl) iconEl.textContent = 'send'; buttonEl.dataset.mode = 'send'; } 
-        else { buttonEl.style.backgroundColor = ''; buttonEl.style.color = ''; if (iconEl) iconEl.textContent = 'mic'; buttonEl.dataset.mode = 'mic'; }
+        // Purposely left completely blank so the "mic" icon strictly behaves as a mic icon without converting.
     }
 
     async function startVoiceRecognition(inputEl, buttonEl, isFollowUp) {
@@ -1101,7 +1110,7 @@
         stopVoiceSiriWave(); activeVoiceInput = null; activeVoiceButton = null;
     }
 
-    
+    // --- ROCK-SOLID AI PANEL TRIGGER ---
     function openAiPanel() {
         try {
             const aiPanel = document.getElementById('ai-floating-panel');
@@ -1146,7 +1155,7 @@
         }
     }
 
-    
+    // --- CONNECT ALL MISSING FLOATING PANEL INTERACTIVES ---
     if (chatInput) {
         chatInput.addEventListener('input', () => handleInputChange(chatInput, aiVoiceBtn));
         chatInput.addEventListener('keydown', (e) => {
@@ -1178,11 +1187,7 @@
 
     if (aiVoiceBtn) {
         aiVoiceBtn.addEventListener('click', () => {
-            if (aiVoiceBtn.dataset.mode === 'send') {
-                submitBtn.click();
-            } else {
-                startVoiceRecognition(chatInput, aiVoiceBtn, false);
-            }
+            startVoiceRecognition(chatInput, aiVoiceBtn, false);
         });
     }
 
@@ -1202,15 +1207,11 @@
 
     if (aiResultsVoiceBtn) {
         aiResultsVoiceBtn.addEventListener('click', () => {
-            if (aiResultsVoiceBtn.dataset.mode === 'send') {
-                followUpBtn.click();
-            } else {
-                startVoiceRecognition(followupInput, aiResultsVoiceBtn, true);
-            }
+            startVoiceRecognition(followupInput, aiResultsVoiceBtn, true);
         });
     }
 
-    
+    // --- SWIPE TO COLLAPSE & EXPAND INTERACTION GESTURES ---
     const onDragStart = (y) => {
         isDragging = true;
         startY = y;
@@ -1274,7 +1275,7 @@
         });
     }
 
-    
+    // --- INIT ---
     if (authToken && currentUserEmail && currentPassword) {
         loadDashboardData();
     } else {
