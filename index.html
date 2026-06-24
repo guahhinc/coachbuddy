@@ -86,6 +86,14 @@
         font-size: 13px; overflow-x: hidden; min-height: 100vh;
     }
 
+    
+    body.ai-panel-open {
+        overflow: hidden !important;
+        position: fixed;
+        width: 100%;
+        height: 100%;
+    }
+
     .app-wrapper {
         display: flex; flex-direction: column; align-items: center;
         width: 100%; height: auto;
@@ -145,6 +153,15 @@
     #roster { overflow: hidden; }
     .player-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #222; cursor: grab; transition: border 0.15s ease, opacity 0.15s ease, background-color 0.15s ease; }
     .player-item:active { cursor: grabbing; }
+
+    
+    .player-item.drag-selected {
+        background-color: #1e293b !important;
+        border-bottom-color: #64B5F6 !important;
+        box-shadow: 0 0 15px rgba(100, 181, 246, 0.45) inset, 0 4px 12px rgba(0,0,0,0.5);
+        transform: scale(1.02);
+        transition: background-color 0.1s ease, box-shadow 0.1s ease, transform 0.1s ease;
+    }
     
     .player-info-group, .player-item-group { 
         display: flex !important; 
@@ -378,16 +395,24 @@
         user-select: none;
         pointer-events: none;
     }
+
+    .roster-section-title {
+        font-size: 11px;
+        font-weight: bold;
+        color: #64B5F6;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
 </style>
 </head>
 <body>
 
 
 <div id="opening-loading-overlay" style="position: fixed; top:0; left:0; width:100%; height:100%; background: #080808; z-index: 100000; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 20px;">
-    <h2 style="color: #FFFFFF; font-size: 1.3rem; font-weight: 600; margin: 0;">Connecting to Coachbuddy</h2>
     <svg class="spinner" viewBox="25 25 50 50">
         <circle cx="50" cy="50" r="20"></circle>
     </svg>
+    <h2 style="color: #FFFFFF; font-size: 1.3rem; font-weight: 600; margin: 0;">Connecting to Coachbuddy</h2>
 </div>
 
 
@@ -471,11 +496,13 @@
                 </div>
                 <div class="timer-controls adjust-controls">
                     <button id="add-minute-btn" class="timer-btn secondary">+20 Sec</button>
+                    <!-- Guahh AI button - Positioned in-between +20 and -20 Sec -->
+                    <button id="suggest-sub-btn" class="timer-btn secondary">Guahh AI</button>
                     <button id="subtract-minute-btn" class="timer-btn secondary">–20 Sec</button>
                 </div>
             </div>
 
-            <div id="input-section">
+            <div id="input-section" style="margin-top: 10px;">
                 <input type="text" id="player-number-input" placeholder="No." inputmode="numeric">
                 <input type="text" id="player-name" placeholder="Enter player's name">
                 <button id="add-player-btn" class="add-icon-btn">+</button>
@@ -490,31 +517,16 @@
                 </div>
 
                 <div id="roster">
-                    <div id="court-dropzone" style="margin-bottom: 15px; padding-bottom: 10px; border-radius: 9px; transition: background-color 0.2s;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px; margin-bottom: 5px; border-bottom: 1px solid #222; padding-bottom: 4px;">
-                            <span class="roster-section-title" style="font-size: 11px; font-weight: bold; color: #4CAF50; text-transform: uppercase; letter-spacing: 0.5px;">On Court</span>
-                            <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0; font-size: 10px; color: #777; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">
-                                <span style="width: 44px; text-align: right;">Time</span>
-                                <span class="pts-label" style="width: 62px; text-align: center; margin-left: 6px; margin-right: 4px;">Pts</span>
-                                <span style="width: 46px; text-align: center;">Status</span>
-                                <span style="width: 26px;"></span>
-                            </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px; margin-bottom: 5px; border-bottom: 1px solid #222; padding-bottom: 4px;">
+                        <span class="roster-section-title"></span>
+                        <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0; font-size: 10px; color: #777; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">
+                            <span style="width: 44px; text-align: right; margin-right: 6px;">Time</span>
+                            <span class="pts-label" style="width: 62px; text-align: center; margin-left: 0px; margin-right: 10px;">Pts</span>
+                            <span style="width: 46px; text-align: center;">Status</span>
+                            <span style="width: 26px;"></span>
                         </div>
-                        <div id="court-list" style="min-height: 50px;"></div>
                     </div>
-                    
-                    <div id="bench-dropzone" style="padding-bottom: 10px; border-radius: 9px; transition: background-color 0.2s;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; margin-bottom: 5px; border-bottom: 1px solid #222; padding-bottom: 4px;">
-                            <span class="roster-section-title" style="font-size: 11px; font-weight: bold; color: #FF9800; text-transform: uppercase; letter-spacing: 0.5px;">Bench</span>
-                            <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0; font-size: 10px; color: #777; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">
-                                <span style="width: 44px; text-align: right;">Time</span>
-                                <span class="pts-label" style="width: 62px; text-align: center; margin-left: 6px; margin-right: 4px;">Pts</span>
-                                <span style="width: 46px; text-align: center;">Status</span>
-                                <span style="width: 26px;"></span>
-                            </div>
-                        </div>
-                        <div id="bench-list" style="min-height: 50px;"></div>
-                    </div>
+                    <div id="roster-list" style="min-height: 100px;"></div>
                 </div>
             </div>
 
@@ -534,10 +546,6 @@
             <div id="notes-section">
                 <label for="game-notes" style="display:block; margin-bottom: 5px; font-weight: bold;">Notes:</label>
                 <textarea id="game-notes" placeholder="Add game notes here..."></textarea>
-            </div>
-
-            <div id="ai-btn-container" style="margin-top: 10px;">
-                <button id="suggest-sub-btn" class="timer-btn secondary" style="width: 100%;">Guahh AI</button>
             </div>
             
             <div style="margin-top: 5px;">
@@ -585,7 +593,7 @@
                         <input type="number" id="new-player-rank" placeholder="Rate (1/10)" style="flex: 1; min-width: 110px; padding: 9px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 15px;" min="1" max="10">
                     </div>
                     <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px;">
-                        <input type="number" id="new-player-height" placeholder="Height (cm)" style="flex: 1; min-width: 80px; padding: 9px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 15px;">
+                        <input type="text" id="new-player-height" placeholder="Height (e.g. 5ft 8)" style="flex: 1; min-width: 80px; padding: 9px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 15px;">
                     </div>
                     <div style="color: #B0B0B0; font-size: 12px; font-weight: 600; margin-bottom: 4px;">Skills (Optional):</div>
                     <div id="skill-pills" style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px;">
@@ -631,7 +639,7 @@
                     <div id="settings-plans-container"></div>
                 </div>
 
-                <!-- CLUB INTEGRATION (SETTINGS) -->
+                <!-- CLUB AFFILIATION (SETTINGS) -->
                 <div style="display: flex; flex-direction: column; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #222;">
                     <span style="font-size: 14px; margin-bottom: 8px; font-weight: bold; color: #E0E0E0;">Club Affiliation</span>
                     <div id="settings-club-content"></div>
@@ -674,14 +682,9 @@
                     <input type="number" id="setting-timer-amount" min="1" max="15" value="3" style="width: 60px; padding: 5px; border-radius: 7px; background: #1A1A1A; color: #E0E0E0; border: 1px solid #222; text-align: center; font-size: 14px;">
                 </div>
 
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #222;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #222;">
                     <span style="font-size: 14px;">Max players on field</span>
                     <input type="number" id="setting-max-players" min="1" max="15" value="5" style="width: 60px; padding: 5px; border-radius: 7px; background: #1A1A1A; color: #E0E0E0; border: 1px solid #222; text-align: center; font-size: 14px;">
-                </div>
-
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #222;">
-                    <span style="font-size: 14px;">Refresh the page to the latest version?</span>
-                    <button id="update-app-btn" class="timer-btn secondary" style="padding: 5px 10px; font-size: 11px;">Update App</button>
                 </div>
 
                 <button id="logout-btn-standard" class="timer-btn secondary" style="width: 100%; margin-bottom: 10px;">Log Out</button>
@@ -760,9 +763,10 @@
     const _V = "0.4";
     const _TK = "\x5f\x63\x62\x5f\x74\x6b"; const _EM = "\x5f\x63\x62\x5f\x65\x6d"; const _PW = "\x5f\x63\x62\x5f\x70\x77"; 
     const _ST = "\x5f\x63\x62\x5f\x73\x74"; const _S1 = "\x5f\x63\x62\x5f\x73\x31"; const _S2 = "\x5f\x63\x62\x5f\x73\x32"; 
-    const _S3 = "\x5f\x63\x62\x5f\x73\x33"; const _S4 = "\x5f\x63\x62\x5f\x73\x34"; const _S5 = "\x5f\x63\x62\x5f\x73\x35"; 
+    const _S3 = "\x5f\x63\x62\x5f\x73\x33"; const _S4 = "\x5f\x63\x62\x5f\x73\x44"; 
+    const _S5 = "\x5f\x63\x62\x5f\x73\x35"; 
     const _S6 = "\x5f\x63\x62\x5f\x73\x36"; 
-    const SUGGESTION_POOL = ["We need to win", "Subs suggestion", "We need shooters", "We need defence", "What can you do", "Make me a drill", "Who's my best player"];
+    const SUGGESTION_POOL = ["Sub Suggestion", "We need to win", "Balance playtime"];
     const MIN_GAME_TIME_FOR_WARNINGS = 180; const LOW_TIME_RATIO = 0.65; const SIGNIFICANT_TIME_GAP = 240; 
     const INITIAL_STOPWATCH_SECONDS = 0; const DEFAULT_COUNTDOWN_SECONDS = 2400;
     const views = ['login-view', 'signup-view', 'sub-block-view', 'app-view', 'manage-view', 'stats-view', 'settings-view'];
@@ -786,7 +790,7 @@
     const maxPlayersInput = document.getElementById('setting-max-players');
     const guahhAiCheckbox = document.getElementById('setting-guahh-ai');
     const pointsTrackingCheckbox = document.getElementById('setting-points-tracking');
-    const aiBtnContainer = document.getElementById('ai-btn-container');
+    const suggestBtn = document.getElementById('suggest-sub-btn');
     const panel = document.getElementById('ai-floating-panel');
     const dragHandle = document.getElementById('ai-drag-handle');
     const customModal = document.getElementById('custom-modal');
@@ -827,12 +831,18 @@
             else pill.classList.remove('active');
         });
     }
+    function cmToFeetInches(cm) {
+        const inches = Math.round(cm / 2.54);
+        const feet = Math.floor(inches / 12);
+        const remainingInches = inches % 12;
+        return remainingInches > 0 ? `${feet}ft ${remainingInches}` : `${feet}ft`;
+    }
 
     if (localStorage.getItem(_S1) === 'false') { if(autoTimerCheckbox) autoTimerCheckbox.checked = false; } else { if(autoTimerCheckbox) autoTimerCheckbox.checked = true; }
     if (autoAddCheckbox) autoAddCheckbox.checked = localStorage.getItem(_S2) === 'true';
     if (timerAmountInput && localStorage.getItem(_S3)) timerAmountInput.value = localStorage.getItem(_S3);
     if (maxPlayersInput && localStorage.getItem(_S4)) maxPlayersInput.value = localStorage.getItem(_S4);
-    if (guahhAiCheckbox && localStorage.getItem(_S5) === 'false') { guahhAiCheckbox.checked = false; if(aiBtnContainer) aiBtnContainer.style.display = 'none'; }
+    if (guahhAiCheckbox && localStorage.getItem(_S5) === 'false') { guahhAiCheckbox.checked = false; if(suggestBtn) suggestBtn.style.display = 'none'; }
     if (pointsTrackingCheckbox) pointsTrackingCheckbox.checked = localStorage.getItem(_S6) !== 'false';
     updatePointsTrackingVisibility();
 
@@ -869,7 +879,10 @@
         } else {
             buttons.push({ text: 'OK', className: 'primary', action: closeModal });
         }
-        showCustomModal(title, `<p>${message}</p>`, buttons);
+        showConfirmationModal(title, `<p>${message}</p>`, buttons);
+    }
+    function showConfirmationModal(title, messageHtml, buttons) {
+        showCustomModal(title, messageHtml, buttons);
     }
 
     // --- SUBSCRIPTION DYNAMIC UI ---
@@ -923,7 +936,7 @@
             settingsHtml += `
             <button class="timer-btn secondary cancel-sub-btn" style="width: 100%; font-size: 13px; color: #D32F2F; margin-bottom: 15px;">Cancel Subscription</button>
             `;
-            settingsHtml += indPlusCard; // Upgrade option
+            settingsHtml += indPlusCard; 
         } else if (subscriptionStatus === "INDIVIDUAL_PLUS") {
             settingsHtml += `
             <button class="timer-btn secondary cancel-sub-btn" style="width: 100%; font-size: 13px; color: #D32F2F; margin-bottom: 15px;">Cancel Subscription</button>
@@ -967,9 +980,11 @@
         const cSub = document.getElementById('sub-club-content');
         const cSet = document.getElementById('settings-club-content');
         
-        let html = '';
+        let subHtml = '';
+        let setHtml = '';
+
         if (status === 'NONE') {
-            html = `
+            const searchPart = `
                 <span style="font-size: 12px; color: #B0B0B0; margin-bottom: 10px; display: block;">Search and request to join a Coachboard club to link your team data.</span>
                 <div style="display: flex; gap: 6px; margin-bottom: 8px;">
                     <input type="text" class="club-search-input" placeholder="Search for your club..." style="flex: 1; padding: 10px; border-radius: 9px; background: #1A1A1A; color: #E0E0E0; border: 1px solid #222; font-size: 14px;">
@@ -977,8 +992,10 @@
                 </div>
                 <div class="club-search-results" style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px;"></div>
             `;
+            subHtml = searchPart;
+            setHtml = searchPart;
         } else if (status === 'PENDING') {
-            html = `
+            subHtml = `
                 <div style="background: #1A1A1A; padding: 12px; border-radius: 9px; border: 1px solid #222; margin-bottom: 10px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                         <span style="font-weight: bold; color: #E0E0E0; font-size: 15px;">${clubName}</span>
@@ -988,8 +1005,16 @@
                     <button class="timer-btn secondary leave-club-btn" style="width: 100%; font-size: 13px; color: #D32F2F;">Cancel Request</button>
                 </div>
             `;
+            setHtml = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <span style="font-weight: bold; color: #E0E0E0; font-size: 15px;">${clubName}</span>
+                    <span style="background: #007bff; color: white; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">PENDING</span>
+                </div>
+                <span style="font-size: 12px; color: #B0B0B0; display: block; margin-bottom: 12px;">Waiting for club administrator approval.</span>
+                <button class="timer-btn secondary leave-club-btn" style="width: 100%; font-size: 13px; color: #D32F2F;">Cancel Request</button>
+            `;
         } else if (status === 'APPROVED') {
-            html = `
+            subHtml = `
                 <div style="background: #1A1A1A; padding: 12px; border-radius: 9px; border: 1px solid #222; margin-bottom: 10px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                         <span style="font-weight: bold; color: #E0E0E0; font-size: 15px;">${clubName}</span>
@@ -999,10 +1024,18 @@
                     <button class="timer-btn secondary leave-club-btn" style="width: 100%; font-size: 13px; color: #D32F2F;">Leave Club</button>
                 </div>
             `;
+            setHtml = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <span style="font-weight: bold; color: #E0E0E0; font-size: 15px;">${clubName}</span>
+                    <span style="background: #4CAF50; color: white; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">APPROVED</span>
+                </div>
+                <span style="font-size: 12px; color: #B0B0B0; display: block; margin-bottom: 12px;">Your account is linked to this club.</span>
+                <button class="timer-btn secondary leave-club-btn" style="width: 100%; font-size: 13px; color: #D32F2F;">Leave Club</button>
+            `;
         }
 
-        if (cSub) { cSub.innerHTML = html; attachClubListeners(cSub); }
-        if (cSet) { cSet.innerHTML = html; attachClubListeners(cSet); }
+        if (cSub) { cSub.innerHTML = subHtml; attachClubListeners(cSub); }
+        if (cSet) { cSet.innerHTML = setHtml; attachClubListeners(cSet); }
     }
     
     function attachClubListeners(container) {
@@ -1137,19 +1170,23 @@
         }); updateSubstitutionWarnings(); 
     }
 
-    // --- DRAG & DROP ENGINE (WITH LONG PRESS TOUCH HOLD DELAY) ---
+    // --- DRAG & DROP ENGINE (WITH snappier LONG PRESS TOUCH HOLD DELAY) ---
     function clearDragStyles() {
-        document.querySelectorAll('.player-item').forEach(item => { item.style.backgroundColor = ''; });
-        const cDrop = document.getElementById('court-dropzone'); const bDrop = document.getElementById('bench-dropzone');
-        if (cDrop) cDrop.style.backgroundColor = ''; if (bDrop) bDrop.style.backgroundColor = ''; lastTouchTarget = null;
+        document.querySelectorAll('.player-item').forEach(item => { 
+            item.style.backgroundColor = ''; 
+            item.classList.remove('drag-selected');
+        });
+        const rosterZone = document.getElementById('roster');
+        if (rosterZone) rosterZone.style.backgroundColor = '';
+        lastTouchTarget = null;
     }
     function setupTouchDrag(playerItem) {
         let holdTimeout = null;
         let startX = 0;
         let startY = 0;
         let isTouchDraggingStarted = false;
-        const HOLD_DELAY = 250; // Milliseconds to hold down card before dragging activates
-        const MOVE_THRESHOLD = 8; // Max px boundary before clearing the drag sequence
+        const HOLD_DELAY = 150; 
+        const MOVE_THRESHOLD = 8; 
 
         playerItem.addEventListener('touchstart', (e) => {
             if (e.target.closest('button, input, select, textarea')) return;
@@ -1158,25 +1195,30 @@
             startY = touch.clientY;
             isTouchDraggingStarted = false;
 
+            playerItem.style.backgroundColor = 'rgba(255, 255, 255, 0.03)';
+
             if (holdTimeout) clearTimeout(holdTimeout);
             holdTimeout = setTimeout(() => {
                 isTouchDraggingStarted = true;
                 touchDragItem = playerItem; 
-                playerItem.style.opacity = '0.5'; 
+                
+                playerItem.classList.add('drag-selected');
+                playerItem.style.opacity = '0.7'; 
                 document.body.classList.add('dragging-active');
                 
                 const rect = playerItem.getBoundingClientRect(); 
                 touchClone = playerItem.cloneNode(true);
+                touchClone.classList.add('drag-selected');
                 touchClone.style.position = 'fixed'; 
                 touchClone.style.left = rect.left + 'px'; 
                 touchClone.style.top = rect.top + 'px';
                 touchClone.style.width = rect.width + 'px'; 
                 touchClone.style.height = rect.height + 'px'; 
-                touchClone.style.opacity = '0.8';
+                touchClone.style.opacity = '0.9';
                 touchClone.style.pointerEvents = 'none'; 
                 touchClone.style.zIndex = '10000'; 
-                touchClone.style.boxShadow = '0 8px 16px rgba(0,0,0,0.5)';
-                touchClone.style.background = '#121212'; 
+                touchClone.style.boxShadow = '0 8px 24px rgba(100, 181, 246, 0.5)';
+                touchClone.style.background = '#1e293b'; 
                 document.body.appendChild(touchClone);
                 
                 if (navigator.vibrate) navigator.vibrate(15);
@@ -1194,8 +1236,9 @@
                         clearTimeout(holdTimeout);
                         holdTimeout = null;
                     }
+                    playerItem.style.backgroundColor = ''; 
                 }
-                return; // Gracefully permit native browser scrolls
+                return; 
             }
 
             if (e.cancelable) e.preventDefault();
@@ -1208,15 +1251,23 @@
             if (element) {
                 const targetPlayerItem = element.closest('.player-item');
                 if (targetPlayerItem && targetPlayerItem !== touchDragItem) {
-                    if (lastTouchTarget && lastTouchTarget !== targetPlayerItem) lastTouchTarget.style.backgroundColor = '';
+                    if (lastTouchTarget && lastTouchTarget !== targetPlayerItem) {
+                        lastTouchTarget.style.backgroundColor = '';
+                        lastTouchTarget.classList.remove('drag-selected');
+                    }
                     targetPlayerItem.style.backgroundColor = 'rgba(255, 255, 255, 0.08)'; 
                     lastTouchTarget = targetPlayerItem;
                 } else {
-                    if (lastTouchTarget && lastTouchTarget.classList.contains('player-item')) lastTouchTarget.style.backgroundColor = '';
-                    const targetZone = element.closest('#court-dropzone, #bench-dropzone');
+                    if (lastTouchTarget && lastTouchTarget.classList.contains('player-item')) {
+                        lastTouchTarget.style.backgroundColor = '';
+                        lastTouchTarget.classList.remove('drag-selected');
+                    }
+                    const targetZone = element.closest('#roster');
                     if (targetZone) {
-                        if (lastTouchTarget && lastTouchTarget !== targetZone) lastTouchTarget.style.backgroundColor = '';
-                        targetZone.style.backgroundColor = 'rgba(255, 255, 255, 0.04)'; 
+                        if (lastTouchTarget && lastTouchTarget !== targetZone) {
+                            lastTouchTarget.style.backgroundColor = '';
+                        }
+                        targetZone.style.backgroundColor = 'rgba(255, 255, 255, 0.02)'; 
                         lastTouchTarget = targetZone;
                     } else if (lastTouchTarget && !lastTouchTarget.classList.contains('player-item')) { 
                         lastTouchTarget.style.backgroundColor = ''; 
@@ -1235,6 +1286,9 @@
                 holdTimeout = null;
             }
 
+            playerItem.classList.remove('drag-selected');
+            playerItem.style.backgroundColor = '';
+
             if (!isTouchDraggingStarted) return;
 
             if (!touchDragItem) return;
@@ -1250,10 +1304,8 @@
             const element = document.elementFromPoint(touch.clientX, touch.clientY);
             if (element) {
                 const targetPlayerItem = element.closest('.player-item');
-                if (targetPlayerItem && targetPlayerItem !== touchDragItem) swapPlayers(touchDragItem, targetPlayerItem);
-                else { 
-                    const targetZone = element.closest('#court-dropzone, #bench-dropzone'); 
-                    if (targetZone) movePlayerToStatus(touchDragItem, targetZone.id === 'court-dropzone' ? '1' : '0'); 
+                if (targetPlayerItem && targetPlayerItem !== touchDragItem) {
+                    swapPlayers(touchDragItem, targetPlayerItem);
                 }
             }
             touchDragItem = null;
@@ -1265,6 +1317,8 @@
                 clearTimeout(holdTimeout);
                 holdTimeout = null;
             }
+            playerItem.classList.remove('drag-selected');
+            playerItem.style.backgroundColor = '';
             if (isTouchDraggingStarted) {
                 playerItem.style.opacity = ''; 
                 document.body.classList.remove('dragging-active');
@@ -1278,24 +1332,43 @@
             }
         });
     }
+
     function setupDesktopDrag(playerItem) {
         playerItem.draggable = true;
-        playerItem.addEventListener('dragstart', (e) => { desktopDragItem = playerItem; playerItem.style.opacity = '0.5'; document.body.classList.add('dragging-active'); e.dataTransfer.effectAllowed = 'move'; });
-        playerItem.addEventListener('dragend', () => { playerItem.style.opacity = ''; document.body.classList.remove('dragging-active'); desktopDragItem = null; clearDragStyles(); });
+        playerItem.addEventListener('dragstart', (e) => { 
+            desktopDragItem = playerItem; 
+            playerItem.classList.add('drag-selected');
+            playerItem.style.opacity = '0.5'; 
+            document.body.classList.add('dragging-active'); 
+            e.dataTransfer.effectAllowed = 'move'; 
+        });
+        playerItem.addEventListener('dragend', () => { 
+            playerItem.classList.remove('drag-selected');
+            playerItem.style.opacity = ''; 
+            document.body.classList.remove('dragging-active'); 
+            desktopDragItem = null; 
+            clearDragStyles(); 
+        });
         playerItem.addEventListener('dragenter', (e) => { e.preventDefault(); playerItem.style.backgroundColor = 'rgba(255, 255, 255, 0.08)'; });
         playerItem.addEventListener('dragleave', () => { playerItem.style.backgroundColor = ''; });
         playerItem.addEventListener('dragover', (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; });
         playerItem.addEventListener('drop', (e) => { e.preventDefault(); e.stopPropagation(); clearDragStyles(); if (desktopDragItem && desktopDragItem !== playerItem) swapPlayers(desktopDragItem, playerItem); });
     }
-    function appendPlayerToCorrectList(playerItem) { const listId = playerItem.dataset.isOnField === '1' ? 'court-list' : 'bench-list'; const listEl = document.getElementById(listId); if (listEl) listEl.appendChild(playerItem); }
+
+    function appendPlayerToCorrectList(playerItem) { 
+        const listEl = document.getElementById('roster-list'); 
+        if (listEl && !listEl.contains(playerItem)) listEl.appendChild(playerItem); 
+    }
+
     function movePlayerToStatus(playerItem, targetStatus) {
         const currentStatus = playerItem.dataset.isOnField; if (currentStatus === targetStatus) { appendPlayerToCorrectList(playerItem); return; }
-        if (targetStatus === '1') { const currentOnCount = document.querySelectorAll('#court-list .player-item').length; const maxPlayersLimit = getMaxPlayers(); if (currentOnCount >= maxPlayersLimit) { showConfirmation('Substitution Limit Reached', `Maximum ${maxPlayersLimit} players allowed on field.`); return; } }
+        if (targetStatus === '1') { const currentOnCount = document.querySelectorAll('.player-item[data-is-on-field="1"]').length; const maxPlayersLimit = getMaxPlayers(); if (currentOnCount >= maxPlayersLimit) { showConfirmation('Substitution Limit Reached', `Maximum ${maxPlayersLimit} players allowed on field.`); return; } }
         playerItem.dataset.isOnField = targetStatus; const toggleBtn = playerItem.querySelector('.toggle-btn');
         if (targetStatus === '1') { if (toggleBtn) { toggleBtn.textContent = 'ON'; toggleBtn.classList.remove('status-off'); toggleBtn.classList.add('status-on'); } recordSubChange(playerItem.querySelector('.player-name').textContent, 'on'); } 
         else { if (toggleBtn) { toggleBtn.textContent = 'OFF'; toggleBtn.classList.add('status-off'); toggleBtn.classList.remove('status-on'); } recordSubChange(playerItem.querySelector('.player-name').textContent, 'off'); }
         appendPlayerToCorrectList(playerItem); updateSubstitutionWarnings();
     }
+
     function swapPlayers(playerA, playerB) {
         const statusA = playerA.dataset.isOnField; const statusB = playerB.dataset.isOnField;
         const parentA = playerA.parentNode; const parentB = playerB.parentNode;
@@ -1314,8 +1387,15 @@
             else { if (toggleBtnA) { toggleBtnA.textContent = 'OFF'; toggleBtnA.classList.add('status-off'); toggleBtnA.classList.remove('status-on'); } recordSubChange(playerA.querySelector('.player-name').textContent, 'off'); }
             if (statusA === '1') { if (toggleBtnB) { toggleBtnB.textContent = 'ON'; toggleBtnB.classList.remove('status-off'); toggleBtnB.classList.add('status-on'); } recordSubChange(playerB.querySelector('.player-name').textContent, 'on'); } 
             else { if (toggleBtnB) { toggleBtnB.textContent = 'OFF'; toggleBtnB.classList.add('status-off'); toggleBtnB.classList.remove('status-on'); } recordSubChange(playerB.querySelector('.player-name').textContent, 'off'); }
-            if (nextB) parentB.insertBefore(playerA, nextB); else parentB.appendChild(playerA);
-            if (nextA) parentA.insertBefore(playerB, nextA); else parentA.appendChild(playerB);
+            
+            if (parentA === parentB) {
+                if (nextA === playerB) parentA.insertBefore(playerB, playerA);
+                else if (nextB === playerA) parentA.insertBefore(playerA, playerB);
+                else { parentA.insertBefore(playerA, nextB); parentB.insertBefore(playerB, nextA); }
+            } else {
+                if (nextB) parentB.insertBefore(playerA, nextB); else parentB.appendChild(playerA);
+                if (nextA) parentA.insertBefore(playerB, nextA); else parentA.appendChild(playerB);
+            }
         }
         updateSubstitutionWarnings();
     }
@@ -1370,12 +1450,39 @@
         const toggleBtn = document.createElement('button'); toggleBtn.className = 'toggle-btn status-off'; toggleBtn.textContent = 'OFF';
         toggleBtn.onclick = () => {
             const isOn = playerItem.dataset.isOnField === '1';
-            if (isOn) { playerItem.dataset.isOnField = '0'; toggleBtn.textContent = 'OFF'; toggleBtn.classList.add('status-off'); toggleBtn.classList.remove('status-on'); recordSubChange(name, 'off'); appendPlayerToCorrectList(playerItem); } 
-            else { const currentOnCount = document.querySelectorAll('#court-list .player-item').length; const maxPlayersLimit = getMaxPlayers(); if (currentOnCount >= maxPlayersLimit) { showConfirmation('Substitution Limit Reached', `Maximum ${maxPlayersLimit} players allowed on field.`); return; } playerItem.dataset.isOnField = '1'; toggleBtn.textContent = 'ON'; toggleBtn.classList.remove('status-off'); toggleBtn.classList.add('status-on'); if (lowWarningIcon) lowWarningIcon.style.display = 'none'; recordSubChange(name, 'on'); appendPlayerToCorrectList(playerItem); }
+            if (isOn) { 
+                playerItem.dataset.isOnField = '0'; 
+                toggleBtn.textContent = 'OFF'; 
+                toggleBtn.classList.add('status-off'); 
+                toggleBtn.classList.remove('status-on'); 
+                recordSubChange(name, 'off'); 
+            } 
+            else { 
+                const currentOnCount = document.querySelectorAll('.player-item[data-is-on-field="1"]').length; 
+                const maxPlayersLimit = getMaxPlayers(); 
+                if (currentOnCount >= maxPlayersLimit) { 
+                    showConfirmation('Substitution Limit Reached', `Maximum ${maxPlayersLimit} players allowed on field.`); 
+                    return; 
+                } 
+                playerItem.dataset.isOnField = '1'; 
+                toggleBtn.textContent = 'ON'; 
+                toggleBtn.classList.remove('status-off'); 
+                toggleBtn.classList.add('status-on'); 
+                if (lowWarningIcon) lowWarningIcon.style.display = 'none'; 
+                recordSubChange(name, 'on'); 
+            }
             updateSubstitutionWarnings();
         };
         const deleteBtn = document.createElement('button'); deleteBtn.className = 'delete-btn'; deleteBtn.textContent = '×';
-        deleteBtn.onclick = () => { showConfirmation('Remove Player', `Remove ${name} from this game?`, (confirmed) => { if (confirmed) { const courtList = document.getElementById('court-list'); const benchList = document.getElementById('bench-list'); if (courtList && courtList.contains(playerItem)) courtList.removeChild(playerItem); if (benchList && benchList.contains(playerItem)) benchList.removeChild(playerItem); updateSubstitutionWarnings(); } }); };
+        deleteBtn.onclick = () => { 
+            showConfirmation('Remove Player', `Remove ${name} from this game?`, (confirmed) => { 
+                if (confirmed) { 
+                    const listEl = document.getElementById('roster-list'); 
+                    if (listEl && listEl.contains(playerItem)) listEl.removeChild(playerItem); 
+                    updateSubstitutionWarnings(); 
+                } 
+            }); 
+        };
         playerControlsGroup.appendChild(timeOnFieldDisplay); playerControlsGroup.appendChild(pointsGroup); playerControlsGroup.appendChild(toggleBtn); playerControlsGroup.appendChild(deleteBtn);
         playerItem.appendChild(playerInfoGroup); playerItem.appendChild(playerControlsGroup);
         setupTouchDrag(playerItem); setupDesktopDrag(playerItem);
@@ -1388,17 +1495,25 @@
         updateSubstitutionWarnings();
     }
     function sortRoster() {
-        const courtList = document.getElementById('court-list'); const benchList = document.getElementById('bench-list');
-        if (courtList) { const courtItems = Array.from(courtList.children); courtItems.sort((a, b) => parseInt(b.dataset.totalTime) - parseInt(a.dataset.totalTime)); courtItems.forEach(item => courtList.appendChild(item)); }
-        if (benchList) { const benchItems = Array.from(benchList.children); benchItems.sort((a, b) => parseInt(b.dataset.totalTime) - parseInt(a.dataset.totalTime)); benchItems.forEach(item => benchList.appendChild(item)); }
+        const listEl = document.getElementById('roster-list');
+        if (listEl) { 
+            const items = Array.from(listEl.children); 
+            items.sort((a, b) => {
+                const statusA = parseInt(a.dataset.isOnField) || 0;
+                const statusB = parseInt(b.dataset.isOnField) || 0;
+                if (statusA !== statusB) return statusB - statusA;
+                return parseInt(b.dataset.totalTime) - parseInt(a.dataset.totalTime);
+            }); 
+            items.forEach(item => listEl.appendChild(item)); 
+        }
     }
 
     // --- APP CORE & VIEWS ---
     function applyGlobalTeamChange(teamId) {
         localStorage.setItem(_ST, teamId); if(teamSelect) teamSelect.value = teamId; const mt = document.getElementById('manage-team-select'); const st = document.getElementById('stats-team-select'); if(mt) mt.value = teamId; if(st) st.value = teamId;
         resetTimer(); resetMiniTimer();
-        const courtList = document.getElementById('court-list'); const benchList = document.getElementById('bench-list');
-        if(courtList) courtList.innerHTML = ''; if(benchList) benchList.innerHTML = '';
+        const rosterList = document.getElementById('roster-list');
+        if(rosterList) rosterList.innerHTML = '';
         if (autoAddCheckbox && autoAddCheckbox.checked) autoAddDefaultPlayers(teamId);
         resetPlayerForm(); renderManagePlayers(); const statsContent = document.getElementById('stats-content'); if(statsContent) statsContent.innerHTML = '';
     }
@@ -1425,7 +1540,7 @@
         const teamPlayers = appData.players.filter(p => p.teamId === teamId); teamPlayers.sort((a, b) => (parseInt(b.rank) || 0) - (parseInt(a.rank) || 0)); 
         teamPlayers.forEach(p => {
             const div = document.createElement('div'); div.style.cssText = "display: flex; justify-content: space-between; padding: 10px; background: #121212; margin-bottom: 5px; border-radius: 9px; align-items: center;";
-            let details = `(Rating: ${p.rank || '-'})`; if(p.height) details += ` | ${p.height}cm`; if(p.skill) details += ` | ${p.skill}`;
+            let details = `(Rating: ${p.rank || '-'})`; if(p.height) details += ` | ${p.height}`; if(p.skill) details += ` | ${p.skill}`;
             div.innerHTML = `<div style="display: flex; flex-direction: column;"><div style="display: flex; align-items: center; gap: 6px;"><span style="font-weight: 700; color: #64B5F6; font-size: 15px;">#${p.playerNumber || '-'}</span><span style="font-weight: 500; font-size: 15px; color: #E0E0E0;">${p.playerName}</span></div><span style="color: #B0B0B0; font-size: 11px; margin-top: 3px;">${details}</span></div><div style="display: flex; gap: 5px;"><button class="timer-btn secondary" style="padding: 5px 10px; font-size: 11px; min-height: 0;" onclick="window._ep('${p.playerId}')">Edit</button><button class="timer-btn secondary" style="padding: 5px 10px; font-size: 11px; min-height: 0; background-color: #D32F2F; color: white;" onclick="window._rp('${p.playerId}')">Remove</button></div>`;
             list.appendChild(div);
         });
@@ -1441,7 +1556,6 @@
         const nav = document.getElementById('app-nav'); if (viewId === 'login-view' || viewId === 'signup-view' || viewId === 'sub-block-view') { if(nav) nav.style.display = 'none'; } else { if(nav) nav.style.display = 'flex'; }
         ['app-view', 'manage-view', 'stats-view', 'settings-view'].forEach(v => { const btn = document.getElementById('nav-' + v.split('-')[0] + '-btn'); if (btn) { btn.className = v === viewId ? 'timer-btn primary' : 'timer-btn secondary'; if (v === 'app-view') btn.style.flex = '1'; } });
 
-        // Auto Polling handler
         if (viewId === 'sub-block-view') {
             if (!subPollingInterval) {
                 subPollingInterval = setInterval(async () => {
@@ -1466,7 +1580,7 @@
                             
                             showView('app-view');
                         }
-                    } catch(e) {} // silent background fail
+                    } catch(e) {} 
                 }, 5000);
             }
         } else {
@@ -1483,9 +1597,7 @@
     // --- AI ENGINE ---
     function loadStepConfigSuggestions() {
         const container = document.getElementById('ai-step-suggestions-stacked'); if (!container) return; container.innerHTML = '';
-        const mandatory = "Subs suggestion"; const rest = SUGGESTION_POOL.filter(item => item !== mandatory);
-        const shuffledRest = [...rest].sort(() => 0.5 - Math.random()); const selected = [mandatory, ...shuffledRest.slice(0, 2)];
-        selected.forEach(text => {
+        SUGGESTION_POOL.forEach(text => {
             const btn = document.createElement('button'); btn.className = 'timer-btn secondary'; btn.style.cssText = 'width: 100%; min-height: 38px; text-align: left; font-size: 13px; font-weight: 600; border-radius: 9px; margin-bottom: 2px; border: none; outline: none; display: flex; align-items: center; justify-content: flex-start; padding: 0 14px;'; btn.textContent = text;
             btn.onclick = (e) => { e.stopPropagation(); const textInput = document.getElementById('ai-chat-input'); if (textInput) { textInput.value = text; const submitBtn = document.getElementById('ai-submit-btn'); if (submitBtn) submitBtn.click(); } }; container.appendChild(btn);
         });
@@ -1502,8 +1614,10 @@
     function stopVoiceSiriWave() { if (voiceSiriWave) { voiceSiriWave.stop(); voiceSiriWave = null; } }
     function handleInputChange(inputEl, buttonEl) {
         const iconEl = buttonEl.querySelector('.material-icons');
-        if (inputEl.value.trim().length > 0) { buttonEl.style.backgroundColor = '#007bff'; buttonEl.style.color = '#FFFFFF'; if (iconEl) iconEl.textContent = 'send'; buttonEl.dataset.mode = 'send'; } 
-        else { buttonEl.style.backgroundColor = ''; buttonEl.style.color = ''; if (iconEl) iconEl.textContent = 'mic'; buttonEl.dataset.mode = 'mic'; }
+        buttonEl.style.backgroundColor = '';
+        buttonEl.style.color = '';
+        if (iconEl) iconEl.textContent = 'mic';
+        buttonEl.dataset.mode = 'mic';
     }
     async function startVoiceRecognition(inputEl, buttonEl, isFollowUp) {
         if (!SpeechRecognition) return showConfirmation('Not Supported', 'Voice recognition is not supported in this browser. Please use Google Chrome or Safari.');
@@ -1580,9 +1694,28 @@
             }
         } catch (error) { stopSiriWave(); showConfirmation('Error', `Failed: ${error.message || error}`); closeAiPanel(); }
     }
-    function collapseAiPanel() { isAiCollapsed = true; panel.classList.add('collapsed'); panel.style.transform = 'translateX(-50%)'; }
-    function expandAiPanel() { isAiCollapsed = false; panel.classList.remove('collapsed'); panel.style.transform = 'translateX(-50%)'; }
-    function closeAiPanel() { panel.style.display = 'none'; isAiCollapsed = false; panel.classList.remove('collapsed'); stopSiriWave(); stopVoiceRecognition(); }
+    function collapseAiPanel() { 
+        isAiCollapsed = true; 
+        panel.classList.add('collapsed'); 
+        panel.style.transform = 'translateX(-50%)'; 
+        document.body.classList.remove('ai-panel-open');
+    }
+    function expandAiPanel() { 
+        isAiCollapsed = false; 
+        panel.classList.remove('collapsed'); 
+        panel.style.transform = 'translateX(-50%)'; 
+        if (panel.style.display === 'flex') {
+            document.body.classList.add('ai-panel-open');
+        }
+    }
+    function closeAiPanel() { 
+        panel.style.display = 'none'; 
+        isAiCollapsed = false; 
+        panel.classList.remove('collapsed'); 
+        stopSiriWave(); 
+        stopVoiceRecognition(); 
+        document.body.classList.remove('ai-panel-open');
+    }
     function dragStart(e) { startY = (e.clientY !== undefined) ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : 0); isDragging = true; panel.style.transition = 'none'; }
     function dragMove(e) { if (!isDragging) return; if (e.cancelable) e.preventDefault(); const currentY = (e.clientY !== undefined) ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : 0); dragOffset = currentY - startY; if (!isAiCollapsed) { if (dragOffset > 0) panel.style.transform = `translate3d(-50%, ${dragOffset}px, 0)`; } else { if (dragOffset < 0) panel.style.transform = `translate3d(-50%, ${dragOffset}px, 0)`; } }
     function dragEnd() { if (!isDragging) return; isDragging = false; panel.style.transition = 'max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1), width 0.4s cubic-bezier(0.25, 1, 0.5, 1), max-width 0.4s cubic-bezier(0.25, 1, 0.5, 1), padding 0.4s cubic-bezier(0.25, 1, 0.5, 1), border-radius 0.4s cubic-bezier(0.25, 1, 0.5, 1), transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2), opacity 0.4s ease, bottom 0.4s cubic-bezier(0.25, 1, 0.5, 1)'; panel.style.transform = 'translateX(-50%)'; if (!isAiCollapsed) { if (dragOffset > 25) collapseAiPanel(); else expandAiPanel(); } else { if (dragOffset < -60) expandAiPanel(); else collapseAiPanel(); } dragOffset = 0; }
@@ -1590,13 +1723,21 @@
     // --- INIT ---
     async function initApp() {
         const overlay = document.getElementById('opening-loading-overlay'); const actionOverlay = document.getElementById('action-loading-overlay'); resetMiniTimer(); miniTotalSeconds = getMiniTimerSeconds(); 
-        const courtDropzone = document.getElementById('court-dropzone'); const benchDropzone = document.getElementById('bench-dropzone');
-        [courtDropzone, benchDropzone].forEach(zone => {
-            if (!zone) return;
-            zone.addEventListener('dragover', (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; zone.style.backgroundColor = 'rgba(255, 255, 255, 0.04)'; });
-            zone.addEventListener('dragleave', () => { zone.style.backgroundColor = ''; });
-            zone.addEventListener('drop', (e) => { e.preventDefault(); clearDragStyles(); if (desktopDragItem) movePlayerToStatus(desktopDragItem, zone.id === 'court-dropzone' ? '1' : '0'); });
-        });
+        const rosterZone = document.getElementById('roster');
+        if (rosterZone) {
+            rosterZone.addEventListener('dragover', (e) => { 
+                e.preventDefault(); 
+                e.dataTransfer.dropEffect = 'move'; 
+                rosterZone.style.backgroundColor = 'rgba(255, 255, 255, 0.02)'; 
+            });
+            rosterZone.addEventListener('dragleave', () => { 
+                rosterZone.style.backgroundColor = ''; 
+            });
+            rosterZone.addEventListener('drop', (e) => { 
+                e.preventDefault(); 
+                clearDragStyles(); 
+            });
+        }
         if (authToken) {
             try {
                 const res = await apiCall('load_data'); currentUser = res.email; subscriptionStatus = res.subscriptionStatus; appData.teams = res.teams || []; appData.players = res.players || [];
@@ -1604,7 +1745,6 @@
                 renderClubStatus();
                 renderSubscriptionUI();
                 
-                // --- Subscription Check ---
                 const activeTiers = ["ACTIVE", "INDIVIDUAL", "INDIVIDUAL_PLUS", "CLUB", "CLUB_PLUS"];
                 if (!activeTiers.includes(subscriptionStatus)) {
                     showView('sub-block-view'); 
@@ -1626,7 +1766,7 @@
                 document.getElementById('action-loading-overlay').style.display = 'flex';
                 try {
                     await apiCall('delete_team', { teamId }); appData.teams = appData.teams.filter(t => t.teamId !== teamId); appData.players = appData.players.filter(p => p.teamId !== teamId);
-                    if (teamSelect && teamSelect.value === teamId) { localStorage.removeItem(_ST); const courtList = document.getElementById('court-list'); const benchList = document.getElementById('bench-list'); if(courtList) courtList.innerHTML = ''; if(benchList) benchList.innerHTML = ''; }
+                    if (teamSelect && teamSelect.value === teamId) { localStorage.removeItem(_ST); const rosterList = document.getElementById('roster-list'); if(rosterList) rosterList.innerHTML = ''; }
                     renderManageTeams(); renderTeams(); showConfirmation('Success', 'Team deleted successfully.');
                 } catch (e) { showConfirmation('Cannot Delete', e.message); } finally { document.getElementById('action-loading-overlay').style.display = 'none'; }
             }
@@ -1645,7 +1785,7 @@
     // --- EVENT LISTENERS BINDING ---
     if(dragHandle) { dragHandle.addEventListener('mousedown', dragStart); dragHandle.addEventListener('touchstart', dragStart, { passive: false }); }
     if(panel) { panel.addEventListener('mousedown', (e) => { if (isAiCollapsed) dragStart(e); }); panel.addEventListener('touchstart', (e) => { if (isAiCollapsed) { dragStart(e); } }, { passive: false }); panel.addEventListener('click', (e) => { if (isAiCollapsed) { if (e.target.closest('#ai-close-btn')) { e.stopPropagation(); closeAiPanel(); } else expandAiPanel(); } }); }
-    document.addEventListener('mousemove', dragMove); document.addEventListener('touchmove', dragMove, { passive: false });
+    document.addEventListener('mousemove', dragMove); document.addEventListener('touchmove', (e) => { if (isDragging) dragMove(e); }, { passive: false });
     document.addEventListener('mouseup', dragEnd); document.addEventListener('touchend', dragEnd);
 
     const cancelBtn = document.getElementById('ai-cancel-btn'); if(cancelBtn) cancelBtn.onclick = (e) => { e.stopPropagation(); setTimeout(closeAiPanel, 100); };
@@ -1657,23 +1797,22 @@
     const submitBtn = document.getElementById('ai-submit-btn');
     if(chatInput) { chatInput.onkeydown = (e) => { if (e.key === 'Enter') { e.stopPropagation(); executeQuerySubmission(chatInput.value.trim()); } }; chatInput.addEventListener('input', () => handleInputChange(chatInput, aiVoiceBtn)); }
     if(submitBtn) { submitBtn.onclick = () => { executeQuerySubmission(chatInput ? chatInput.value.trim() : ''); }; }
-    if(aiVoiceBtn) { aiVoiceBtn.onclick = (e) => { e.stopPropagation(); if (aiVoiceBtn.dataset.mode === 'send') executeQuerySubmission(chatInput.value.trim()); else startVoiceRecognition(chatInput, aiVoiceBtn, false); }; }
+    if(aiVoiceBtn) { aiVoiceBtn.onclick = (e) => { e.stopPropagation(); startVoiceRecognition(chatInput, aiVoiceBtn, false); }; }
 
     const aiResultsVoiceBtn = document.getElementById('ai-results-voice-btn');
     const followupInput = document.getElementById('ai-results-followup-input');
     const followUpBtn = document.getElementById('ai-results-followup-btn');
     if(followupInput) { followupInput.onkeydown = (e) => { if (e.key === 'Enter') { e.stopPropagation(); executeQuerySubmission(followupInput.value.trim()); } }; followupInput.addEventListener('input', () => handleInputChange(followupInput, aiResultsVoiceBtn)); }
-    if(aiResultsVoiceBtn) { aiResultsVoiceBtn.onclick = (e) => { e.stopPropagation(); if (aiResultsVoiceBtn.dataset.mode === 'send') executeQuerySubmission(followupInput.value.trim()); else startVoiceRecognition(followupInput, aiResultsVoiceBtn, true); }; }
+    if(aiResultsVoiceBtn) { aiResultsVoiceBtn.onclick = (e) => { e.stopPropagation(); startVoiceRecognition(followupInput, aiResultsVoiceBtn, true); }; }
     if(followUpBtn) { followUpBtn.onclick = (e) => { e.stopPropagation(); executeQuerySubmission(followupInput.value.trim()); }; }
 
-    const suggestBtn = document.getElementById('suggest-sub-btn');
     if(suggestBtn) { suggestBtn.onclick = () => { if(panel) { panel.style.display = 'flex'; expandAiPanel(); } loadStepConfigSuggestions(); document.getElementById('ai-step-config').style.display = 'block'; document.getElementById('ai-step-loading').style.display = 'none'; document.getElementById('ai-step-results').style.display = 'none'; if (chatInput) { chatInput.value = ''; handleInputChange(chatInput, aiVoiceBtn); } }; }
 
     if(autoTimerCheckbox) autoTimerCheckbox.addEventListener('change', (e) => localStorage.setItem(_S1, e.target.checked));
     if(autoAddCheckbox) autoAddCheckbox.addEventListener('change', (e) => localStorage.setItem(_S2, e.target.checked));
     if(timerAmountInput) { timerAmountInput.addEventListener('change', (e) => { let val = parseInt(e.target.value); if (isNaN(val) || val < 1) { val = 3; e.target.value = 3; } localStorage.setItem(_S3, val); if (!isMiniTimerRunning) resetMiniTimer(); }); }
     if(maxPlayersInput) { maxPlayersInput.addEventListener('change', (e) => { let val = parseInt(e.target.value); if (isNaN(val) || val < 1) { val = 5; e.target.value = 5; } localStorage.setItem(_S4, val); }); }
-    if(guahhAiCheckbox) { guahhAiCheckbox.addEventListener('change', (e) => { localStorage.setItem(_S5, e.target.checked); if(aiBtnContainer) aiBtnContainer.style.display = e.target.checked ? 'block' : 'none'; if (!e.target.checked) closeAiPanel(); }); }
+    if(guahhAiCheckbox) { guahhAiCheckbox.addEventListener('change', (e) => { localStorage.setItem(_S5, e.target.checked); if(suggestBtn) suggestBtn.style.display = e.target.checked ? '' : 'none'; if (!e.target.checked) closeAiPanel(); }); }
     if(pointsTrackingCheckbox) { pointsTrackingCheckbox.addEventListener('change', (e) => { localStorage.setItem(_S6, e.target.checked); updatePointsTrackingVisibility(); }); }
 
     document.querySelectorAll('.skill-pill').forEach(pill => { pill.addEventListener('click', (e) => { e.preventDefault(); pill.classList.toggle('active'); }); });
@@ -1774,7 +1913,7 @@
     if(createTeamBtn) { createTeamBtn.onclick = async () => { const nameInput = document.getElementById('new-team-name'); const sportSelect = document.getElementById('new-team-sport'); const name = nameInput.value.trim(); const sport = sportSelect ? sportSelect.value : ''; if (!name) return showConfirmation('Error', 'Please enter a team name.'); if (!sport) return showConfirmation('Error', 'Please select a sport.'); document.getElementById('action-loading-overlay').style.display = 'flex'; try { const res = await apiCall('create_team', { teamName: name, sport: sport }); appData.teams.push({ teamId: res.teamId, teamName: res.teamName, sport: res.sport }); renderManageTeams(); renderTeams(); if(manageTeamSelect) { manageTeamSelect.value = res.teamId; manageTeamSelect.dispatchEvent(new Event('change')); } nameInput.value = ''; if(sportSelect) sportSelect.value = ''; } catch (e) { showConfirmation('Error', 'Failed to create team: ' + e.message); } finally { document.getElementById('action-loading-overlay').style.display = 'none'; } }; }
 
     const createPlayerBtn = document.getElementById('create-player-btn');
-    if(createPlayerBtn) { createPlayerBtn.onclick = async () => { const teamId = manageTeamSelect ? manageTeamSelect.value : null; const name = document.getElementById('new-player-name').value.trim(); const num = document.getElementById('new-player-number').value.trim(); const rank = document.getElementById('new-player-rank').value.trim(); const height = document.getElementById('new-player-height').value.trim(); const skill = getSelectedSkills(); if (!teamId || !name) return showConfirmation('Error', 'Team and Name are required.'); if (editingPlayerId) { const p = appData.players.find(p => p.playerId === editingPlayerId); if (p) { p.playerName = name; p.playerNumber = num; p.rank = rank || "5"; p.height = height; p.skill = skill; renderManagePlayers(); const currentEditId = editingPlayerId; resetPlayerForm(); try { await apiCall('edit_player', { playerId: currentEditId, playerName: name, playerNumber: num, rank: rank || "5", height, skill }); } catch (e) { showConfirmation('Error', 'Failed to update player: ' + e.message); } } } else { const tempId = 'temp_' + Date.now(); const newPlayer = { playerId: tempId, teamId, playerName: name, playerNumber: num, rank: rank || "5", height, skill }; appData.players.push(newPlayer); renderManagePlayers(); resetPlayerForm(); try { const res = await apiCall('add_player', { teamId, playerName: name, playerNumber: num, rank: rank || "5", height, skill }); const p = appData.players.find(p => p.playerId === tempId); if (p) p.playerId = res.playerId; } catch (e) { appData.players = appData.players.filter(p => p.playerId !== tempId); renderManagePlayers(); showConfirmation('Error', 'Failed to add player: ' + e.message); } } }; }
+    if(createPlayerBtn) { createPlayerBtn.onclick = async () => { const teamId = manageTeamSelect ? manageTeamSelect.value : null; const name = document.getElementById('new-player-name').value.trim(); const num = document.getElementById('new-player-number').value.trim(); const rank = document.getElementById('new-player-rank').value.trim(); let height = document.getElementById('new-player-height').value.trim(); if (/^\d+$/.test(height)) { const cmVal = parseInt(height, 10); if (cmVal > 30) { height = cmToFeetInches(cmVal); } } const skill = getSelectedSkills(); if (!teamId || !name) return showConfirmation('Error', 'Team and Name are required.'); if (editingPlayerId) { const p = appData.players.find(p => p.playerId === editingPlayerId); if (p) { p.playerName = name; p.playerNumber = num; p.rank = rank || "5"; p.height = height; p.skill = skill; renderManagePlayers(); const currentEditId = editingPlayerId; resetPlayerForm(); try { await apiCall('edit_player', { playerId: currentEditId, playerName: name, playerNumber: num, rank: rank || "5", height, skill }); } catch (e) { showConfirmation('Error', 'Failed to update player: ' + e.message); } } } else { const tempId = 'temp_' + Date.now(); const newPlayer = { playerId: tempId, teamId, playerName: name, playerNumber: num, rank: rank || "5", height, skill }; appData.players.push(newPlayer); renderManagePlayers(); resetPlayerForm(); try { const res = await apiCall('add_player', { teamId, playerName: name, playerNumber: num, rank: rank || "5", height, skill }); const p = appData.players.find(p => p.playerId === tempId); if (p) p.playerId = res.playerId; } catch (e) { appData.players = appData.players.filter(p => p.playerId !== tempId); renderManagePlayers(); showConfirmation('Error', 'Failed to add player: ' + e.message); } } }; }
 
     const loadStatsBtn = document.getElementById('load-stats-btn');
     if(loadStatsBtn) { loadStatsBtn.onclick = async () => { const teamId = statsTeamSelect ? statsTeamSelect.value : null; if (!teamId) return; loadStatsBtn.textContent = 'Loading...'; loadStatsBtn.disabled = true; try { const res = await apiCall('get_stats', { teamId }); const content = document.getElementById('stats-content'); content.innerHTML = ''; if (!res.stats || res.stats.length === 0) { content.innerHTML = '<p style="color:#B0B0B0; text-align:center; margin-top:20px;">No games recorded yet.</p>'; return; } res.stats.reverse().forEach(game => { let html = `<div style="background: #2D2D2D; padding: 12px; border-radius: 9px; margin-bottom: 10px;"><div style="font-weight: bold; margin-bottom: 5px; color: #64B5F6; font-size: 14px;">${game.date}</div><div style="font-size: 12px; color: #B0B0B0; margin-bottom: 8px;">Duration: <span style="color: #64B5F6; font-weight: bold;">${game.duration}</span> | Notes: <span style="color:white;">${game.notes}</span></div><table style="width: 100%; font-size: 13px; border-collapse: collapse;"><tr style="border-bottom: 1px solid #444; color: #E0E0E0;"><th style="text-align: left; padding: 6px 4px;">Player</th><th style="text-align: center; padding: 6px 4px;">No.</th><th style="text-align: center; padding: 6px 4px;">Pts</th><th style="text-align: right; padding: 6px 4px;">Time</th></tr>`; game.players.forEach(p => { html += `<tr style="border-bottom: 3px solid #333;"><td style="padding: 6px 4px;">${p.name}</td><td style="text-align: center; padding: 6px 4px;">${p.number}</td><td style="text-align: center; padding: 6px 4px; font-weight:bold; color: #FFFFFF;">${p.points || 0}</td><td style="text-align: right; padding: 6px 4px; color:#64B5F6; font-weight:bold;">${p.time}</td></tr>`; }); html += `</table></div>`; content.innerHTML += html; }); } catch (e) { showConfirmation('Error', 'Failed to load stats: ' + e.message); } finally { loadStatsBtn.textContent = 'Load Stats'; loadStatsBtn.disabled = false; } }; }
@@ -1789,9 +1928,6 @@
     const subMinBtn = document.getElementById('subtract-minute-btn'); if(subMinBtn) subMinBtn.onclick = () => adjustTime(-20);
     if(miniStartPauseBtn) miniStartPauseBtn.onclick = () => isMiniTimerRunning ? pauseMiniTimer() : startMiniTimer();
     const miniResetBtn = document.getElementById('mini-reset-btn'); if(miniResetBtn) miniResetBtn.onclick = resetMiniTimer;
-
-    const updateAppBtn = document.getElementById('update-app-btn');
-    if(updateAppBtn) { updateAppBtn.onclick = () => { try { window.location.reload(); } catch (e) { window.location.href = window.location.href; } }; }
 
     const saveToSheetsBtn = document.getElementById('save-to-sheets-btn');
     if(saveToSheetsBtn) { saveToSheetsBtn.onclick = () => { const gameData = { teamId: teamSelect.value, mainTime: timeDisplay.textContent, notes: document.getElementById('game-notes').value, players: [] }; document.querySelectorAll('.player-item').forEach(item => { gameData.players.push({ number: item.querySelector('.player-number')?.textContent.replace('#', '') || 'N/A', name: item.querySelector('.player-name')?.textContent || 'Unnamed', time: item.querySelector('.player-time')?.textContent || '00:00', points: item.dataset.points || '0' }); }); if (!gameData.teamId) return showConfirmation('Required Field Missing', 'Please select a Team before saving.'); showCustomModal('Finish and Save Game', '<p>End this game and save final times to Server?</p>', [ { text: 'Confirm', className: 'primary', action: (e) => { const btn = e.target; const cancelBtn = btn.nextElementSibling; btn.textContent = 'Saving...'; btn.disabled = true; if(cancelBtn) cancelBtn.disabled = true; apiCall('save', gameData).then(() => { showCustomModal('Success!', '<p>Game data successfully saved to the server.</p>', [{ text: 'OK', className: 'primary', action: closeModal }]); }).catch(err => { showCustomModal('Network Error', `<p>Details: ${err.message}</p>`, [{ text: 'OK', className: 'primary', action: closeModal }]); }); } }, { text: 'Cancel', className: 'secondary', action: closeModal } ]); }; }

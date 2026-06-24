@@ -14,6 +14,121 @@ window.GuahhAI = (() => {
         cardedPlayers: {} // Tracks cards or foul status (e.g. 'yellow', 'red', 'foul trouble')
     };
 
+    function parseHeightToInches(heightStr) {
+        if (!heightStr) return 0;
+        const s = String(heightStr).toLowerCase().trim();
+        let feet = 0;
+        let inches = 0;
+        
+        const ftMatch = s.match(/(\d+)\s*(?:ft|feet|'|’)/i);
+        if (ftMatch) {
+            feet = parseInt(ftMatch[1], 10);
+            const rest = s.substring(ftMatch.index + ftMatch[0].length);
+            const inMatch = rest.match(/(\d+)\s*(?:in|inches|")?/i);
+            if (inMatch && inMatch[1]) {
+                inches = parseInt(inMatch[1], 10);
+            }
+        } else {
+            const simpleMatch = s.match(/(\d+)\s*[-'’\s]\s*(\d+)/);
+            if (simpleMatch) {
+                feet = parseInt(simpleMatch[1], 10);
+                inches = parseInt(simpleMatch[2], 10);
+            } else {
+                const singleNumMatch = s.match(/^(\d+)$/);
+                if (singleNumMatch) {
+                    const val = parseInt(singleNumMatch[1], 10);
+                    if (val > 30) {
+                        return Math.round(val / 2.54);
+                    } else if (val < 10) {
+                        feet = val;
+                    } else {
+                        inches = val;
+                    }
+                }
+            }
+        }
+        return (feet * 12) + inches;
+    }
+
+    // Built-in offline knowledge database
+    const generalKnowledgeDB = {
+        dog: "A dog is a domesticated carnivorous mammal of the canine family. Known as 'man's best friend,' they are highly social, loyal, and possess an excellent sense of smell and hearing. They have been bred by humans for thousands of years for work, protection, and companionship!",
+        apple: "An apple is a sweet, round pomaceous edible fruit produced by an apple tree (Malus domestica). Apples are high in fiber, Vitamin C, and various antioxidants. They are incredibly popular worldwide, eaten raw, baked, or made into cider.",
+        butterfly: "Butterflies go through a fascinating four-stage lifecycle called complete metamorphosis: \n1. **The Egg**: Laid on a leaf.\n2. **The Larva (Caterpillar)**: Hatches and eats continuously to grow.\n3. **The Pupa (Chrysalis)**: The caterpillar spins a protective casing where its body entirely reorganizes.\n4. **The Adult Butterfly**: Emerges fully formed, spreads its wings to dry, and flies away!",
+        dunk: "A dunk (or slam dunk) is a high-flying basketball shot where a player leaps high into the air and forcefully drives the ball directly down through the hoop with one or both hands, often grabbing the rim. It is one of the most exciting, high-percentage, and momentum-shifting plays in sports!",
+        offside: "In soccer, a player is caught in an offside position if they are nearer to the opponent's goal line than both the ball and the second-last opponent (usually the last defender) at the exact moment the ball is passed to them. It prevents attackers from simply waiting ('cherry-picking') near the opposing goal.",
+        touchdown: "In American football, a touchdown is scored when a player runs the ball into, or catches a pass within, the opponent's end zone. It is worth 6 points and is followed by an opportunity to kick an extra point or try for a 2-point conversion.",
+        home_run: "In baseball, a home run occurs when a batter hits the ball far enough (usually over the outfield fence) to circle all four bases and score a run safely in a single play, along with any other players already on base.",
+        netball: "Netball is a fast-paced non-contact team sport played by two teams of seven players on a court divided into thirds. The objective is to score goals through a ring. Players are assigned strict positional zones (like GK, GD, WD, C, WA, GA, GS) and cannot run with the ball.",
+        afl: "Australian Rules Football (commonly called AFL or Footy) is a fast, highly physical contact sport played on a large oval field between two teams of 18 players. The ball is kicked or handpassed, and points are scored by kicking the oval ball between tall goal posts (6 points for a goal, 1 point for a behind).",
+        corner_kick: "In soccer, a corner kick is awarded to the attacking team when the ball leaves the play area across the opposing end line, having last been touched by a defending player. It is taken from the nearest corner arc and is a major scoring opportunity.",
+        free_throw: "In basketball, a free throw (or foul shot) is an uncontested shot worth 1 point taken from behind the free-throw line (15 feet from the hoop) while the game clock is stopped. They are awarded following personal fouls by the opposing team.",
+        photosynthesis: "Photosynthesis is the process used by plants, algae, and certain bacteria to harness energy from sunlight and turn it into chemical energy. They absorb carbon dioxide and water, using light energy to produce glucose (food) and release oxygen into the atmosphere!",
+        sky_blue: "The sky is blue because of a phenomenon called Rayleigh scattering. Sunlight reaches Earth's atmosphere and is scattered in all directions by gases and particles in the air. Because blue light travels in smaller, shorter waves, it is scattered much more than other colors, making the sky appear blue to our eyes!",
+        gravity: "Gravity is a fundamental force of nature that pulls objects toward one another. It is the force that keeps our feet on the ground, causes apples to fall from trees, and holds the Earth and other planets in orbit around the Sun. The more massive an object is, the stronger its gravitational pull!"
+    };
+
+    // Sideline casual conversational responses
+    const casualResponses = {
+        "thank you": "You're welcome! Let me know if you need any more sideline assistance.",
+        "thanks": "You're welcome! Always happy to assist.",
+        "how are you": "I'm doing great, ready to help you manage your game! How can I assist you on the sideline?",
+        "good job": "Thank you! I appreciate it. Let's keep working to get the win!",
+        "great job": "Thank you! I'm here to make coaching easier for you.",
+        "goodbye": "Goodbye! Best of luck with the rest of your match!",
+        "bye": "Goodbye! Let me know if you need any more strategies later on."
+    };
+
+    function matchGeneralKnowledge(q) {
+        if (/butterfly|butterflies/i.test(q)) return generalKnowledgeDB.butterfly;
+        if (/dog/i.test(q)) return generalKnowledgeDB.dog;
+        if (/apple/i.test(q)) return generalKnowledgeDB.apple;
+        if (/dunk|slam\s*dunk/i.test(q)) return generalKnowledgeDB.dunk;
+        if (/offside/i.test(q)) return generalKnowledgeDB.offside;
+        if (/touchdown/i.test(q)) return generalKnowledgeDB.touchdown;
+        if (/home\s*run/i.test(q)) return generalKnowledgeDB.home_run;
+        if (/netball/i.test(q)) return generalKnowledgeDB.netball;
+        if (/afl|footy|australian\s*rules/i.test(q)) return generalKnowledgeDB.afl;
+        if (/corner\s*kick/i.test(q)) return generalKnowledgeDB.corner_kick;
+        if (/free\s*throw/i.test(q)) return generalKnowledgeDB.free_throw;
+        if (/photosynthesis/i.test(q)) return generalKnowledgeDB.photosynthesis;
+        if (/sky.*blue/i.test(q)) return generalKnowledgeDB.sky_blue;
+        if (/gravity/i.test(q)) return generalKnowledgeDB.gravity;
+        return null;
+    }
+
+    function trySolveMath(query) {
+        let s = query.toLowerCase()
+            .replace(/\bwhat\s+is\s+/g, '')
+            .replace(/\bwhats\s+/g, '')
+            .replace(/\bcalculate\s+/g, '')
+            .replace(/\bmultiply\s+/g, '')
+            .replace(/\bdivided\s+by\s+/g, '/')
+            .replace(/\bmultiplied\s+by\s+/g, '*')
+            .replace(/\btimes\s+/g, '*')
+            .replace(/\bplus\s+/g, '+')
+            .replace(/\bminus\s+/g, '-')
+            .replace(/\bdivided\b/g, '/')
+            .trim();
+        
+        s = s.replace(/(\d+)\s*x\s*(\d+)/g, '$1*$2');
+        const cleanMath = s.replace(/[^0-9+\-*/().\s]/g, '').trim();
+        
+        if (/[0-9]/.test(cleanMath) && /[+\-*/]/.test(cleanMath)) {
+            try {
+                const result = new Function(`return (${cleanMath})`)();
+                if (result !== undefined && !isNaN(result)) {
+                    const originalExpr = cleanMath.replace(/\*/g, ' x ').replace(/\//g, ' / ');
+                    return {
+                        text: `🔢 **Math Solver:**\n\nExpression: **${originalExpr}**\nResult: **${result}**`,
+                        actions: []
+                    };
+                }
+            } catch (e) {}
+        }
+        return null;
+    }
+
     const coachingDatabase = {
         drills: {
             basketball: [
@@ -67,29 +182,11 @@ window.GuahhAI = (() => {
             'rebounding': "**How to Box Out / Secure Space**:\n1. Locate your opponent as soon as the shot/ball is released.\n2. Make initial contact with forearm to track them.\n3. Reverse pivot to seal them behind your hips, drop into a low stance, and keep your arms wide.",
             'spacing': "**Offensive Spacing Guide**:\n- Maintain healthy passing lanes between perimeter players at all times.\n- If a teammate drives toward you, vacate that space and relocate to an open passing lane to stretch the defense out.",
             'passing': "**Precision Passing Fundamentals**:\n- Step toward your target and push the ball out, releasing cleanly with thumbs down.\n- Aim passes to rise to your teammate's waist.\n- Keep your release balanced and track movement patterns across lanes.",
-            'fastbreak': "**Transition / Fastbreak Strategy**:\n- Rebounders must quickly turn and clear the ball with a rapid outlet pass to the wings.\n- Sprints down the wings stretch defensive coverage and create numerical advantages."
+            'fastbreak': "**Transition / Fastbreak Strategy**:\n- Rebounders must quickly turn and clear the ball with a rapid outlet pass to the wings.\n- Sprints down the wings stretch defensive coverage and create numerical advantages.",
+            'zone': "**Zone Defense Countering**:\n- Fast perimeter ball movement swings the zone out of alignment.\n- Cutters should target the soft spots (gaps between defenders, high post, short corners).\n- Attack the gaps with drives, then kick the ball out to open shooters.",
+            'press': "**Breaking Full Court Pressure**:\n- Establish a reliable safety valve receiver behind the ball handler.\n- Use quick, balanced chest passes down the court rather than dribbling blindly.\n- Maintain strong floor spacing, utilizing the middle of the court to release pressure.",
+            'clutch': "**Clutch Situations Tactic**:\n- Run high pick-and-roll screen actions to force mismatch coverage.\n- Keep your most reliable shot-creator with the ball, while floor spacers spread out to the corners.\n- Defensively, communicate every switch and secure defensive rebounds at all costs."
         }
-    };
-
-    const casualResponses = {
-        'how old are you': "I was created in 2026, which makes me quite young, but I have a wealth of sports analytics and knowledge!",
-        'where do you live': "I live right here inside Coachbuddy's digital ecosystem.",
-        'are you married': "No, I am completely single and entirely focused on helping you coach a winning team!",
-        'meaning of life': "To help your team get as many buckets as possible! Or forty-two, depending on who you ask.",
-        'are you a robot': "I am Guahh AI, an artificial intelligence. Think of me as your elite digital assistant coach.",
-        'what is basketball': "Basketball is a game played between two teams of five players on a rectangular court, where the objective is to shoot a ball through a hoop.",
-        'how to win': "Score more points than the opponent! Defend well, box out, limit turnovers, and maximize high-efficiency shots.",
-        'who are you': "I am Guahh AI, your intelligent, standalone assistant coaching companion.",
-        'your name': "My name is Guahh AI. I'm here to handle the numbers, strategy, and drills while you focus on the court.",
-        'thank you': "You're welcome! Let me know if you need any other play strategies, drills, or roster adjustments.",
-        'thanks': "No worries! Let's get these players rotated and win this game.",
-        'good job': "Appreciate it! I'm always ready to crunch the stats to keep our squad fresh.",
-        'weather forecast': "Ask me 'weather in [CityName]' to fetch live local temperatures!",
-        'who is the best coach': "All our coaches are doing a fantastic job running their teams!",
-        'how to be a better coach': "Stay organized, balance player minutes to avoid fatigue, and keep drills exciting and high-intensity!",
-        'love you': "Thank you! I am fully committed to helping your team achieve maximum success on the court.",
-        'hello there': "General Kenobi! Or rather, hello coach! How can I assist you on the sidelines today?",
-        'help with drills': "I have a library of basketball, soccer, netball, and Australian footy drills. Ask me 'recommend a defense drill' or 'give me a shooting drill'."
     };
 
     function convertSpokenNumbers(text) {
@@ -156,6 +253,37 @@ window.GuahhAI = (() => {
         return null;
     }
 
+    // --- COGNITIVE SPACE-SEPARATED TOKEN NAME PARSER ---
+    function extractPlayerNames(text, playersArray) {
+        if (!text || !playersArray) return [];
+        const found = [];
+        const sortedPlayers = [...playersArray].sort((a, b) => {
+            const nameA = (a.name || a.playerName || "");
+            const nameB = (b.name || b.playerName || "");
+            return nameB.length - nameA.length;
+        });
+
+        let remainingText = " " + text.toLowerCase().replace(/[\s,]+/g, ' ').trim() + " ";
+        sortedPlayers.forEach(p => {
+            const pName = (p.name || p.playerName || "").toLowerCase();
+            if (!pName) return;
+            const escapedName = pName.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+            const regex = new RegExp(`\\b${escapedName}\\b`, 'i');
+            
+            if (regex.test(remainingText)) {
+                found.push(p);
+                remainingText = remainingText.replace(regex, ' ');
+            } else {
+                const pNum = String(p.number || p.playerNumber || "");
+                if (pNum && new RegExp(`\\b#?${pNum}\\b`).test(remainingText)) {
+                    found.push(p);
+                    remainingText = remainingText.replace(new RegExp(`\\b#?${pNum}\\b`), ' ');
+                }
+            }
+        });
+        return found;
+    }
+
     // --- SPORT-SPECIFIC VOCABULARY NORMALIZATION TRANSLATOR ---
     function normalizeSportInputs(q, sport) {
         q = q.replace(/\bdefence\b/g, 'defense');
@@ -176,8 +304,40 @@ window.GuahhAI = (() => {
         return q;
     }
 
+    // --- DYNAMIC INJURY RECOGNITION AUTO-SCANNER ---
+    function scanNotesAndQueryForInjuries(notesStr, queryStr, playersList) {
+        const foundInjured = [];
+        const combinedText = ((notesStr || "") + " " + (queryStr || "")).toLowerCase();
+        playersList.forEach(p => {
+            const pName = (p.name || p.playerName || "").toLowerCase();
+            if (!pName) return;
+            const escapedName = pName.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+            
+            const patterns = [
+                new RegExp(`\\b${escapedName}\\b\\s+(?:is\\s+)?(?:injured|hurt|sprained|broken|out|unavailable|sick|bench|sore)`, 'i'),
+                new RegExp(`(?:injured|hurt|sprained|broken|out|unavailable|sick|bench|sore)\\s+\\b${escapedName}\\b`, 'i')
+            ];
+            
+            if (patterns.some(rx => rx.test(combinedText))) {
+                foundInjured.push(p.name || p.playerName);
+            }
+        });
+        return foundInjured;
+    }
+
+    // --- DYNAMIC TALLEST PLAYER CLASSIFIER ---
+    function getTallestPlayers(playersList) {
+        const valid = playersList.filter(p => {
+            const inches = parseHeightToInches(p.height);
+            return inches > 0;
+        });
+        if (valid.length === 0) return [];
+        valid.sort((a, b) => parseHeightToInches(b.height) - parseHeightToInches(a.height));
+        const maxHeight = parseHeightToInches(valid[0].height);
+        return valid.filter(p => (maxHeight - parseHeightToInches(p.height)) <= 3).map(p => p.name || p.playerName);
+    }
+
     function generateRotationStrategy(context, queryText, onField, offField, players, recentSubs) {
-        // DEFENSIVE FAIL-SAFES: Guarantee arguments never evaluate to undefined even if omitted in caller
         onField = onField || context.onField || [];
         offField = offField || context.offField || [];
         players = players || context.players || [];
@@ -185,15 +345,15 @@ window.GuahhAI = (() => {
 
         let notesLower = ((context.notes || "") + " " + queryText).toLowerCase();
         
-        let goal = 'any';
-        if (/(win|best|lose|behind|deficit|need to win)/i.test(notesLower)) goal = 'win';
-        else if (/(even|fair|playtime|equal|morale|balanced)/i.test(notesLower)) goal = 'even';
+        let goal = aiConversationState.lastSubGoal || 'any';
+        if (/(win|best|lose|behind|deficit|need to win|clutch|tight game|down by)/i.test(notesLower)) goal = 'win';
+        else if (/(even|fair|playtime|equal|morale|balanced|balance playtime|garbage time|safe lead)/i.test(notesLower)) goal = 'even';
 
         let secondaryGoal = '';
-        if (/(height|tall|size|rebound)/i.test(notesLower)) secondaryGoal = 'height';
-        else if (/(speed|fast|pace|quick|run)/i.test(notesLower)) secondaryGoal = 'speed';
-        else if (/(defense|defend|stop|tighten|defence)/i.test(notesLower)) secondaryGoal = 'defense';
-        else if (/(shoot|scoring|3pt|three|points|shooter)/i.test(notesLower)) secondaryGoal = '3pt';
+        if (/(height|tall|size|rebound|boards|big)/i.test(notesLower)) secondaryGoal = 'height';
+        else if (/(speed|fast|pace|quick|run|transition)/i.test(notesLower)) secondaryGoal = 'speed';
+        else if (/(defense|defend|stop|tighten|defence|lockdown)/i.test(notesLower)) secondaryGoal = 'defense';
+        else if (/(shoot|scoring|3pt|three|points|shooter|offense|offensive)/i.test(notesLower)) secondaryGoal = '3pt';
 
         const getRank = (name) => {
             const p = findPlayer(name, players);
@@ -205,7 +365,7 @@ window.GuahhAI = (() => {
         };
         const getHeight = (name) => {
             const p = findPlayer(name, players);
-            return p ? (parseInt(p.height) || 0) : 0;
+            return p ? parseHeightToInches(p.height) : 0;
         };
 
         let reasons = [];
@@ -236,7 +396,7 @@ window.GuahhAI = (() => {
         const isUnavailable = (name) => {
             if (aiConversationState.injuredPlayers.includes(name)) return true;
             if (aiConversationState.cardedPlayers[name] === 'red') return true;
-            return /(injure|hurt|sick|late|absent|unwell|sore|bench)/.test(notesLower.substring(Math.max(0, notesLower.indexOf(name.toLowerCase()) - 40), notesLower.indexOf(name.toLowerCase()) + 60));
+            return false;
         };
 
         let unavailablePlayers = [];
@@ -299,6 +459,44 @@ window.GuahhAI = (() => {
         while (suggestedOut.length < numToSub && candidatesOut.length > 0) suggestedOut.push(candidatesOut.shift());
         while (suggestedIn.length < suggestedOut.length && candidatesIn.length > 0) suggestedIn.push(candidatesIn.shift());
 
+        // "One tall on at all times" Check
+        const enforceOneTall = /one\s+tall\s+on|tall\s+on\s+at\s+all\s+times|keep\s+a\s+tall/i.test(notesLower);
+        if (enforceOneTall) {
+            const tallNames = getTallestPlayers([...onField, ...offField].map(p => ({
+                name: p.name,
+                height: p.height
+            })));
+            
+            if (tallNames.length > 0) {
+                let futureOnFieldNames = onField.map(p => p.name)
+                    .filter(n => !suggestedOut.some(o => o.name === n))
+                    .concat(suggestedIn.map(i => i.name));
+                
+                const hasTallOnFuture = futureOnFieldNames.some(n => tallNames.includes(n));
+                if (!hasTallOnFuture) {
+                    const tallProposedOff = suggestedOut.find(p => tallNames.includes(p.name));
+                    if (tallProposedOff) {
+                        suggestedOut = suggestedOut.filter(p => p.name !== tallProposedOff.name);
+                        if (suggestedIn.length > suggestedOut.length) {
+                            suggestedIn.pop();
+                        }
+                        reasonsList.push(`**Height Lock Override**: Kept ${tallProposedOff.name} on the court to comply with notes: *"One tall on at all times"*`);
+                    } else {
+                        const tallOnBench = candidatesIn.find(p => tallNames.includes(p.name));
+                        if (tallOnBench) {
+                            suggestedIn.push(tallOnBench);
+                            candidatesIn = candidatesIn.filter(p => p.name !== tallOnBench.name);
+                            if (suggestedOut.length < suggestedIn.length && candidatesOut.length > 0) {
+                                const nonTallOnField = candidatesOut.find(p => !tallNames.includes(p.name)) || candidatesOut[0];
+                                if (nonTallOnField) suggestedOut.push(nonTallOnField);
+                            }
+                            reasonsList.push(`**Height Lock Override**: Bringing ${tallOnBench.name} on from bench to comply with notes: *"One tall on at all times"*`);
+                        }
+                    }
+                }
+            }
+        }
+
         if (suggestedOut.length === 0) {
             return { text: `No recommended substitutions needed right now.`, actions: [] };
         }
@@ -338,6 +536,7 @@ window.GuahhAI = (() => {
     }
 
     async function processQuery(rawQuery, context) {
+        let responseObj = { text: "", actions: [] };
         let activeTeam = null;
         if (typeof appData !== 'undefined' && appData.teams) {
             activeTeam = appData.teams.find(t => t.teamId === context.teamId);
@@ -351,14 +550,170 @@ window.GuahhAI = (() => {
 
         if (!query) return { text: "No input detected.", actions: [] };
 
-        const responseObj = { text: "", actions: [] };
-        
-        // Defensively fall back to empty arrays to prevent spread errors across environments
+        // --- MATH SOLVER CHECK ---
+        const mathResult = trySolveMath(query);
+        if (mathResult) return mathResult;
+
+        // --- GENERAL KNOWLEDGE OFFLINE SEARCH ---
+        const offlineAnswer = matchGeneralKnowledge(query);
+        if (offlineAnswer) {
+            return { text: `📖 **Knowledge Assistant:**\n\n${offlineAnswer}`, actions: [] };
+        }
+
         const onField = context.onField || [];
         const offField = context.offField || [];
         const players = context.players || [];
         const recentSubs = context.recentSubs || [];
         const allCurrentPlayers = [...onField, ...offField];
+
+        // Dynamic situational tags
+        let notesLower = ((context.notes || "") + " " + query).toLowerCase();
+        let situationTag = "";
+        let isClutch = /(clutch|tight\s+game|final\s+seconds|down\s+by|must\s+win|comeback|deficit)/i.test(notesLower);
+        let isGarbage = /(garbage\s+time|up\s+by\s+a\s+lot|winning\s+big|safe\s+lead)/i.test(notesLower);
+        
+        if (isClutch) {
+            aiConversationState.lastSubGoal = 'win';
+            situationTag = "\n\n⚠️ **Game Context (CLUTCH MODE Active):** The game is in a critical stage. Prioritizing top-rated players and scorers, keeping our best on-court lineup active longer.";
+        } else if (isGarbage) {
+            aiConversationState.lastSubGoal = 'even';
+            situationTag = "\n\n💚 **Game Context (DEVELOPMENT MODE Active):** We hold a comfortable lead. Prioritizing play development by distributing court time evenly and resting our elite starters.";
+        }
+
+        if (query === "sub suggestion" || query === "subs suggestion") {
+            query = "generate substitutions";
+        } else if (query === "we need to win") {
+            query = "generate substitutions we need to win";
+        } else if (query === "balance playtime") {
+            query = "generate substitutions even playtime";
+        }
+
+        const discoveredInjured = scanNotesAndQueryForInjuries(context.notes, query, allCurrentPlayers);
+        discoveredInjured.forEach(name => {
+            if (!aiConversationState.injuredPlayers.includes(name)) {
+                aiConversationState.injuredPlayers.push(name);
+            }
+        });
+
+        // ==========================================
+        // 🏁 STARTING LINEUP / SQUAD SELECTOR (WITH STRATEGY TYPE)
+        // ==========================================
+        const isStartingLineupQuery = /(?:starting\s*(?:lineup|team|five|5|roster|eleven|11|seven|7|squad)?|start\s+me\s+off|choose\s+starters|select\s+starters|recommend\s+starters|starting\s+players)/i.test(query);
+        
+        if (isStartingLineupQuery) {
+            const teamId = context.teamId;
+            if (!teamId) {
+                return { text: "Please select a team in the app before setting up your starting lineup.", actions: [] };
+            }
+            
+            const teamPlayers = players.filter(p => p.teamId === teamId);
+            if (teamPlayers.length === 0) {
+                return { text: "No players registered yet for this team. Please head to the **Manage** tab to create your roster first!", actions: [] };
+            }
+
+            // Extract the desired starters limit
+            let starterLimit = 5; 
+            const numMatch = query.match(/starting\s*(\d+)/i);
+            if (numMatch) {
+                starterLimit = parseInt(numMatch[1], 10);
+            } else {
+                if (/\bfive\b/i.test(query)) starterLimit = 5;
+                else if (/\bseven\b/i.test(query)) starterLimit = 7;
+                else if (/\beleven\b/i.test(query)) starterLimit = 11;
+                else if (/\bsix\b/i.test(query)) starterLimit = 6;
+                else {
+                    if (currentSport === 'soccer') starterLimit = 11;
+                    else if (currentSport === 'netball') starterLimit = 7;
+                    else if (currentSport === 'footy') starterLimit = 18;
+                    else if (typeof getMaxPlayers === 'function') {
+                        try { starterLimit = getMaxPlayers(); } catch(e) {}
+                    }
+                }
+            }
+
+            // Identify the Strategy Type
+            let strategyType = "optimal"; 
+            if (/(dev|newer|younger|confidence|less\s+playtime|stamina|experience|fresh|learn|confidence)/i.test(query)) {
+                strategyType = "developmental";
+            } else if (/(balanced|balance|mix|equal)/i.test(query)) {
+                strategyType = "balanced";
+            }
+
+            const getSkill = (p) => (p.skill || '').toLowerCase();
+            const getRank = (p) => parseInt(p.rank) || 5;
+
+            let starters = [];
+            if (strategyType === "developmental") {
+                // Developmental: Prioritize lower ratings to build confidence
+                const pool = [...teamPlayers].sort((a, b) => getRank(a) - getRank(b));
+                starters = pool.slice(0, starterLimit);
+            } else if (strategyType === "balanced") {
+                // Balanced: Blend of veteran anchors and developmental players
+                const pool = [...teamPlayers].sort((a, b) => getRank(b) - getRank(a));
+                const highCount = Math.ceil(starterLimit / 2);
+                const lowCount = starterLimit - highCount;
+                
+                const topTier = pool.slice(0, highCount);
+                const lowTier = pool.slice(highCount).reverse(); // lowest ratings first
+                
+                starters = [...topTier, ...lowTier.slice(0, lowCount)];
+            } else {
+                // Optimal: Maximizes rank, incorporating skill tag filters if present
+                const pool = [...teamPlayers].sort((a, b) => {
+                    let scoreA = getRank(a);
+                    let scoreB = getRank(b);
+                    if (/(defen|stop)/i.test(query)) {
+                        if (getSkill(a).includes('defence') || getSkill(a).includes('defense')) scoreA += 5;
+                        if (getSkill(b).includes('defence') || getSkill(b).includes('defense')) scoreB += 5;
+                    } else if (/(shoot|scor|accuracy)/i.test(query)) {
+                        if (getSkill(a).includes('accuracy') || getSkill(a).includes('star') || getSkill(a).includes('shot')) scoreA += 5;
+                        if (getSkill(b).includes('accuracy') || getSkill(b).includes('star') || getSkill(b).includes('shot')) scoreB += 5;
+                    } else if (/(speed|fast|pace)/i.test(query)) {
+                        if (getSkill(a).includes('speed')) scoreA += 5;
+                        if (getSkill(b).includes('speed')) scoreB += 5;
+                    }
+                    return scoreB - scoreA;
+                });
+                starters = pool.slice(0, starterLimit);
+            }
+
+            const starterNames = starters.map(p => p.playerName);
+            const currentOnFieldNames = onField.map(p => p.name);
+            const outNames = currentOnFieldNames.filter(name => !starterNames.includes(name));
+            const inNames = starterNames.filter(name => !currentOnFieldNames.includes(name));
+
+            // Select matching tactical reasoning
+            let strategyReasoning = "";
+            let strategyTitle = "Max Performance Lineup";
+            if (strategyType === "developmental") {
+                strategyTitle = "Development & Confidence Lineup";
+                strategyReasoning = "This developmental starting lineup intentionally prioritizes players with lower ratings. Introducing newer players early allows them to build valuable court confidence, develop safe game rhythm, and gain real match experience while stamina reserves are full.";
+            } else if (strategyType === "balanced") {
+                strategyTitle = "Balanced Mixture Lineup";
+                strategyReasoning = "This balanced starting strategy blends seasoned roster leaders with fresh talent. It establishes a secure backbone of high-rated anchors to guide early plays, while exposing developmental players to match rhythm in a safe environment.";
+            } else {
+                strategyReasoning = "This high-performance starting lineup places your highest-rated match assets on-court immediately. It focuses on securing an early competitive lead, establishing offensive efficiency, and matching opposing starters with maximum skill density.";
+            }
+
+            let responseText = `🏁 **Starting Lineup Recommendation:**\n\n`;
+            responseText += `Strategy: **${strategyTitle}**\n`;
+            responseText += `${strategyReasoning}\n\n`;
+            responseText += `**Starters (${starters.length} selected):**\n`;
+            starters.forEach((p, idx) => {
+                responseText += `${idx + 1}. **#${p.playerNumber || 'N/A'} ${p.playerName}** (Rating: ${p.rank}/10${p.skill ? ` | ${p.skill}` : ''})\n`;
+            });
+
+            if (starters.length < starterLimit) {
+                responseText += `\n*(Note: You requested ${starterLimit} players, but only ${starters.length} are registered on the team roster)*\n`;
+            }
+
+            responseText += `\nReady to put this lineup on the court? Click **Make Substitutes** to apply this starting roster.`;
+
+            return {
+                text: responseText,
+                actions: [{ type: 'SUB_PLAYERS', out: outNames, in: inNames }]
+            };
+        }
 
         // ==========================================
         // 🏢 GATED INTELLIGENCE: CLUB & CROSS-TEAM ANALYSIS INTENTS
@@ -369,10 +724,8 @@ window.GuahhAI = (() => {
         const isClubAverages = /(average\s+points|avg\s+ppg|club\s+average|overall\s+average)\s+across\s+the\s+club/i.test(query);
 
         if (isBestAcrossTeams || isMostPlaytimeAcrossTeams || isHighestScoringTeam || isClubAverages) {
-            // Compile all historical games across all club teams
             let clubGameRecords = [];
 
-            // Stage 1: Load directly available local games
             if (context.recentGames && Array.isArray(context.recentGames)) {
                 context.recentGames.forEach(g => {
                     clubGameRecords.push({
@@ -384,7 +737,6 @@ window.GuahhAI = (() => {
                 });
             }
 
-            // Stage 2: Attempt dynamic fetch for stats of every registered team
             if (context.teams && Array.isArray(context.teams) && typeof context.apiCall === 'function') {
                 try {
                     const teamFetches = context.teams.map(t => 
@@ -392,7 +744,6 @@ window.GuahhAI = (() => {
                             .then(res => {
                                 if (res && Array.isArray(res.stats)) {
                                     res.stats.forEach(g => {
-                                        // Ensure entry uniqueness
                                         const exists = clubGameRecords.some(r => r.teamName === t.teamName && r.date === g.date && r.notes === g.notes);
                                         if (!exists) {
                                             clubGameRecords.push({
@@ -413,7 +764,6 @@ window.GuahhAI = (() => {
                 }
             }
 
-            // Map and calculate player performance parameters across teams
             let playerStats = {};
             clubGameRecords.forEach(game => {
                 const tName = game.teamName;
@@ -441,11 +791,9 @@ window.GuahhAI = (() => {
                     return { text: "No statistical logs have been uploaded across any of your teams yet.", actions: [] };
                 }
                 
-                // Sort by total scoring
                 statsArray.sort((a, b) => b.totalPoints - a.totalPoints);
                 const topTotalScorer = statsArray[0];
 
-                // Sort by Points-Per-Game (PPG)
                 const statsWithPPG = statsArray.map(p => ({
                     ...p,
                     ppg: p.gamesCount > 0 ? (p.totalPoints / p.gamesCount) : 0
@@ -586,7 +934,6 @@ window.GuahhAI = (() => {
                     text += `**${g.teamName}** (${g.date})\n`;
                     text += `- Duration: ${g.duration} | Notes: ${g.notes || "None"}\n`;
                     
-                    // Fixed potential sub-spread crash if game players array is ever null
                     if (g.players && Array.isArray(g.players) && g.players.length > 0) {
                         const topScorer = [...g.players].sort((a,b)=>parseInt(b.points)-parseInt(a.points))[0];
                         text += `- Top Scorer: ${topScorer.name} (#${topScorer.number}) with ${topScorer.points} points\n`;
@@ -595,6 +942,92 @@ window.GuahhAI = (() => {
                 });
                 return { text: text, actions: [] };
             }
+        }
+
+        // ==========================================
+        // 🛡️ DUAL INTERACTIVE MATCHUP SELECTOR INTENT
+        // ==========================================
+        if (/(who\s+should\s+guard|who\s+should\s+defend|matchup\s+recommend|guard\s+their\s+best|stop\s+their\s+star|defensive\s+matchup)/i.test(query)) {
+            if (players.length === 0) return { text: "No players registered on your roster yet. Please create team players in the Manage section.", actions: [] };
+            
+            const sortedDefenders = [...players].sort((a, b) => {
+                const sA = (a.skill || '').toLowerCase().includes('defence') ? 5 : 0;
+                const sB = (b.skill || '').toLowerCase().includes('defence') ? 5 : 0;
+                return (parseInt(b.rank || 5) + sB) - (parseInt(a.rank || 5) + sA);
+            });
+            const topDefender = sortedDefenders[0];
+            const secondaryDefender = sortedDefenders[1] || topDefender;
+            
+            let resText = `🛡️ **Defensive Matchup Analysis:**\n\n`;
+            resText += `I recommend assigning **${topDefender.playerName}** (Rating: ${topDefender.rank}/10) as your primary defender on their best offensive player.\n`;
+            if (topDefender.skill) resText += `- **Key Attributes**: ${topDefender.skill}\n`;
+            resText += `\n**Alternative Option:** If ${topDefender.playerName} needs rest or is in foul trouble, utilize **${secondaryDefender.playerName}** (Rating: ${secondaryDefender.rank}/10) for matchup coverage. Let me know if you would like to generate custom substitutions around this matchup.`;
+            return { text: resText, actions: [] };
+        }
+
+        // ==========================================
+        // 📋 SPORT FORMATION STRUCTURALS INTENT
+        // ==========================================
+        if (/(formation|tactical\s+setup|system|lineup\s+structure|strategy\s+layout)/i.test(query)) {
+            let resText = `📋 **Tactical Setup Recommendation:**\n\n`;
+            if (currentSport === 'soccer') {
+                resText += `For **Soccer**, I highly recommend running a **4-4-2 balanced formation** to secure the midfield while utilizing outer wing overlaps, or a **4-3-3 attacking style** if your squad can sustain high forward pressure.`;
+            } else if (currentSport === 'footy') {
+                resText += `For **Australian Football (AFL)**, establish a clear **6-6-6 structure** emphasizing center square ball extractions. Focus on keeping a reliable loose sweep option in your back 50.`;
+            } else if (currentSport === 'netball') {
+                resText += `For **Netball**, structure your spacing to rely on fast crossing leads across the transverse lines by WA and GA to break the defense before feed entry into the goal circle.`;
+            } else {
+                resText += `For **Basketball**, I recommend running a **4-out 1-in spacing model** if you have reliable shooters, or a standard **motion offense** using high screens to open up pick-and-roll mismatches.`;
+            }
+            return { text: resText, actions: [] };
+        }
+
+        // ==========================================
+        // 📊 SQUAD STRENGTH & ROSTER EVALUATOR INTENT
+        // ==========================================
+        if (/(evaluate\s+my\s+team|how\s+is\s+our\s+roster|team\s+analysis|roster\s+feedback|squad\s+strength)/i.test(query)) {
+            if (players.length === 0) return { text: "No roster players registered yet. Create players under the Manage section.", actions: [] };
+            
+            const avgRank = (players.reduce((acc, p) => acc + (parseInt(p.rank) || 5), 0) / players.length).toFixed(1);
+            const highRanks = players.filter(p => (parseInt(p.rank) || 5) >= 7).map(p => p.playerName);
+            const specialized = players.filter(p => p.skill).length;
+            
+            let resText = `📊 ** Roster Evaluation Report:**\n\n`;
+            resText += `- **Total Registered Roster**: ${players.length} players\n`;
+            resText += `- **Roster Average Rating**: ${avgRank}/10\n`;
+            resText += `- **Specialized Attributes**: ${specialized} player(s) configured with skill tags.\n\n`;
+            
+            if (highRanks.length > 0) {
+                resText += `⭐️ **Key Star Performers**: ${highRanks.join(', ')}\n`;
+            }
+            resText += `\n**Coaching Advice:** Ensure you balance court time regularly to preserve the physical stamina of your key players. Ready to execute dynamic rotation algorithms whenever you ask for 'subs'!`;
+            return { text: resText, actions: [] };
+        }
+
+        // ==========================================
+        // 🔥 CLUTCH PLAY CALLER INTENT
+        // ==========================================
+        if (/(clutch\s+play|final\s+seconds|last\s+play|winning\s+shot|down\s+by\s+1|down\s+by\s+2)/i.test(query)) {
+            let playText = `🔥 **Clutch Situation Play Call:**\n\n`;
+            if (currentSport === 'soccer') {
+                playText += `**Tactic (Overload Box):** Move your tallest players into the penalty box. Execute a fast, long aerial cross or corner delivery, utilizing shields to block out their keeper and secure an header or scrap goal.`;
+            } else if (currentSport === 'footy') {
+                playText += `**Tactic (Long Bomb/Boundary Boundary):** Direct your midfielders to load up the 50-meter arc. Clear long, spearing drop punts straight to the pockets, looking to execute a quick mark and boundary set shot.`;
+            } else if (currentSport === 'netball') {
+                playText += `**Tactic (Screen & High Lob):** Feeders maintain position right on the circle edge. GA sets a heavy screen on GK, allowing GS to break open into space for a clean, high lob catch directly under the ring.`;
+            } else {
+                playText += `**Tactic (High Pick-and-Roll):** Run a high ball screen at the top of the key with your best playmaker and your tallest player. Spread shooters out to both corners to empty the paint for a drive or roll option.`;
+            }
+            return { text: playText, actions: [] };
+        }
+
+        // ==========================================
+        // 🛡️ PRESS BREAKING TACTIC INTENT
+        // ==========================================
+        if (/(beat\s+(?:the\s+)?press|break\s+(?:the\s+)?press|full\s+court\s+press|pressuring\s+us)/i.test(query)) {
+            let resText = `🛡️ **Tactical Press-Breaking Scheme:**\n\n`;
+            resText += coachingDatabase.tactics.press + `\n\n**Actionable Step:** Use quick, short passes across lanes and make sure players run *toward* the ball handler to provide safety valve check-downs. Avoid long, slow floaters which are highly vulnerable to intercepts.`;
+            return { text: resText, actions: [] };
         }
 
         // --- MOTIVATIONAL SIDEKICK TALK GENERATOR ---
@@ -732,7 +1165,7 @@ window.GuahhAI = (() => {
                       "5. **Sideline Data Analytics**: Ask \"who's my best player\", \"who is my tallest player\", or \"who's the best defender\".\n" +
                       "6. **Live Court Overviews**: Ask \"who's on court right now\" or \"who is on the bench\".\n" +
                       "7. **Game Timer Commands**: Ask me to \"pause the game\" or \"start the clock\".",
-                actions: []
+                    actions: []
             };
         }
 
@@ -760,46 +1193,28 @@ window.GuahhAI = (() => {
             return responseObj;
         }
 
-        // --- SUB THE BENCH FOR ... COMMAND HANDLER ---
-        const benchSwapMatch = query.match(/sub\s+(?:the\s+)?bench\s+for\s+(.+)/i);
-        if (benchSwapMatch) {
-            let outgoingRaw = benchSwapMatch[1].trim();
-            let outgoingTokens = outgoingRaw.split(/(?:,|\band\b|&)+/).map(s => s.trim()).filter(s => s.length > 0);
-            
-            let outPlayersResolved = [];
-            let unresolvedOut = [];
-            
-            outgoingTokens.forEach(tok => {
-                const p = findPlayer(tok, onField);
-                if (p) {
-                    outPlayersResolved.push(p);
-                } else {
-                    unresolvedOut.push(tok);
-                }
-            });
-            
-            let inPlayers = offField; 
-            let inNames = inPlayers.map(p => p.name);
-            let outNames = outPlayersResolved.map(p => p.name);
-            
+        // --- GLOBAL FULL-SQUAD SWAP ACTIONS ---
+        const isFullSwap = /sub\s+(?:the\s+)?bench\s+for\s+(?:the\s+)?(court|field)/i.test(query) || 
+                           /swap\s+(?:the\s+)?bench\s+(?:and|with)\s+(?:the\s+)?(court|field)/i.test(query) ||
+                           /swap\s+(?:the\s+)?court\s+and\s+(?:the\s+)?bench/i.test(query) ||
+                           /swap\s+everyone/i.test(query) ||
+                           /sub\s+everyone/i.test(query);
+
+        if (isFullSwap) {
+            let activeBench = offField.filter(p => !aiConversationState.injuredPlayers.includes(p.name) && aiConversationState.cardedPlayers[p.name] !== 'red');
+            let outNames = onField.map(p => p.name);
+            let inNames = activeBench.map(p => p.name);
+
             if (inNames.length > 0) {
-                let textParts = [];
-                textParts.push(`Substituting the entire bench (**${inNames.join(', ')}**) ON.`);
-                if (outNames.length > 0) {
-                    textParts.push(`Substituting **${outNames.join(', ')}** OFF.`);
-                }
-                if (unresolvedOut.length > 0) {
-                    textParts.push(`Could not find active court players matching: "${unresolvedOut.join(', ')}".`);
-                }
-                responseObj.text = textParts.join('\n');
+                responseObj.text = `🔄 **Full Squad Swap:** Swapping the entire lineup!\n\n**Bringing ON:** ${inNames.join(', ')}\n**Taking OFF:** ${outNames.join(', ')}`;
                 responseObj.actions.push({ type: 'SUB_PLAYERS', out: outNames, in: inNames });
                 return responseObj;
             } else {
-                return { text: "There are currently no resting bench players to sub in.", actions: [] };
+                return { text: "There are currently no active bench players available to sub on.", actions: [] };
             }
         }
 
-        // --- ROBUST MULTI-PLAYER SWAP PARSER ---
+        // --- COMMA-FREE MULTI-PLAYER SWAP PARSER ---
         let multiSwapMatch = query.match(/(?:sub|bring|put|swap|replace)\s+(.+?)\s+(?:on|in)?\s*for\s+(.+)/i);
         if (!multiSwapMatch) {
             multiSwapMatch = query.match(/(?:replace|swap)\s+(.+?)\s+(?:with|and)\s+(.+)/i);
@@ -809,40 +1224,13 @@ window.GuahhAI = (() => {
             let incomingRaw = multiSwapMatch[1].trim();
             let outgoingRaw = multiSwapMatch[2].trim();
 
-            const splitNames = (str) => {
-                return str.split(/(?:,|\band\b|&)+/)
-                          .map(s => s.trim())
-                          .filter(s => s.length > 0);
-            };
+            let inPlayersResolved = extractPlayerNames(incomingRaw, offField);
+            let outPlayersResolved = extractPlayerNames(outgoingRaw, onField);
 
-            let incomingTokens = splitNames(incomingRaw);
-            let outgoingTokens = splitNames(outgoingRaw);
-
-            let inPlayersResolved = [];
-            let outPlayersResolved = [];
-            let unresolvedIn = [];
-            let unresolvedOut = [];
-
-            incomingTokens.forEach(tok => {
-                const p = findPlayer(tok, offField);
-                if (p) {
-                    inPlayersResolved.push(p);
-                } else {
-                    const alreadyOn = findPlayer(tok, onField);
-                    if (!alreadyOn) {
-                        unresolvedIn.push(tok);
-                    }
-                }
-            });
-
-            outgoingTokens.forEach(tok => {
-                const p = findPlayer(tok, onField);
-                if (p) {
-                    outPlayersResolved.push(p);
-                } else {
-                    unresolvedOut.push(tok);
-                }
-            });
+            if (inPlayersResolved.length === 0 && outPlayersResolved.length === 0) {
+                inPlayersResolved = extractPlayerNames(incomingRaw, players);
+                outPlayersResolved = extractPlayerNames(outgoingRaw, players);
+            }
 
             if (inPlayersResolved.length > 0 || outPlayersResolved.length > 0) {
                 let textParts = [];
@@ -850,18 +1238,11 @@ window.GuahhAI = (() => {
                 let outNames = outPlayersResolved.map(p => p.name);
 
                 if (inNames.length > 0 && outNames.length > 0) {
-                    textParts.push(`Substituting **${inNames.join(', ')}** ON for **${outNames.join(', ')}** OFF.`);
+                    textParts.push(`Substituting **${inNames.join(' & ')}** ON for **${outNames.join(' & ')}** OFF.`);
                 } else if (inNames.length > 0) {
-                    textParts.push(`Substituting **${inNames.join(', ')}** ON.`);
+                    textParts.push(`Substituting **${inNames.join(' & ')}** ON.`);
                 } else if (outNames.length > 0) {
-                    textParts.push(`Substituting **${outNames.join(', ')}** OFF.`);
-                }
-
-                if (unresolvedIn.length > 0) {
-                    textParts.push(`Could not find bench players matching: "${unresolvedIn.join(', ')}".`);
-                }
-                if (unresolvedOut.length > 0) {
-                    textParts.push(`Could not find court players matching: "${unresolvedOut.join(', ')}".`);
+                    textParts.push(`Substituting **${outNames.join(' & ')}** OFF.`);
                 }
 
                 responseObj.text = textParts.join('\n');
@@ -875,26 +1256,38 @@ window.GuahhAI = (() => {
 
         if (subInMatch && !query.includes('for') && !query.includes('with') && !query.includes('and')) {
             const target = subInMatch[1].trim();
-            const p = findPlayer(target, offField);
-            if (p) {
-                responseObj.text = `Substituting **${p.name}** ON.`;
-                responseObj.actions.push({ type: 'SUB_PLAYERS', out: [], in: [p.name] });
+            const matchedPlayers = extractPlayerNames(target, offField);
+            
+            if (matchedPlayers.length > 0) {
+                const names = matchedPlayers.map(p => p.name);
+                responseObj.text = `Substituting **${names.join(' & ')}** ON.`;
+                responseObj.actions.push({ type: 'SUB_PLAYERS', out: [], in: names });
             } else {
-                const alreadyOn = findPlayer(target, onField);
-                responseObj.text = alreadyOn ? `**${alreadyOn.name}** is already on the field.` : `I couldn't locate an available bench player matching "${target}".`;
+                const alreadyOn = extractPlayerNames(target, onField);
+                if (alreadyOn.length > 0) {
+                    responseObj.text = `**${alreadyOn.map(p => p.name).join(' & ')}** are already on the field.`;
+                } else {
+                    responseObj.text = `I couldn't locate any available bench players matching "${target}".`;
+                }
             }
             return responseObj;
         }
 
         if (subOutMatch && !query.includes('for') && !query.includes('with') && !query.includes('and')) {
             const target = subOutMatch[1].trim();
-            const p = findPlayer(target, onField);
-            if (p) {
-                responseObj.text = `Substituting **${p.name}** OFF.`;
-                responseObj.actions.push({ type: 'SUB_PLAYERS', out: [p.name], in: [] });
+            const matchedPlayers = extractPlayerNames(target, onField);
+            
+            if (matchedPlayers.length > 0) {
+                const names = matchedPlayers.map(p => p.name);
+                responseObj.text = `Substituting **${names.join(' & ')}** OFF.`;
+                responseObj.actions.push({ type: 'SUB_PLAYERS', out: names, in: [] });
             } else {
-                const alreadyOff = findPlayer(target, offField);
-                responseObj.text = alreadyOff ? `**${alreadyOff.name}** is already resting on the bench.` : `I couldn't locate an active court player matching "${target}".`;
+                const alreadyOff = extractPlayerNames(target, offField);
+                if (alreadyOff.length > 0) {
+                    responseObj.text = `**${alreadyOff.map(p => p.name).join(' & ')}** are already resting on the bench.`;
+                } else {
+                    responseObj.text = `I couldn't locate any active court players matching "${target}".`;
+                }
             }
             return responseObj;
         }
@@ -932,7 +1325,6 @@ window.GuahhAI = (() => {
             }
         }
 
-        // If no sport-specific overrides were triggered, fall back to standard/basketball notation
         if (pointsAmount === 0 && targetNameRaw === "") {
             const pointsMatch = query.match(/(add|give|award|plus|subtract|remove|minus|take\s+away)\s+(\d+)\s*(?:pts|points|point)?\s*(?:to|for|from)?\s+([a-zA-Z0-9\s#]+)/i);
             const bballActionMatch = query.match(/([a-z0-9\s#]+)\s+(scored|got|made|hit)\s+(?:a\s+)?(layup|basket|jumper|shot|free\s*throw|three|3-pointer|3\s*pointer|3|2|1)/i);
@@ -1000,7 +1392,7 @@ window.GuahhAI = (() => {
                 let statSummary = `### Player Profile: ${playerProfile.playerName}\n`;
                 statSummary += `- **Number**: #${playerProfile.playerNumber || 'N/A'}\n`;
                 statSummary += `- **Rating**: ${playerProfile.rank || '5'}/10\n`;
-                statSummary += `- **Height**: ${playerProfile.height ? playerProfile.height + ' cm' : 'N/A'}\n`;
+                statSummary += `- **Height**: ${playerProfile.height ? playerProfile.height : 'N/A'}\n`;
                 statSummary += `- **Registered Skills**: ${playerProfile.skill || 'None configured'}\n\n`;
 
                 if (context.teamId) {
@@ -1036,11 +1428,11 @@ window.GuahhAI = (() => {
         }
 
         if (/(tallest|highest\s+height|who\s+is\s+the\s+tallest|tallest\s+player)/i.test(query)) {
-            const validHeightPlayers = players.filter(p => p.height && parseInt(p.height) > 0);
+            const validHeightPlayers = players.filter(p => p.height && parseHeightToInches(p.height) > 0);
             if (validHeightPlayers.length > 0) {
-                validHeightPlayers.sort((a, b) => parseInt(b.height) - parseInt(a.height));
+                validHeightPlayers.sort((a, b) => parseHeightToInches(b.height) - parseHeightToInches(a.height));
                 const tallest = validHeightPlayers[0];
-                return { text: `The tallest player registered is **${tallest.playerName}** measuring **${tallest.height} cm** tall.`, actions: [] };
+                return { text: `The tallest player registered is **${tallest.playerName}** measuring **${tallest.height}** tall.`, actions: [] };
             }
             return { text: "No height parameters have been configured on the register player forms yet.", actions: [] };
         }
@@ -1281,7 +1673,7 @@ window.GuahhAI = (() => {
             }
             
             const strategyResult = generateRotationStrategy(context, query, onField, offField, players, recentSubs);
-            responseObj.text = strategyResult.text;
+            responseObj.text = strategyResult.text + situationTag;
             responseObj.actions = strategyResult.actions;
             return responseObj;
         }
@@ -1334,17 +1726,7 @@ window.GuahhAI = (() => {
             } catch (e) {}
         }
 
-        try {
-            const searchRes = await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(query)}&limit=1&origin=*`);
-            const searchData = await searchRes.json();
-            if (searchData[1] && searchData[1].length > 0) {
-                const summaryRes = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(searchData[1][0])}`);
-                const summaryData = await summaryRes.json();
-                if (summaryData.extract) return { text: summaryData.extract, actions: [] };
-            }
-        } catch (e) {}
-
-        return { text: "Sorry I didn't quite get that. Try asking for 'subs', 'coaching drills' or 'who has the most points this game'", actions: [] };
+        return { text: "Sorry I didn't quite get that. Try asking for 'subs', 'coaching drills' or 'who's my best player''", actions: [] };
     }
 
     return { processQuery };
