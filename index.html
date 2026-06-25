@@ -10,20 +10,20 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    
+    <!-- Google Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-    
+    <!-- FAVICON -->
     <link rel="icon" href="https://raw.githubusercontent.com/guahhinc/coachbuddy/main/Icon-iOS-Default-1024x1024%401x.png">
     <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/guahhinc/coachbuddy/main/Icon-iOS-Default-1024x1024%401x.png">
 
-    
+    <!-- SiriWave Library for Guahh Assistant Thinking Animation -->
     <script src="https://unpkg.com/siriwave/dist/siriwave.umd.min.js"></script>
 
-    
+    <!-- Guahh AI Separated Conversational Brain -->
     <script src="ai.js"></script>
 
-    
+    <!-- iOS WEB APP CAPABILITIES -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Coachbuddy">
@@ -45,7 +45,7 @@
     }
     .btn-pop { animation: btn-pop 0.35s ease !important; }
 
-    
+    /* Flash Animation for Resume Button */
     @keyframes flash-resume {
         0%, 100% { filter: brightness(1); transform: scale(1); background-color: #007bff; }
         10%, 30% { filter: brightness(1.3); transform: scale(1.03); background-color: #3395ff; }
@@ -55,7 +55,7 @@
         animation: flash-resume 2.5s infinite ease-in-out !important;
     }
 
-    
+    /* Material Design Style Spinner */
     .spinner {
         width: 64px;
         height: 64px;
@@ -146,7 +146,7 @@
     .player-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #222; cursor: grab; transition: border 0.15s ease, opacity 0.15s ease, background-color 0.15s ease; }
     .player-item:active { cursor: grabbing; }
 
-    
+    /* Visual feedback class when player item is selected for dragging - Now solid and semi-transparent blue highlight */
     .player-item.drag-selected {
         background-color: rgba(100, 181, 246, 0.2) !important;
         border-bottom-color: #64B5F6 !important;
@@ -193,7 +193,7 @@
     .player-time { font-weight: bold; color: #64B5F6; font-size: 14px; min-width: 44px; text-align: right; flex-shrink: 0; font-variant-numeric: tabular-nums; }
     .player-controls-group { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
     
-    
+    /* Points System CSS */
     .points-controls {
         display: flex; align-items: center; gap: 2px; background-color: #1A1A1A; padding: 3px; border-radius: 9px; flex-shrink: 0; margin-left: 6px; margin-right: 4px; height: 26px;
     }
@@ -231,12 +231,12 @@
     .modal-buttons { display: flex; flex-direction: column; gap: 10px; justify-content: center; text-align: center; }
     .modal-buttons .timer-btn { flex-basis: auto; padding: 10px 15px; font-size: 14px; }
 
-    
+    /* Custom Confirm Modal Override to Guarantee Overlay Position */
     #custom-modal {
         z-index: 100005 !important;
     }
 
-    
+    /* Toggle Switch CSS for Settings */
     .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
     .switch input { opacity: 0; width: 0; height: 0; }
     .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #222; transition: .4s; border-radius: 25px; }
@@ -244,7 +244,7 @@
     input:checked + .slider { background-color: #4CAF50; }
     input:checked + .slider:before { transform: translateX(20px); }
 
-    
+    /* Multi-select Pills for Skills */
     .skill-pill {
         background-color: #121212; color: #B0B0B0; border: 1px solid #222; border-radius: 13px;
         padding: 6px 10px; font-size: 12px; cursor: pointer; transition: all 0.2s;
@@ -258,7 +258,7 @@
         border: none;
     }
 
-    
+    /* Dedicated Floating Card for AI Suggestions */
     #ai-floating-panel {
         position: fixed;
         bottom: calc(16px + env(safe-area-inset-bottom, 0px));
@@ -404,7 +404,7 @@
 </head>
 <body>
 
-
+<!-- Opening Connecting Loading Screen -->
 <div id="opening-loading-overlay" style="position: fixed; top:0; left:0; width:100%; height:100%; background: #080808; z-index: 100000; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 20px;">
     <svg class="spinner" viewBox="25 25 50 50">
         <circle cx="50" cy="50" r="20"></circle>
@@ -412,7 +412,7 @@
     <h2 style="color: #FFFFFF; font-size: 1.3rem; font-weight: 600; margin: 0;">Connecting to Coachbuddy</h2>
 </div>
 
-
+<!-- Background Blur Action Overlay -->
 <div id="action-loading-overlay" style="position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(10, 10, 10, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 10000; display: none; justify-content: center; align-items: center;">
     <svg class="spinner" viewBox="25 25 50 50">
         <circle cx="50" cy="50" r="20"></circle>
@@ -422,7 +422,7 @@
 <div class="app-wrapper">
     <div class="app-container">
 
-        
+        <!-- MAIN NAVIGATION -->
         <div id="app-nav" style="display: none; gap: 5px; margin-bottom: 10px;">
             <button id="nav-app-btn" class="timer-btn primary" style="flex: 1; font-size: 11px;">Game</button>
             <button id="nav-manage-btn" class="timer-btn secondary" style="flex: 1; font-size: 11px;">Manage</button>
@@ -430,7 +430,7 @@
             <button id="nav-settings-btn" class="timer-btn secondary" style="flex: 1; font-size: 11px;">Settings</button>
         </div>
 
-        
+        <!-- LOGIN VIEW -->
         <div id="login-view" style="display: none;">
             <h2 style="text-align: center; margin-bottom: 30px; font-size: 2rem;">Coachbuddy Beta</h2>
             <div id="login-form">
@@ -803,9 +803,9 @@
     const MIN_GAME_TIME_FOR_WARNINGS = 180; const LOW_TIME_RATIO = 0.65; const SIGNIFICANT_TIME_GAP = 240; 
     const INITIAL_STOPWATCH_SECONDS = 0; const DEFAULT_COUNTDOWN_SECONDS = 2400;
     const views = ['login-view', 'signup-view', 'sub-block-view', 'app-view', 'manage-view', 'stats-view', 'settings-view'];
-    const feedbackUrl = "https:
+    const feedbackUrl = "https://script.google.com/macros/s/AKfycbzFsd4XNh8Ck5uIkbCATTEhX3r9XnsunrYoo-JRSIIDVznq_dm-SzgOgatz4q1YRITQ/exec";
 
-    
+    // --- DOM ELEMENTS ---
     const timeDisplay = document.getElementById('time-display');
     const startPauseBtn = document.getElementById('start-pause-btn');
     const resetBtn = document.getElementById('reset-btn');
@@ -823,14 +823,14 @@
     const dragHandle = document.getElementById('ai-drag-handle');
     const customModal = document.getElementById('custom-modal');
 
-    
+    // Feedback DOM
     const feedbackBtn = document.getElementById('open-feedback-btn');
     const feedbackSettingsBtn = document.getElementById('open-feedback-settings-btn');
     const feedbackModal = document.getElementById('feedback-modal');
     const closeFeedbackBtn = document.getElementById('close-feedback-btn');
     const submitFeedbackBtn = document.getElementById('submit-feedback-btn');
 
-    
+    // --- STATE VARIABLES ---
     let isAiCollapsed = false; let startY = 0; let dragOffset = 0; let isDragging = false; let siriWave = null;
     let touchDragItem = null; let touchClone = null; let lastTouchTarget = null; let desktopDragItem = null;
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -841,9 +841,9 @@
     let countdownInterval = null; let totalSeconds = INITIAL_STOPWATCH_SECONDS; let isRunning = false; let isCountdownMode = false;
     let miniTimerInterval = null; let miniTotalSeconds = 180; let isMiniTimerRunning = false;
     let subPollingInterval = null;
-    let startingFive = []; 
+    let startingFive = []; // State array tracking starting 5 player names
 
-    
+    // --- GETTERS & HELPERS ---
     function getMaxPlayers() { return parseInt(localStorage.getItem(_S4) || '5'); }
     function getMiniTimerSeconds() { return parseInt(localStorage.getItem(_S3) || '3') * 60; }
     function formatTime(seconds) {
@@ -910,12 +910,12 @@
     if (pointsTrackingCheckbox) pointsTrackingCheckbox.checked = localStorage.getItem(_S6) !== 'false';
     updatePointsTrackingVisibility();
 
-    
+    // --- API & MODALS ---
     async function apiCall(action, payload = {}) {
         payload.action = action; payload.version = _V;
         if (authToken) { payload.token = authToken; payload.email = localStorage.getItem(_EM); payload.password = localStorage.getItem(_PW); }
         const encPayload = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
-        
+        // Content-Type is text/plain with no parameters to keep request simple and prevent CORS preflight OPTIONS blocking
         const res = await fetch(_U, { method: 'POST', mode: 'cors', headers: { 'Content-Type': 'text/plain' }, body: encPayload });
         const raw = await res.text();
         let data; try { data = JSON.parse(decodeURIComponent(escape(atob(raw)))); } catch(err) { throw new Error("Server communication error."); }
@@ -950,7 +950,7 @@
         showCustomModal(title, messageHtml, buttons);
     }
 
-    
+    // --- SUBSCRIPTION DYNAMIC UI ---
     function renderSubscriptionUI() {
         const subContainer = document.getElementById('sub-plans-container');
         const setContainer = document.getElementById('settings-plans-container');
@@ -1011,7 +1011,7 @@
         if (subContainer) subContainer.innerHTML = subHtml;
         if (setContainer) setContainer.innerHTML = settingsHtml;
 
-        
+        // Attach listeners
         document.querySelectorAll('.sub-btn-ind').forEach(btn => {
             btn.onclick = () => openStripe('INDIVIDUAL', 'test_14A5kE0hmcpY0VvbWi1Nu01');
         });
@@ -1030,7 +1030,7 @@
         window.open(stripeUrl, '_blank');
     }
 
-    
+    // BETA RESTRICTION Overwrite
     function showCancelSubscriptionDetails() {
         showCustomModal(
             "Couldn't complete action",
@@ -1039,7 +1039,7 @@
         );
     }
 
-    
+    // --- DYNAMIC CLUB AFFILIATION ENGINE ---
     function renderClubStatus() {
         const status = appData.clubStatus || 'NONE';
         const clubName = appData.clubName || '';
@@ -1163,7 +1163,7 @@
         finally { document.getElementById('action-loading-overlay').style.display = 'none'; }
     }
 
-    
+    // BETA RESTRICTION Overwrite
     window._reqJoin = function(clubId) {
         showCustomModal(
             "Couldn't complete action",
@@ -1172,7 +1172,7 @@
         );
     };
 
-    
+    // --- TIMERS ---
     function resetMiniTimer() {
         clearInterval(miniTimerInterval); isMiniTimerRunning = false; 
         if (miniStartPauseBtn) { miniStartPauseBtn.style.display = ''; miniStartPauseBtn.textContent = 'Start'; miniStartPauseBtn.classList.remove('pause'); }
@@ -1192,19 +1192,19 @@
         if (miniStartPauseBtn) { miniStartPauseBtn.textContent = 'Resume'; miniStartPauseBtn.classList.remove('pause'); }
     }
     function captureStarters() {
-        if (startingFive.length > 0) return; 
+        if (startingFive.length > 0) return; // Prevent overwriting captured starters
         const onField = Array.from(document.querySelectorAll('.player-item[data-is-on-field="1"]'));
         startingFive = onField.map(item => item.querySelector('.player-name')?.textContent || 'Unnamed').slice(0, 5);
     }
     function startTimer() {
         if (isRunning || (isCountdownMode && totalSeconds <= 0)) return; isRunning = true; 
         
-        
+        // Capture starters on the first start sequence of a clean game
         if (totalSeconds === 0 && startingFive.length === 0) {
             captureStarters();
         }
 
-        
+        // Request screen wake lock while running
         requestWakeLock();
 
         if(startPauseBtn) { startPauseBtn.textContent = 'Pause'; startPauseBtn.classList.add('pause'); startPauseBtn.classList.remove('resume-flash'); }
@@ -1228,7 +1228,7 @@
         if(timeDisplay) timeDisplay.classList.remove('countdown-ended'); 
         totalSeconds = isCountdownMode ? DEFAULT_COUNTDOWN_SECONDS : INITIAL_STOPWATCH_SECONDS;
         if(timeDisplay) timeDisplay.textContent = formatTime(totalSeconds);
-        startingFive = []; 
+        startingFive = []; // Reset starters array on restart
         document.querySelectorAll('.player-item').forEach(item => {
             item.dataset.totalTime = 0; const pt = item.querySelector('.player-time'); if(pt) pt.textContent = formatTime(0); 
             item.dataset.isOnField = '0'; const btn = item.querySelector('.toggle-btn'); if (btn) { btn.textContent = 'OFF'; btn.classList.add('status-off'); btn.classList.remove('status-on'); }
@@ -1245,7 +1245,7 @@
         }); updateSubstitutionWarnings(); 
     }
 
-    
+    // --- DRAG & DROP ENGINE (WITH snappier LONG PRESS TOUCH HOLD DELAY) ---
     function clearDragStyles() {
         document.querySelectorAll('.player-item').forEach(item => { 
             item.style.backgroundColor = ''; 
@@ -1475,7 +1475,7 @@
         updateSubstitutionWarnings();
     }
 
-    
+    // --- GAME ROTATION ENGINE ---
     function updateRecentSubsUI() {
         const container = document.getElementById('recent-subs-section'); const list = document.getElementById('recent-subs-list'); if(!container || !list) return;
         const justOn = recentSubs.filter(sub => sub.state === 'on'); if (justOn.length === 0) { container.style.display = 'none'; return; }
@@ -1583,11 +1583,11 @@
         }
     }
 
-    
+    // --- APP CORE & VIEWS ---
     function applyGlobalTeamChange(teamId) {
         localStorage.setItem(_ST, teamId); if(teamSelect) teamSelect.value = teamId; const mt = document.getElementById('manage-team-select'); const st = document.getElementById('stats-team-select'); if(mt) mt.value = teamId; if(st) st.value = teamId;
         resetTimer(); resetMiniTimer();
-        startingFive = []; 
+        startingFive = []; // Clear current starters tracking
         const rosterList = document.getElementById('roster-list');
         if(rosterList) rosterList.innerHTML = '';
         if (autoAddCheckbox && autoAddCheckbox.checked) autoAddDefaultPlayers(teamId);
@@ -1672,7 +1672,7 @@
     function promptLogoutStandard() { showConfirmation('Log Out', 'Are you sure you want to log out?', (c) => { if (c) { apiCall('logout').catch(e => {}); clearLocalAuth(); window.location.reload(); } }); }
     function promptLogoutAll() { showConfirmation('Log Out All Sessions', 'Are you sure you want to log out of all your devices? You will need to log in again.', (c) => { if (c) { apiCall('logout_all').catch(e => {}); clearLocalAuth(); window.location.reload(); } }); }
 
-    
+    // --- AI ENGINE ---
     function loadStepConfigSuggestions() {
         const container = document.getElementById('ai-step-suggestions-stacked'); if (!container) return; container.innerHTML = '';
         SUGGESTION_POOL.forEach(text => {
@@ -1798,7 +1798,7 @@
     function dragMove(e) { if (!isDragging) return; if (e.cancelable) e.preventDefault(); const currentY = (e.clientY !== undefined) ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : 0); dragOffset = currentY - startY; if (!isAiCollapsed) { if (dragOffset > 0) panel.style.transform = `translate3d(-50%, ${dragOffset}px, 0)`; } else { if (dragOffset < 0) panel.style.transform = `translate3d(-50%, ${dragOffset}px, 0)`; } }
     function dragEnd() { if (!isDragging) return; isDragging = false; panel.style.transition = 'max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1), width 0.4s cubic-bezier(0.25, 1, 0.5, 1), max-width 0.4s cubic-bezier(0.25, 1, 0.5, 1), padding 0.4s cubic-bezier(0.25, 1, 0.5, 1), border-radius 0.4s cubic-bezier(0.25, 1, 0.5, 1), transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2), opacity 0.4s ease, bottom 0.4s cubic-bezier(0.25, 1, 0.5, 1)'; panel.style.transform = 'translateX(-50%)'; if (!isAiCollapsed) { if (dragOffset > 25) collapseAiPanel(); else expandAiPanel(); } else { if (dragOffset < -60) expandAiPanel(); else collapseAiPanel(); } dragOffset = 0; }
 
-    
+    // --- INIT ---
     async function initApp() {
         const overlay = document.getElementById('opening-loading-overlay'); const actionOverlay = document.getElementById('action-loading-overlay'); resetMiniTimer(); miniTotalSeconds = getMiniTimerSeconds(); 
         const rosterZone = document.getElementById('roster');
@@ -1838,7 +1838,7 @@
         if (actionOverlay) actionOverlay.style.display = 'none';
     }
 
-    
+    // --- GLOBAL WINDOW HELPERS ---
     window._dt = function(teamId) {
         showConfirmation('Delete Team', 'Are you sure you want to completely delete this team? This action cannot be undone.', async (c) => {
             if (c) {
@@ -1861,7 +1861,7 @@
     };
     window._rp = function(playerId) { showConfirmation('Remove Player', `Are you sure you want to delete this player from the database?`, (confirmed) => { if (confirmed) { appData.players = appData.players.filter(p => p.playerId !== playerId); renderManagePlayers(); if (!playerId.startsWith('temp_')) apiCall('remove_player', { playerId }).catch(e => {}); } }); };
 
-    
+    // --- EVENT LISTENERS BINDING ---
     if(dragHandle) { dragHandle.addEventListener('mousedown', dragStart); dragHandle.addEventListener('touchstart', dragStart, { passive: false }); }
     if(panel) { panel.addEventListener('mousedown', (e) => { if (isAiCollapsed) dragStart(e); }); panel.addEventListener('touchstart', (e) => { if (isAiCollapsed) { dragStart(e); } }, { passive: false }); panel.addEventListener('click', (e) => { if (isAiCollapsed) { if (e.target.closest('#ai-close-btn')) { e.stopPropagation(); closeAiPanel(); } else expandAiPanel(); } }); }
     document.addEventListener('mousemove', dragMove); document.addEventListener('touchmove', (e) => { if (isDragging) dragMove(e); }, { passive: false });
@@ -1907,7 +1907,7 @@
     const logoutBtnMain = document.getElementById('logout-btn-main'); if(logoutBtnMain) logoutBtnMain.onclick = promptLogoutAll;
     const logoutBtnSub = document.getElementById('logout-btn-sub'); if(logoutBtnSub) logoutBtnSub.onclick = promptLogoutStandard;
 
-    
+    // --- FEEDBACK EVENTS ---
     if(feedbackBtn) {
         feedbackBtn.onclick = () => {
             feedbackModal.style.display = 'flex';
@@ -1943,7 +1943,7 @@
             submitFeedbackBtn.disabled = true;
 
             try {
-                
+                // Populate query parameters to guarantee population of e.parameter in standard Google Apps Script configurations
                 const queryParams = new URLSearchParams();
                 queryParams.append('name', name);
                 queryParams.append('feedbackType', type);
@@ -1951,7 +1951,7 @@
                 
                 const targetUrl = `${feedbackUrl}?${queryParams.toString()}`;
 
-                
+                // Fire the post containing payload in both query params and stringified JSON body
                 await fetch(targetUrl, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -2117,7 +2117,7 @@
                 teamId: teamSelect.value, 
                 mainTime: timeDisplay.textContent, 
                 notes: document.getElementById('game-notes').value, 
-                starters: startingFive, 
+                starters: startingFive, // Include starters array in server payload
                 players: [] 
             }; 
             document.querySelectorAll('.player-item').forEach(item => { 
@@ -2135,7 +2135,7 @@
 
     document.addEventListener('pointerdown', (e) => { const btn = e.target.closest('button'); if (btn && !btn.disabled) { btn.classList.remove('btn-pop'); void btn.offsetWidth; btn.classList.add('btn-pop'); setTimeout(() => btn.classList.remove('btn-pop'), 350); } });
     
-    
+    // Screen Wake Lock API Setup
     let wakeLock = null; 
     async function requestWakeLock() { 
         if (wakeLock !== null) return;
