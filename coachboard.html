@@ -697,7 +697,8 @@
         try {
             
             const authCheck = await apiCall('verify_token');
-            if (authCheck.subscriptionStatus !== 'ACTIVE') {
+            const validSubscriptions = ['ACTIVE', 'INDIVIDUAL', 'INDIVIDUAL_PLUS'];
+            if (!validSubscriptions.includes(authCheck.subscriptionStatus)) {
                 showSubscriptionBlock();
                 return;
             }
