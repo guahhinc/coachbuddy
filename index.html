@@ -143,7 +143,7 @@
     .sort-btn:active { background-color: #333; }
 
     #roster { overflow: hidden; }
-    .player-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #222; cursor: grab; transition: border 0.15s ease, opacity 0.15s ease, background-color 0.15s ease; }
+    .player-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #222; cursor: grab; transition: border 0.15s ease, opacity 0.15s ease, background-color 0.15s ease; -webkit-user-select: none; user-select: none; }
     .player-item:active { cursor: grabbing; }
 
     /* Visual feedback class when player item is selected for dragging - Now solid and semi-transparent blue highlight */
@@ -774,9 +774,11 @@
             <option value="" disabled selected>Type of Feedback...</option>
             <option value="Feature Idea">Feature Idea</option>
             <option value="General Feedback">General Feedback</option>
-            <option value="Function Bug">Function Bug</option>
+            <option value="Functional Bug">Functional Bug</option>
             <option value="Visual Bug">Visual Bug</option>
             <option value="General Bug">General Bug</option>
+            <option value="AI Bug">AI Bug</option>
+            <option value="AI Suggestion">AI Suggestion</option>
             <option value="Other">Other</option>
         </select>
         <textarea id="feedback-text" placeholder="Enter your feedback here..." style="width: 100%; min-height: 80px; margin-bottom: 15px; padding: 10px; border-radius: 9px; background: #1A1A1A; color: #E0E0E0; border: 1px solid #222; font-size: 15px; resize: vertical;"></textarea>
@@ -1392,7 +1394,7 @@
             if (touchClone) { 
                 document.body.removeChild(touchClone); 
                 touchClone = null; 
-                }
+            }
             clearDragStyles();
             
             const touch = e.changedTouches[0]; 
@@ -1445,32 +1447,15 @@
     }
 
     function swapPlayers(playerA, playerB) {
-        const statusA = playerA.dataset.isOnField; const statusB = playerB.dataset.isOnField;
-        const parentA = playerA.parentNode; const parentB = playerB.parentNode;
-        if (!parentA || !parentB) return;
-        const nextA = playerA.nextSibling; const nextB = playerB.nextSibling;
-        if (statusA === statusB) {
-            if (parentA === parentB) {
-                if (nextA === playerB) parentA.insertBefore(playerB, playerA);
-                else if (nextB === playerA) parentA.insertBefore(playerA, playerB);
-                else { parentA.insertBefore(playerA, nextB); parentB.insertBefore(playerB, nextA); }
-            }
+        const parent = playerB.parentNode;
+        if (!parent || playerA.parentNode !== parent) return;
+        const siblings = Array.from(parent.children);
+        const indexA = siblings.indexOf(playerA);
+        const indexB = siblings.indexOf(playerB);
+        if (indexA < indexB) {
+            parent.insertBefore(playerA, playerB.nextSibling);
         } else {
-            playerA.dataset.isOnField = statusB; playerB.dataset.isOnField = statusA;
-            const toggleBtnA = playerA.querySelector('.toggle-btn'); const toggleBtnB = playerB.querySelector('.toggle-btn');
-            if (statusB === '1') { if (toggleBtnA) { toggleBtnA.textContent = 'ON'; toggleBtnA.classList.remove('status-off'); toggleBtnA.classList.add('status-on'); } recordSubChange(playerA.querySelector('.player-name').textContent, 'on'); } 
-            else { if (toggleBtnA) { toggleBtnA.textContent = 'OFF'; toggleBtnA.classList.add('status-off'); toggleBtnA.classList.remove('status-on'); } recordSubChange(playerA.querySelector('.player-name').textContent, 'off'); }
-            if (statusA === '1') { if (toggleBtnB) { toggleBtnB.textContent = 'ON'; toggleBtnB.classList.remove('status-off'); toggleBtnB.classList.add('status-on'); } recordSubChange(playerB.querySelector('.player-name').textContent, 'on'); } 
-            else { if (toggleBtnB) { toggleBtnB.textContent = 'OFF'; toggleBtnB.classList.add('status-off'); toggleBtnB.classList.remove('status-on'); } recordSubChange(playerB.querySelector('.player-name').textContent, 'off'); }
-            
-            if (parentA === parentB) {
-                if (nextA === playerB) parentA.insertBefore(playerB, playerA);
-                else if (nextB === playerA) parentA.insertBefore(playerA, playerB);
-                else { parentA.insertBefore(playerA, nextB); parentB.insertBefore(playerB, nextA); }
-            } else {
-                if (nextB) parentB.insertBefore(playerA, nextB); else parentB.appendChild(playerA);
-                if (nextA) parentA.insertBefore(playerB, nextA); else parentA.appendChild(playerB);
-            }
+            parent.insertBefore(playerA, playerB);
         }
         updateSubstitutionWarnings();
     }
@@ -1484,7 +1469,7 @@
             const badge = document.createElement('span'); badge.style.cssText = `padding: 4px 8px; border-radius: 7px; font-size: 11px; font-weight: 600; color: white; background-color: #4CAF50;`; badge.textContent = sub.name; list.appendChild(badge);
         });
     }
-    function commitSubs() { recentSubs = [...pendingSubChanges]; pendingSubChanges = []; subDebounceTimer = null; updateRecentSubsUI(); resetMiniTimer(); if (autoTimerCheckbox && autoTimerCheckbox.checked) startMiniTimer(); }
+    function commitSubs() { recentSubs = [...pendingSubChanges]; pendingSubChanges = []; subDebounceTimer = null; updateRecentSubsUI(); resetMiniTimer(); if (autoTimerCheckbox && autoTimerCheckbox.checked && totalSeconds > 0) startMiniTimer(); }
     function recordSubChange(name, state) { pendingSubChanges = pendingSubChanges.filter(p => p.name !== name); pendingSubChanges.push({ name, state }); if (subDebounceTimer) clearTimeout(subDebounceTimer); subDebounceTimer = setTimeout(commitSubs, 4000); }
     function updateSubstitutionWarnings() {
         const items = document.querySelectorAll('.player-item'); if (items.length === 0) return;
@@ -1574,9 +1559,6 @@
         if (listEl) { 
             const items = Array.from(listEl.children); 
             items.sort((a, b) => {
-                const statusA = parseInt(a.dataset.isOnField) || 0;
-                const statusB = parseInt(b.dataset.isOnField) || 0;
-                if (statusA !== statusB) return statusB - statusA;
                 return parseInt(b.dataset.totalTime) - parseInt(a.dataset.totalTime);
             }); 
             items.forEach(item => listEl.appendChild(item)); 
