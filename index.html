@@ -1,3 +1,90 @@
-<html>
-    <h1>Server Maintenence. Be back soon!</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Maintenance</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-color: #0f0f11;
+            color: #e4e4e7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 24px;
+        }
+        .container {
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        .icon {
+            font-size: 48px;
+            color: #a1a1aa;
+            margin-bottom: 24px;
+            display: inline-block;
+            animation: pulse 2s infinite ease-in-out;
+        }
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+        }
+        p {
+            font-size: 16px;
+            color: #a1a1aa;
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #1f1f23;
+            border: 1px solid #27272a;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #38bdf8;
+            font-weight: 500;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            background-color: #38bdf8;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- SVG Tool Icon -->
+        <div class="icon">
+            <svg xmlns="http://w3.org" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        </div>
+        
+        <h1>Server Maintenance</h1>
+        
+        <p>Coachbuddy is undergoing maintenence to improve server security and add new logic. Be back soon!</p>
+        
+        <p>Estimated time back: 1 July 10:30pm</p>
+        
+    </div>
+
+</body>
 </html>
