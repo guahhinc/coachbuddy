@@ -272,16 +272,20 @@ window.GuahhAI = (() => {
             
             if (regex.test(remainingText)) {
                 found.push(p);
-                remainingText = remainingText.replace(regex, ' ');
-            } else {
-                const pNum = String(p.number || p.playerNumber || "");
-                if (pNum && new RegExp(`\\b#?${pNum}\\b`).test(remainingText)) {
-                    found.push(p);
-                    remainingText = remainingText.replace(new RegExp(`\\b#?${pNum}\\b`), ' ');
-                }
+                remainingText = remainingText.replace(regex, " "); // avoid double matching
             }
         });
         return found;
+    }
+
+    // --- DYNAMIC CORE ROTATION ENGINE ---
+    function updateRecentSubsUI() {
+        const container = document.getElementById('recent-subs-section'); const list = document.getElementById('recent-subs-list'); if(!container || !list) return;
+        const justOn = recentSubs.filter(sub => sub.state === 'on'); if (justOn.length === 0) { container.style.display = 'none'; return; }
+        container.style.display = 'block'; list.innerHTML = '';
+        justOn.forEach(sub => {
+            const badge = document.createElement('span'); badge.style.cssText = `padding: 4px 8px; border-radius: 7px; font-size: 11px; font-weight: 600; color: white; background-color: #4CAF50;`; badge.textContent = sub.name; list.appendChild(badge);
+        });
     }
 
     // --- SPORT-SPECIFIC VOCABULARY NORMALIZATION TRANSLATOR ---
@@ -631,6 +635,25 @@ window.GuahhAI = (() => {
                 }
             }
 
+            // Retrieve starters from the last 1-2 games from the database
+            let recentStartersList = [];
+            try {
+                if (typeof context.apiCall === 'function') {
+                    const statsRes = await context.apiCall('get_stats', { teamId });
+                    if (statsRes && Array.isArray(statsRes.stats)) {
+                        const games = [...statsRes.stats].reverse().slice(0, 2);
+                        games.forEach(g => {
+                            if (g.starters) {
+                                const names = g.starters.split(',').map(n => n.trim().toLowerCase());
+                                recentStartersList.push(...names);
+                            }
+                        });
+                    }
+                }
+            } catch (e) {
+                console.warn("Could not retrieve past game starters for fair starting lineup rotation.", e);
+            }
+
             // Identify the Strategy Type
             let strategyType = "optimal"; 
             if (/(dev|newer|younger|confidence|less\s+playtime|stamina|experience|fresh|learn|confidence)/i.test(query)) {
@@ -642,7 +665,15 @@ window.GuahhAI = (() => {
             const getSkill = (p) => (p.skill || '').toLowerCase();
             const getRank = (p) => parseInt(p.rank) || 5;
 
+            // Sort all team players to identify "Anchors" (strongest players)
+            const teamPlayersSorted = [...teamPlayers].sort((a, b) => getRank(b) - getRank(a));
+            // Keep up to 2 high-performance anchors exempt from rest rotation to keep lineup competitive
+            const anchorLimit = Math.min(2, Math.floor(starterLimit / 2) || 1);
+            const anchors = teamPlayersSorted.slice(0, anchorLimit).map(p => p.playerName.toLowerCase());
+
             let starters = [];
+            let rotationDetails = { anchors: [], rested: [], promoted: [] };
+
             if (strategyType === "developmental") {
                 // Developmental: Prioritize lower ratings to build confidence
                 const pool = [...teamPlayers].sort((a, b) => getRank(a) - getRank(b));
@@ -658,23 +689,57 @@ window.GuahhAI = (() => {
                 
                 starters = [...topTier, ...lowTier.slice(0, lowCount)];
             } else {
-                // Optimal: Maximizes rank, incorporating skill tag filters if present
-                const pool = [...teamPlayers].sort((a, b) => {
-                    let scoreA = getRank(a);
-                    let scoreB = getRank(b);
+                // Optimal (Performance with Fair Starting Rotation Adjuster):
+                const pool = teamPlayers.map(p => {
+                    const lowercaseName = p.playerName.toLowerCase();
+                    let baseScore = getRank(p); // 1-10 rating
+
+                    // Apply standard query skill overrides
                     if (/(defen|stop)/i.test(query)) {
-                        if (getSkill(a).includes('defence') || getSkill(a).includes('defense')) scoreA += 5;
-                        if (getSkill(b).includes('defence') || getSkill(b).includes('defense')) scoreB += 5;
+                        if (getSkill(p).includes('defence') || getSkill(p).includes('defense')) baseScore += 5;
                     } else if (/(shoot|scor|accuracy)/i.test(query)) {
-                        if (getSkill(a).includes('accuracy') || getSkill(a).includes('star') || getSkill(a).includes('shot')) scoreA += 5;
-                        if (getSkill(b).includes('accuracy') || getSkill(b).includes('star') || getSkill(b).includes('shot')) scoreB += 5;
+                        if (getSkill(p).includes('accuracy') || getSkill(p).includes('star') || getSkill(p).includes('shot')) baseScore += 5;
                     } else if (/(speed|fast|pace)/i.test(query)) {
-                        if (getSkill(a).includes('speed')) scoreA += 5;
-                        if (getSkill(b).includes('speed')) scoreB += 5;
+                        if (getSkill(p).includes('speed')) baseScore += 5;
                     }
-                    return scoreB - scoreA;
+
+                    // Count how many times this player started recently
+                    const occurrences = recentStartersList.filter(name => name === lowercaseName).length;
+                    const isAnchor = anchors.includes(lowercaseName);
+
+                    // Apply starting rotation penalty only if they are not part of our protected anchors
+                    let penalty = 0;
+                    if (!isAnchor && occurrences > 0) {
+                        penalty = 15 * occurrences; // Subtract heavy weight so others start
+                    }
+
+                    return {
+                        player: p,
+                        score: baseScore - penalty,
+                        startedRecently: occurrences > 0,
+                        isAnchor: isAnchor
+                    };
                 });
-                starters = pool.slice(0, starterLimit);
+
+                // Sort by final starter score descending
+                pool.sort((a, b) => b.score - a.score);
+                starters = pool.map(item => item.player).slice(0, starterLimit);
+
+                // Populate details for final layout render
+                rotationDetails.anchors = anchors.map(name => {
+                    const found = teamPlayers.find(tp => tp.playerName.toLowerCase() === name);
+                    return found ? found.playerName : name;
+                });
+                
+                rotationDetails.rested = pool
+                    .slice(starterLimit)
+                    .filter(item => item.startedRecently && !item.isAnchor)
+                    .map(item => item.player.playerName);
+
+                rotationDetails.promoted = pool
+                    .slice(0, starterLimit)
+                    .filter(item => !item.startedRecently && getRank(item.player) < 8)
+                    .map(item => item.player.playerName);
             }
 
             const starterNames = starters.map(p => p.playerName);
@@ -692,7 +757,7 @@ window.GuahhAI = (() => {
                 strategyTitle = "Balanced Mixture Lineup";
                 strategyReasoning = "This balanced starting strategy blends seasoned roster leaders with fresh talent. It establishes a secure backbone of high-rated anchors to guide early plays, while exposing developmental players to match rhythm in a safe environment.";
             } else {
-                strategyReasoning = "This high-performance starting lineup places your highest-rated match assets on-court immediately. It focuses on securing an early competitive lead, establishing offensive efficiency, and matching opposing starters with maximum skill density.";
+                strategyReasoning = "This starting lineup prioritizes your core roster assets on-court immediately. It focuses on establishing offensive efficiency and matching opposing squads with high skill density.";
             }
 
             let responseText = `🏁 **Starting Lineup Recommendation:**\n\n`;
@@ -705,6 +770,17 @@ window.GuahhAI = (() => {
 
             if (starters.length < starterLimit) {
                 responseText += `\n*(Note: You requested ${starterLimit} players, but only ${starters.length} are registered on the team roster)*\n`;
+            }
+
+            if (strategyType === "optimal" && recentStartersList.length > 0) {
+                responseText += `\n🔄 **Starting Rotation Adjustments (Fair Play Mode):**\n`;
+                responseText += `- **Retained Core Anchors:** ${rotationDetails.anchors.join(', ')}\n`;
+                if (rotationDetails.rested.length > 0) {
+                    responseText += `- **Rested from Start (started recently):** ${rotationDetails.rested.join(', ')}\n`;
+                }
+                if (rotationDetails.promoted.length > 0) {
+                    responseText += `- **Promoted to Starters (giving others a turn):** ${rotationDetails.promoted.join(', ')}\n`;
+                }
             }
 
             responseText += `\nReady to put this lineup on the court? Click **Make Substitutes** to apply this starting roster.`;

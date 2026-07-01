@@ -1,90 +1,2148 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Server Maintenance</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            background-color: #0f0f11;
-            color: #e4e4e7;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 24px;
-        }
-        .container {
-            text-align: center;
-            max-width: 500px;
-            width: 100%;
-        }
-        .icon {
-            font-size: 48px;
-            color: #a1a1aa;
-            margin-bottom: 24px;
-            display: inline-block;
-            animation: pulse 2s infinite ease-in-out;
-        }
-        h1 {
-            font-size: 32px;
-            font-weight: 700;
-            color: #ffffff;
-            margin-bottom: 16px;
-            letter-spacing: -0.5px;
-        }
-        p {
-            font-size: 16px;
-            color: #a1a1aa;
-            line-height: 1.6;
-            margin-bottom: 32px;
-        }
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background-color: #1f1f23;
-            border: 1px solid #27272a;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-            color: #38bdf8;
-            font-weight: 500;
-        }
-        .dot {
-            width: 8px;
-            height: 8px;
-            background-color: #38bdf8;
-            border-radius: 50%;
-            display: inline-block;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Coachbuddy</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Google Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- FAVICON -->
+    <link rel="icon" href="https://raw.githubusercontent.com/guahhinc/coachbuddy/main/Icon-iOS-Default-1024x1024%401x.png">
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/guahhinc/coachbuddy/main/Icon-iOS-Default-1024x1024%401x.png">
+
+    <!-- SiriWave Library for Guahh Assistant Thinking Animation -->
+    <script src="https://unpkg.com/siriwave/dist/siriwave.umd.min.js"></script>
+
+    <!-- Guahh AI Separated Conversational Brain -->
+    <script src="ai.js"></script>
+
+    <!-- iOS WEB APP CAPABILITIES -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Coachbuddy">
+    <meta name="theme-color" content="#080808">
+
+<style>
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    button, input, select, textarea { font-family: inherit; }
+    button {
+        transition: all 0.27s ease; touch-action: manipulation; -webkit-user-select: none;
+        user-select: none; -webkit-backface-visibility: hidden; backface-visibility: hidden;
+        transform: translateZ(0); will-change: transform, filter;
+    }
+
+    @keyframes btn-pop {
+        0% { transform: scale(1); filter: brightness(1); }
+        50% { transform: scale(1.06); filter: brightness(1.8); }
+        100% { transform: scale(1); filter: brightness(1); }
+    }
+    .btn-pop { animation: btn-pop 0.35s ease !important; }
+
+    /* Flash Animation for Resume Button */
+    @keyframes flash-resume {
+        0%, 100% { filter: brightness(1); transform: scale(1); background-color: #007bff; }
+        10%, 30% { filter: brightness(1.3); transform: scale(1.03); background-color: #3395ff; }
+        20%, 40% { filter: brightness(1); transform: scale(1); background-color: #007bff; }
+    }
+    .resume-flash {
+        animation: flash-resume 2.5s infinite ease-in-out !important;
+    }
+
+    /* Material Design Style Spinner */
+    .spinner {
+        width: 64px;
+        height: 64px;
+        animation: md-rotate 2s linear infinite;
+    }
+    .spinner circle {
+        stroke: #FFFFFF;
+        stroke-width: 4;
+        stroke-dasharray: 1, 200;
+        stroke-dashoffset: 0;
+        animation: md-dash 1.5s ease-in-out infinite;
+        stroke-linecap: round;
+        fill: none;
+    }
+    @keyframes md-rotate {
+        100% { transform: rotate(360deg); }
+    }
+    @keyframes md-dash {
+        0% { stroke-dasharray: 1, 200; stroke-dashoffset: 0; }
+        50% { stroke-dasharray: 89, 200; stroke-dashoffset: -35px; }
+        100% { stroke-dasharray: 89, 200; stroke-dashoffset: -124px; }
+    }
+
+    html { background-color: #080808; overflow-x: hidden; }
+    body {
+        font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        margin: 0; padding: 0; background-color: #080808; color: #E0E0E0;
+        font-size: 13px; overflow-x: hidden; min-height: 100vh;
+    }
+
+    .app-wrapper {
+        display: flex; flex-direction: column; align-items: center;
+        width: 100%; height: auto;
+    }
+
+    .app-container {
+        width: 100%; max-width: 480px; padding: 8px 6px; padding-bottom: 40px;
+    }
+
+    #timer-section, #input-section, #roster-container, #notes-section, #team-name-section, #mini-timer-section {
+        background-color: #121212; padding: 8px; border-radius: 13px; margin-bottom: 10px;
+    }
+
+    #notes-section, #team-name-section { width: 100%; padding: 8px; border-radius: 13px; margin-top: 0; margin-bottom: 10px; background-color: #121212; }
+    #game-notes, #team-select {
+        padding: 7px; border: 1px solid #222; border-radius: 9px; font-size: 16px;
+        background-color: #1A1A1A; color: #E0E0E0; width: 100%; box-sizing: border-box;
+    }
+    #game-notes { min-height: 80px; resize: vertical; }
+
+    #timer-section { text-align: center; }
+    #time-display { font-size: 2.7rem; font-weight: 700; color: #4CAF50; margin-bottom: 5px; font-variant-numeric: tabular-nums; }
+    #time-display.countdown-ended { color: #D32F2F; }
+    .timer-controls { display: flex; gap: 8px; justify-content: center; margin-top: 8px; width: 100%; }
+    .timer-controls.adjust-controls { margin-top: 6px; }
+
+    .timer-btn {
+        padding: 9px 12px; border: none; border-radius: 9px; cursor: pointer;
+        font-weight: 600; transition: all 0.25s ease; font-size: 13px;
+        line-height: 1.2; display: flex; align-items: center; justify-content: center; min-height: 36px;
+    }
+    .timer-controls .timer-btn { flex: 1; }
+    .timer-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .timer-btn.primary { background-color: #007bff; color: white; }
+    .timer-btn.primary.pause { background-color: #FF9800; }
+    .timer-btn.secondary, .timer-btn.mode-btn { background-color: #2D2D2D; color: #E0E0E0; }
+    .timer-btn.secondary:hover, .timer-btn.mode-btn:hover { background-color: #424242; }
+
+    #input-section { display: flex; gap: 6px; align-items: center; }
+    #player-number-input, #player-name {
+        padding: 7px; border: 1px solid #222; border-radius: 9px; font-size: 16px;
+        background-color: #1A1A1A; color: #E0E0E0;
+    }
+    #player-number-input { width: 45px; flex-shrink: 0; text-align: center; }
+    #player-name { flex-grow: 1; }
+    .add-icon-btn {
+        background-color: #4CAF50; color: white; width: 32px; height: 32px; font-size: 19px;
+        line-height: 32px; padding: 0; border-radius: 9px; flex-shrink: 0; border: none; cursor: pointer;
+    }
+
+    .roster-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid #222; }
+    .roster-title { font-weight: bold; font-size: 13px; color: #B0B0B0; }
+    .sort-buttons-group { display: flex; gap: 6px; }
+    .sort-btn { background-color: #222; color: #E0E0E0; border: none; padding: 6px 12px; border-radius: 21px; font-size: 10px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .sort-btn:active { background-color: #333; }
+
+    #roster { overflow: hidden; }
+    .player-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #222; cursor: grab; transition: border 0.15s ease, opacity 0.15s ease, background-color 0.15s ease; -webkit-user-select: none; user-select: none; }
+    .player-item:active { cursor: grabbing; }
+
+    /* Visual feedback class when player item is selected for dragging */
+    .player-item.drag-selected {
+        background-color: rgba(100, 181, 246, 0.2) !important;
+        border-bottom-color: #64B5F6 !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        transform: scale(1.02);
+        transition: background-color 0.1s ease, box-shadow 0.1s ease, transform 0.1s ease;
+    }
+    
+    .player-info-group, .player-item-group { 
+        display: flex !important; 
+        align-items: center !important; 
+        gap: 8px !important; 
+        flex-grow: 1; 
+        padding-right: 8px; 
+        min-width: 0;
+    }
+
+    .player-rank {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-weight: 700; color: white; background-color: #222; font-size: 13px; width: 26px; height: 26px;
+        text-align: center; border-radius: 9px; flex-shrink: 0; margin-right: 4px; transition: background-color 0.3s, color 0.3s;
+    }
+    .player-rank.rank-color-1 { background-color: #D32F2F; color: white; }
+    .player-rank.rank-color-2 { background-color: #FFC107; color: #121212; }
+    .player-rank.rank-color-3 { background-color: #4CAF50; color: white; }
+    .player-rank.rank-color-4 { background-color: #007bff; color: white; }
+
+    .player-name-wrapper {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        flex-grow: 1;
+        min-width: 0;
+    }
+
+    .player-number { font-weight: 700; color: #64B5F6; font-size: 10px; flex-shrink: 0; white-space: nowrap; line-height: 1; margin-bottom: 2px; }
+    .player-name { font-weight: 500; font-size: 14px; word-break: break-word; line-height: 1.2; }
+    .warning-icon { font-size: 15px; margin-left: 5px; display: none; animation: pulse 2s infinite; }
+    @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+    .warning-icon.low { color: #FFC107; }
+
+    .player-time { font-weight: bold; color: #64B5F6; font-size: 14px; min-width: 44px; text-align: right; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+    .player-controls-group { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    
+    /* Points System CSS */
+    .points-controls {
+        display: flex; align-items: center; gap: 2px; background-color: #1A1A1A; padding: 3px; border-radius: 9px; flex-shrink: 0; margin-left: 6px; margin-right: 4px; height: 26px;
+    }
+    .pt-btn {
+        width: 20px; height: 20px; font-size: 13px; line-height: 1; border-radius: 7px; border: none; cursor: pointer;
+        background-color: #2D2D2D; color: #E0E0E0; display: flex; align-items: center; justify-content: center;
+        transition: background-color 0.2s;
+    }
+    .pt-btn:active { background-color: #424242; transform: scale(0.95); }
+    .pt-display { font-size: 12px; font-weight: bold; min-width: 14px; text-align: center; color: #FFF; font-variant-numeric: tabular-nums; }
+
+    body.hide-points-tracking .points-controls, body.hide-points-tracking .pts-label {
+        display: none !important;
+    }
+
+    body.dragging-active .player-item * {
+        pointer-events: none !important;
+    }
+
+    .toggle-btn { height: 28px; width: 46px; font-size: 12px; border-radius: 9px; flex-shrink: 0; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 600; line-height: 1; }
+    .toggle-btn.status-on { background-color: #4CAF50; color: white; }
+    .toggle-btn.status-off { background-color: #D32F2F; color: white; }
+    .delete-btn { width: 26px; height: 26px; font-size: 13px; border-radius: 9px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; background-color: #222; color: white; padding: 0; line-height: 1; flex-shrink: 0; }
+
+    #mini-timer-section { display: flex; justify-content: space-between; align-items: center; padding: 6px 8px; }
+    #mini-time-display { font-size: 1.8rem; font-weight: 700; color: #E0E0E0; font-variant-numeric: tabular-nums; }
+    #mini-time-display.countdown-ended { color: #D32F2F; }
+    .mini-timer-controls { display: flex; gap: 8px; }
+    .mini-timer-controls .timer-btn { min-width: 70px; }
+
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 100002; }
+    .modal-content { background-color: #121212; padding: 20px; border-radius: 17px; width: 90%; max-width: 400px; text-align: left; }
+    #modal-title { font-size: 1.4rem; margin-top: 0; color: #E0E0E0; text-align: center; }
+    #modal-message { margin-bottom: 20px; color: #B0B0B0; font-size: 16px; white-space: pre-line; }
+    .modal-buttons { display: flex; flex-direction: column; gap: 10px; justify-content: center; text-align: center; }
+    .modal-buttons .timer-btn { flex-basis: auto; padding: 10px 15px; font-size: 14px; }
+
+    /* Custom Confirm Modal Override to Guarantee Overlay Position */
+    #custom-modal {
+        z-index: 100005 !important;
+    }
+
+    /* Toggle Switch CSS for Settings */
+    .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #222; transition: .4s; border-radius: 25px; }
+    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: #4CAF50; }
+    input:checked + .slider:before { transform: translateX(20px); }
+
+    /* Multi-select Pills for Skills */
+    .skill-pill {
+        background-color: #121212; color: #B0B0B0; border: 1px solid #222; border-radius: 13px;
+        padding: 6px 10px; font-size: 12px; cursor: pointer; transition: all 0.2s;
+        -webkit-tap-highlight-color: transparent; user-select: none;
+    }
+    .skill-pill.active { background-color: #4CAF50; color: white; border-color: #4CAF50; }
+
+    #suggest-sub-btn {
+        background: linear-gradient(90deg, #f9a238, #fd4e93, #aca1fd, #4eb4fc);
+        color: white;
+        border: none;
+    }
+
+    /* Dedicated Floating Card for AI Suggestions */
+    #ai-floating-panel {
+        position: fixed;
+        bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+        left: 50%;
+        transform: translateX(-50%) translateY(0);
+        width: calc(100% - 24px) !important;
+        max-width: 480px !important; 
+        background: rgba(10, 10, 10, 0.72) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 24px; 
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        display: none;
+        flex-direction: column;
+        padding: 8px 20px 20px 20px; 
+        color: #FFFFFF;
+        backdrop-filter: blur(12px) saturate(1.5);
+        -webkit-backdrop-filter: blur(12px) saturate(1.5);
+        transition: max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1), width 0.4s cubic-bezier(0.25, 1, 0.5, 1), max-width 0.4s cubic-bezier(0.25, 1, 0.5, 1), padding 0.4s cubic-bezier(0.25, 1, 0.5, 1), border-radius 0.4s cubic-bezier(0.25, 1, 0.5, 1), transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2), opacity 0.4s ease, bottom 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        max-height: 92vh; 
+        overflow: hidden;
+        will-change: transform, bottom;
+    }
+
+    #ai-floating-panel::before {
+        content: "";
+        position: absolute;
+        bottom: -30px;
+        left: 0;
+        right: 0;
+        height: 185px;
+        background: linear-gradient(90deg, #f9a238, #fd4e93, #aca1fd, #4eb4fc);
+        filter: blur(32px);
+        opacity: 0.75;
+        z-index: 0;
+        pointer-events: none;
+        transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    #ai-floating-panel.collapsed {
+        max-height: 46px; 
+        width: 180px !important;     
+        max-width: 180px !important; 
+        padding: 0;       
+        border-radius: 23px; 
+        bottom: calc(38px + env(safe-area-inset-bottom, 0px));
+        background: rgba(10, 10, 10, 0.72) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        cursor: pointer;
+    }
+
+    #ai-floating-panel.collapsed::before {
+        height: 80px;
+        bottom: -20px;
+        opacity: 0.8;
+        filter: blur(15px);
+    }
+
+    #ai-drag-handle, #ai-expanded-content, #ai-collapsed-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    #ai-floating-panel .timer-btn {
+        font-size: 15px !important;
+        min-height: 44px;
+        border: none !important;
+    }
+
+    #ai-results-text {
+        font-size: 17px; 
+        line-height: 1.5;
+        color: #E0E0E0;
+        max-height: 460px; 
+        overflow-y: auto;
+        margin-bottom: 12px;
+        padding-right: 4px;
+        white-space: pre-wrap;
+    }
+    
+    @keyframes textFlowUpBlur {
+        0% { opacity: 0; transform: translateY(20px); filter: blur(8px); }
+        100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+    }
+    .ai-text-flow {
+        animation: textFlowUpBlur 1s cubic-bezier(0.15, 0.85, 0.15, 1) forwards;
+    }
+
+    #ai-expanded-content {
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .collapsed #ai-expanded-content {
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(10px);
+    }
+
+    #ai-collapsed-content {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 16px;
+        transition: opacity 0.3s ease;
+        opacity: 0;
+        pointer-events: none;
+    }
+    .collapsed #ai-collapsed-content {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    #ai-drag-handle {
+        width: 100%; height: 32px; margin: -8px auto 8px auto; cursor: grab; display: flex; align-items: center; justify-content: center; -webkit-user-select: none; user-select: none;
+        transition: opacity 0.3s ease, height 0.3s ease, margin 0.3s ease;
+        opacity: 1;
+        touch-action: none;
+    }
+    .collapsed #ai-drag-handle {
+        opacity: 0;
+        height: 0;
+        margin: 0 auto;
+        pointer-events: none;
+    }
+    
+    .material-icons {
+        user-select: none;
+        pointer-events: none;
+    }
+
+    .roster-section-title {
+        font-size: 11px;
+        font-weight: bold;
+        color: #64B5F6;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+</style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- SVG Tool Icon -->
-        <div class="icon">
-            <svg xmlns="http://w3.org" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+<!-- Opening Connecting Loading Screen -->
+<div id="opening-loading-overlay" style="position: fixed; top:0; left:0; width:100%; height:100%; background: #080808; z-index: 100000; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 20px;">
+    <svg class="spinner" viewBox="25 25 50 50">
+        <circle cx="50" cy="50" r="20"></circle>
+    </svg>
+    <h2 style="color: #FFFFFF; font-size: 1.3rem; font-weight: 600; margin: 0;">Connecting to Coachbuddy</h2>
+</div>
+
+<!-- Background Blur Action Overlay -->
+<div id="action-loading-overlay" style="position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(10, 10, 10, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 10000; display: none; justify-content: center; align-items: center;">
+    <svg class="spinner" viewBox="25 25 50 50">
+        <circle cx="50" cy="50" r="20"></circle>
+    </svg>
+</div>
+
+<div class="app-wrapper">
+    <div class="app-container">
+
+        <!-- MAIN NAVIGATION -->
+        <div id="app-nav" style="display: none; gap: 5px; margin-bottom: 10px;">
+            <button id="nav-app-btn" class="timer-btn primary" style="flex: 1; font-size: 11px;">Game</button>
+            <button id="nav-manage-btn" class="timer-btn secondary" style="flex: 1; font-size: 11px;">Manage</button>
+            <button id="nav-stats-btn" class="timer-btn secondary" style="flex: 1; font-size: 11px;">Stats</button>
+            <button id="nav-settings-btn" class="timer-btn secondary" style="flex: 1; font-size: 11px;">Settings</button>
         </div>
-        
-        <h1>Server Maintenance</h1>
-        
-        <p>Coachbuddy is undergoing maintenence to improve server security and add new logic. Be back soon!</p>
-        
-        <p>Estimated time back: 1 July 10:30pm</p>
-        
+
+        <!-- LOGIN VIEW -->
+        <div id="login-view" style="display: none;">
+            <h2 style="text-align: center; margin-bottom: 30px; font-size: 2rem;">Coachbuddy</h2>
+            <div id="login-form">
+                <input type="email" id="login-email" placeholder="Email Address" style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 16px;" autocomplete="email">
+                <input type="password" id="login-password" placeholder="Password" style="width: 100%; margin-bottom: 15px; padding: 12px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 16px;" autocomplete="current-password">
+                <button id="login-btn" class="timer-btn primary" style="width: 100%; margin-bottom: 10px;">Log In</button>
+                <div style="text-align: center; margin-top: 15px;">
+                    <a href="#" id="go-to-signup" style="color: #64B5F6; text-decoration: none; font-size: 14px;">Don't have an account? Sign up</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- SIGN UP VIEW -->
+        <div id="signup-view" style="display: none;">
+            <h2 style="text-align: center; margin-bottom: 30px; font-size: 2rem;">Coachbuddy Beta</h2>
+            <div id="signup-form">
+                <input type="text" id="signup-firstname" placeholder="First Name" style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 16px;" autocomplete="given-name">
+                <input type="email" id="signup-email" placeholder="Email Address" style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 16px;" autocomplete="email">
+                <input type="tel" id="signup-phone" placeholder="Phone Number (Optional)" style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 16px;" autocomplete="tel">
+                <input type="password" id="signup-password" placeholder="Create Password (Min 6 chars)" style="width: 100%; margin-bottom: 15px; padding: 12px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 16px;" autocomplete="new-password">
+                
+                <!-- Terms of Service & Privacy Policy Consent Checkbox -->
+                <div style="display: flex; align-items: flex-start; gap: 8px; margin-bottom: 15px; text-align: left;">
+                    <input type="checkbox" id="signup-terms" style="width: 18px; height: 18px; accent-color: #4CAF50; cursor: pointer; flex-shrink: 0; margin-top: 1px;">
+                    <label for="signup-terms" style="color: #B0B0B0; font-size: 13px; line-height: 1.4; user-select: none; cursor: pointer;">
+                        I agree to the <a href="https://guahh.net/termsofservice.html" target="_blank" style="color: #64B5F6; text-decoration: none; font-weight: 500;">Terms of Service</a> and <a href="https://guahh.net/privacypolicy.html" target="_blank" style="color: #64B5F6; text-decoration: none; font-weight: 500;">Privacy Policy</a>
+                    </label>
+                </div>
+
+                <button id="signup-btn" class="timer-btn primary" style="width: 100%; margin-bottom: 10px;">Sign Up</button>
+                <div style="text-align: center; margin-top: 15px;">
+                    <a href="#" id="go-to-login" style="color: #64B5F6; text-decoration: none; font-size: 14px;">Already have an account? Log in</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- SUBSCRIPTION BLOCK VIEW (BETA WELCOME SCREEN) -->
+        <div id="sub-block-view" style="display: none; text-align: center; background-color: #121212; padding: 20px; border-radius: 13px;">
+            <h2 style="color: #E0E0E0; margin-top: 0;">Welcome to Coachbuddy Beta</h2>
+            <p style="color: #B0B0B0; font-size: 15px; line-height: 1.5; margin-bottom: 20px;">Thank you for joining the beta release you will be accepted shortly and will be able to use Coachbuddy. Be sure to submit any feedback with the feedback button at the bottom of home, thank you!</p>
+            
+            <!-- Hidden elements to preserve JS bindings -->
+            <div id="sub-plans-container" style="display: none;"></div>
+            <div id="sub-club-content" style="display: none;"></div>
+
+            <button id="refresh-sub-btn" class="timer-btn primary" style="width: 100%; margin-top: 20px; margin-bottom: 10px; display: none;">Check Status Again</button>
+            <button id="logout-btn-sub" class="timer-btn secondary" style="width: 100%;">Log Out</button>
+        </div>
+
+        <!-- GAME APP VIEW -->
+        <div id="app-view" style="display: none;">
+            <div id="team-name-section">
+                <label for="team-select" style="display:block; margin-bottom: 5px; font-weight: bold;">Team:</label>
+                <select id="team-select">
+                    <option value="" disabled selected>Select a Team...</option>
+                </select>
+            </div>
+
+            <div id="timer-section">
+                <div id="time-display">00:00</div>
+                <div class="timer-controls mode-main-controls">
+                    <button id="start-pause-btn" class="timer-btn primary">Start</button>
+                    <button id="reset-btn" class="timer-btn secondary">Reset</button>
+                </div>
+                <div class="timer-controls adjust-controls">
+                    <button id="add-minute-btn" class="timer-btn secondary">+20 Sec</button>
+                    <!-- Guahh AI button - Positioned in-between +20 and -20 Sec -->
+                    <button id="suggest-sub-btn" class="timer-btn secondary">Guahh AI</button>
+                    <button id="subtract-minute-btn" class="timer-btn secondary">–20 Sec</button>
+                </div>
+            </div>
+
+            <div id="input-section" style="margin-top: 10px;">
+                <input type="text" id="player-number-input" placeholder="No." inputmode="numeric">
+                <input type="text" id="player-name" placeholder="Enter player's name">
+                <button id="add-player-btn" class="add-icon-btn">+</button>
+            </div>
+
+            <div id="roster-container">
+                <div class="roster-header" style="margin-bottom: 4px;">
+                    <span class="roster-title">Roster</span>
+                    <div class="sort-buttons-group">
+                        <button id="sort-desc-btn" class="sort-btn">Sort</button>
+                    </div>
+                </div>
+
+                <div id="roster">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px; margin-bottom: 5px; border-bottom: 1px solid #222; padding-bottom: 4px;">
+                        <span class="roster-section-title"></span>
+                        <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0; font-size: 10px; color: #777; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">
+                            <span style="width: 44px; text-align: right; margin-right: 6px;">Time</span>
+                            <span class="pts-label" style="width: 62px; text-align: center; margin-left: 0px; margin-right: 10px;">Pts</span>
+                            <span style="width: 46px; text-align: center;">Status</span>
+                            <span style="width: 26px;"></span>
+                        </div>
+                    </div>
+                    <div id="roster-list" style="min-height: 100px;"></div>
+                </div>
+            </div>
+
+            <div id="recent-subs-section" style="display: none; background-color: #121212; padding: 10px; border-radius: 13px; margin-bottom: 10px;">
+                <div style="font-size: 11px; font-weight: bold; color: #B0B0B0; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;">Last Subbed On</div>
+                <div id="recent-subs-list" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
+            </div>
+
+            <div id="mini-timer-section">
+                <div id="mini-time-display">03:00</div>
+                <div class="mini-timer-controls">
+                    <button id="mini-start-pause-btn" class="timer-btn primary">Start</button>
+                    <button id="mini-reset-btn" class="timer-btn secondary">Reset</button>
+                </div>
+            </div>
+
+            <div id="notes-section">
+                <label for="game-notes" style="display:block; margin-bottom: 5px; font-weight: bold;">Notes:</label>
+                <textarea id="game-notes" placeholder="Add game notes here..."></textarea>
+            </div>
+            
+            <div style="margin-top: 5px;">
+                <button id="save-to-sheets-btn" class="timer-btn primary" style="width: 100%; background-color: #1a73e8;">Finish Game</button>
+            </div>
+            
+            <div style="margin-top: 5px;">
+                <button id="add-default-players-btn" class="timer-btn secondary" style="width: 100%;">Add Default Players</button>
+            </div>
+            
+            <!-- NEW FEEDBACK BUTTON -->
+            <div style="margin-top: 5px;">
+                <button id="open-feedback-btn" class="timer-btn secondary" style="width: 100%;">Submit Feedback</button>
+            </div>
+        </div>
+
+        <!-- MANAGE TEAMS & PLAYERS VIEW -->
+        <div id="manage-view" style="display: none;">
+            <div style="background-color: #121212; padding: 12px; border-radius: 13px; margin-bottom: 10px;">
+                <h3 style="margin-top: 0; color: #E0E0E0;">My Teams</h3>
+                <div id="manage-team-list" style="margin-bottom: 10px;"></div>
+                
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <div style="display: flex; gap: 6px;">
+                        <input type="text" id="new-team-name" placeholder="New Team Name" style="flex: 2; padding: 9px; border-radius: 9px; background: #1A1A1A; color: #E0E0E0; border: 1px solid #222; font-size: 15px;">
+                        <select id="new-team-sport" style="flex: 1.2; padding: 9px; border-radius: 9px; background: #1A1A1A; color: #E0E0E0; border: 1px solid #222; font-size: 15px;">
+                            <option value="" disabled selected>Sport...</option>
+                            <option value="Basketball">Basketball</option>
+                            <option value="Soccer">Soccer</option>
+                            <option value="Footy">Footy</option>
+                            <option value="Netball">Netball</option>
+                        </select>
+                    </div>
+                    <button id="create-team-btn" class="timer-btn primary" style="width: 100%;">Create Team</button>
+                </div>
+            </div>
+
+            <div style="background-color: #121212; padding: 12px; border-radius: 13px;">
+                <h3 style="margin-top: 0; color: #E0E0E0;">Manage Players</h3>
+                <select id="manage-team-select" style="width: 100%; padding: 9px; border-radius: 9px; background: #1A1A1A; color: #E0E0E0; border: 1px solid #222; margin-bottom: 10px; font-size: 15px;">
+                    <option value="" disabled selected>Select a Team...</option>
+                </select>
+                
+                <div id="manage-player-list"></div>
+                
+                <div style="margin-top: 10px; background: #1A1A1A; padding: 10px; border-radius: 9px;">
+                    <div style="display: flex; gap: 6px; margin-bottom: 6px; flex-wrap: wrap;">
+                        <input type="text" id="new-player-name" placeholder="Name" style="flex: 2; min-width: 100px; padding: 9px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 15px;">
+                        <input type="text" id="new-player-number" placeholder="No." style="flex: 1; min-width: 50px; padding: 9px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 15px;">
+                        <input type="number" id="new-player-rank" placeholder="Rate (1/10)" style="flex: 1; min-width: 110px; padding: 9px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 15px;" min="1" max="10">
+                    </div>
+                    <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px;">
+                        <input type="text" id="new-player-height" placeholder="Height (e.g. 5ft 8)" style="flex: 1; min-width: 80px; padding: 9px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 15px;">
+                    </div>
+                    <div style="color: #B0B0B0; font-size: 12px; font-weight: 600; margin-bottom: 4px;">Skills (Optional):</div>
+                    <div id="skill-pills" style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px;">
+                        <button type="button" class="skill-pill" data-skill="Speed">Speed</button>
+                        <button type="button" class="skill-pill" data-skill="Jump Height">Jump Height</button>
+                        <button type="button" class="skill-pill" data-skill="Shot Accuracy">Shot Accuracy</button>
+                        <button type="button" class="skill-pill" data-skill="Quick Thinking">Quick Thinking</button>
+                        <button type="button" class="skill-pill" data-skill="3 Point Star">3 Point Star</button>
+                        <button type="button" class="skill-pill" data-skill="Defence">Defence</button>
+                        <button type="button" class="skill-pill" data-skill="Communication">Communication</button>
+                        <button type="button" class="skill-pill" data-skill="Good At Everything">Good At Everything</button>
+                        <button type="button" class="skill-pill" data-skill="Rebounding">Rebounding</button>
+                        <button type="button" class="skill-pill" data-skill="Good Passing">Good Passing</button>
+                        <button type="button" class="skill-pill" data-skill="Good Handles">Good Handles</button>
+                        <button type="button" class="skill-pill" data-skill="Positioning">Positioning</button>
+                        <button type="button" class="skill-pill" data-skill="IQ">IQ</button>
+                    </div>
+                    <button id="create-player-btn" class="timer-btn primary" style="width: 100%;">Add Player</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- STATS VIEW -->
+        <div id="stats-view" style="display: none;">
+            <div style="background-color: #121212; padding: 12px; border-radius: 13px;">
+                <h3 style="margin-top: 0; color: #E0E0E0;">Game Stats</h3>
+                <select id="stats-team-select" style="width: 100%; padding: 9px; border-radius: 9px; background: #1A1A1A; color: #E0E0E0; border: 1px solid #222; margin-bottom: 10px; font-size: 15px;">
+                    <option value="" disabled selected>Select a Team...</option>
+                </select>
+                <button id="load-stats-btn" class="timer-btn primary" style="width: 100%; margin-bottom: 10px;">Load Stats</button>
+                <div id="stats-content"></div>
+            </div>
+        </div>
+
+        <!-- SETTINGS VIEW -->
+        <div id="settings-view" style="display: none;">
+            <div style="background-color: #121212; padding: 12px; border-radius: 13px; margin-bottom: 10px;">
+                <h3 style="margin-top: 0; color: #E0E0E0;">Settings</h3>
+                
+                <!-- NEW FEEDBACK BUTTON (SETTINGS) -->
+                <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #222;">
+                    <button id="open-feedback-settings-btn" class="timer-btn secondary" style="width: 100%;">Submit Feedback</button>
+                </div>
+
+                <!-- SUBSCRIPTION MANAGEMENT (SETTINGS) -->
+                <div style="display: flex; flex-direction: column; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #222;">
+                    <span style="font-size: 14px; margin-bottom: 8px; font-weight: bold; color: #E0E0E0;">Subscription</span>
+                    <div id="settings-plans-container"></div>
+                </div>
+
+                <!-- CLUB AFFILIATION (SETTINGS) -->
+                <div style="display: flex; flex-direction: column; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #222;">
+                    <span style="font-size: 14px; margin-bottom: 8px; font-weight: bold; color: #E0E0E0;">Club Affiliation</span>
+                    <div id="settings-club-content"></div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #222;">
+                    <span style="font-size: 14px;">Guahh AI</span>
+                    <label class="switch">
+                        <input type="checkbox" id="setting-guahh-ai" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #222;">
+                    <span style="font-size: 14px;">Points Tracking</span>
+                    <label class="switch">
+                        <input type="checkbox" id="setting-points-tracking" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #222;">
+                    <span style="font-size: 14px;">Auto-start substitute timer after subs</span>
+                    <label class="switch">
+                        <input type="checkbox" id="setting-autotimer" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #222;">
+                    <span style="font-size: 14px;">Auto-add default players on app open</span>
+                    <label class="switch">
+                        <input type="checkbox" id="setting-autoadd">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #222;">
+                    <span style="font-size: 14px;">Substitute timer duration (minutes)</span>
+                    <input type="number" id="setting-timer-amount" min="1" max="15" value="3" style="width: 60px; padding: 5px; border-radius: 7px; background: #1A1A1A; color: #E0E0E0; border: 1px solid #222; text-align: center; font-size: 14px;">
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #222;">
+                    <span style="font-size: 14px;">Max players on field</span>
+                    <input type="number" id="setting-max-players" min="1" max="15" value="5" style="width: 60px; padding: 5px; border-radius: 7px; background: #1A1A1A; color: #E0E0E0; border: 1px solid #222; text-align: center; font-size: 14px;">
+                </div>
+
+                <button id="logout-btn-standard" class="timer-btn secondary" style="width: 100%; margin-bottom: 10px;">Log Out</button>
+                <button id="logout-btn-main" class="timer-btn secondary" style="width: 100%; background-color: #D32F2F; color: white;">Log Out All Sessions</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Floating AI Panel -->
+<div id="ai-floating-panel">
+    <div id="ai-drag-handle">
+        <div style="width: 60px; height: 6px; background: rgba(255,255,255,0.4); border-radius: 3px;"></div>
+    </div>
+    
+    <div id="ai-expanded-content">
+        <div id="ai-step-config">
+            <h3 style="margin-top: 0; margin-bottom: 12px; color: #fff; text-align: center; font-size: 18px;">Guahh AI</h3>
+            <div id="ai-step-suggestions-stacked" style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px;"></div>
+            <div style="margin-bottom: 15px; text-align: left; display: flex; gap: 8px;">
+                <input type="text" id="ai-chat-input" placeholder="Ask anything" style="flex: 1; height: 44px; padding: 0 14px; border-radius: 12px; background-color: #1A1A1A; color: white; border: 1px solid #222; font-size: 15px; font-family: inherit; outline: none; box-sizing: border-box;">
+                <button id="ai-voice-btn" class="timer-btn secondary" style="width: 44px; height: 44px; padding: 0; border-radius: 12px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;"><span class="material-icons">mic</span></button>
+            </div>
+            <div id="ai-voice-wave-config" style="display: none; width: 100%; height: 90px; margin: 5px auto; text-align: center;"></div>
+            <div style="display: flex; gap: 8px;" id="ai-config-buttons-row">
+                <button id="ai-submit-btn" class="timer-btn primary" style="flex: 2;">Ask Assistant</button>
+                <button id="ai-cancel-btn" class="timer-btn secondary" style="flex: 1;">Close</button>
+            </div>
+        </div>
+
+        <div id="ai-step-loading" style="display: none; text-align: center; padding: 10px 0;">
+            <div id="siri-container" style="width: 100%; height: 110px; margin: 0 auto;"></div>
+            <span style="display: block; color: #FFFFFF; font-weight: bold; font-size: 15px; margin-top: 10px;">Guahh AI is thinking...</span>
+        </div>
+
+        <div id="ai-step-results" style="display: none;">
+            <h3 id="ai-results-title" style="margin-top: 0; margin-bottom: 12px; color: #fff; text-align: center; font-size: 14px; font-weight: 600; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 8px;">Response</h3>
+            <div id="ai-results-text"></div>
+            <div id="ai-results-followup-container" style="display: flex; gap: 8px; margin-bottom: 12px; background: #2D2D2D !important; padding: 4px; border-radius: 14px; border: none !important; height: 50px; align-items: center; box-sizing: border-box; box-shadow: none !important;">
+                <input type="text" id="ai-results-followup-input" placeholder="Ask anything" style="flex: 1; padding: 0 14px; border-radius: 10px; background-color: transparent; color: white; border: none !important; outline: none !important; font-size: 15px; box-sizing: border-box; height: 42px; box-shadow: none !important;">
+                <button id="ai-results-voice-btn" class="timer-btn secondary" style="width: 42px; height: 42px; padding: 0; border-radius: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin-right: 2px;"><span class="material-icons">mic</span></button>
+                <button id="ai-results-followup-btn" class="timer-btn primary" style="padding: 0 20px; height: 42px; font-size: 14px; border: none !important; outline: none !important; border-radius: 10px; flex-shrink: 0; box-shadow: none !important; font-weight: 700;">Ask</button>
+            </div>
+            <div id="ai-voice-wave-results" style="display: none; width: 100%; height: 90px; margin: 5px auto; text-align: center;"></div>
+            <div style="display: flex; gap: 8px;" id="ai-results-buttons-row">
+                <button id="ai-apply-btn" class="timer-btn primary" style="flex: 2; min-height: 44px; font-size: 15px; border-radius: 12px;">Make Substitutes</button>
+                <button id="ai-dismiss-btn" class="timer-btn secondary" style="flex: 1; min-height: 44px; font-size: 15px; border-radius: 12px;">Dismiss</button>
+            </div>
+        </div>
     </div>
 
+    <div id="ai-collapsed-content">
+        <span style="font-weight: bold; font-size: 15px; display: flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #FFFFFF;">Guahh AI</span>
+        <div style="display: flex; gap: 8px; align-items: center; flex-shrink: 0;">
+            <button id="ai-close-btn" style="background-color: #2D2D2D; border: none; color: #E0E0E0; font-size: 22px; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; line-height: 0; padding-bottom: 2px;">&times;</button>
+        </div>
+    </div>
+</div>
+
+<!-- Custom Confirmation Modal -->
+<div id="custom-modal" class="modal-overlay">
+    <div class="modal-content">
+        <h3 id="modal-title"></h3>
+        <div id="modal-message"></div>
+        <div id="modal-buttons" class="modal-buttons"></div>
+    </div>
+</div>
+
+<!-- Feedback Modal -->
+<div id="feedback-modal" class="modal-overlay">
+    <div class="modal-content">
+        <h3 style="font-size: 1.4rem; margin-top: 0; color: #E0E0E0; text-align: center;">Submit Feedback</h3>
+        <input type="text" id="feedback-name" placeholder="Name (Optional)" style="width: 100%; margin-bottom: 10px; padding: 10px; border-radius: 9px; background: #1A1A1A; color: #E0E0E0; border: 1px solid #222; font-size: 15px;">
+        <select id="feedback-type" style="width: 100%; margin-bottom: 10px; padding: 10px; border-radius: 9px; background: #1A1A1A; color: #E0E0E0; border: 1px solid #222; font-size: 15px;">
+            <option value="" disabled selected>Type of Feedback...</option>
+            <option value="Feature Idea">Feature Idea</option>
+            <option value="General Feedback">General Feedback</option>
+            <option value="Functional Bug">Functional Bug</option>
+            <option value="Visual Bug">Visual Bug</option>
+            <option value="General Bug">General Bug</option>
+            <option value="AI Bug">AI Bug</option>
+            <option value="AI Suggestion">AI Suggestion</option>
+            <option value="Other">Other</option>
+        </select>
+        <textarea id="feedback-text" placeholder="Enter your feedback here..." style="width: 100%; min-height: 80px; margin-bottom: 15px; padding: 10px; border-radius: 9px; background: #1A1A1A; color: #E0E0E0; border: 1px solid #222; font-size: 15px; resize: vertical;"></textarea>
+        <div class="modal-buttons">
+            <button id="submit-feedback-btn" class="timer-btn primary">Submit</button>
+            <button id="close-feedback-btn" class="timer-btn secondary">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<script>
+(() => {
+    console.log = console.warn = console.error = console.info = console.debug = function() {};
+    
+    // --- CONSTANTS & CONFIG ---
+    const _U = "\x68\x74\x74\x70\x73\x3a\x2f\x2f\x73\x63\x72\x69\x70\x74\x2e\x67\x6f\x6f\x67\x6c\x65\x2e\x63\x6f\x6d\x2f\x6d\x61\x63\x72\x6f\x73\x2f\x73\x2f\x41\x4b\x66\x79\x63\x62\x7a\x4c\x33\x6e\x48\x4c\x34\x37\x2d\x51\x59\x50\x50\x61\x4e\x4d\x4c\x74\x44\x43\x65\x54\x30\x2d\x4b\x70\x74\x33\x58\x71\x6b\x42\x46\x64\x75\x35\x61\x55\x32\x42\x39\x39\x6f\x42\x71\x36\x5a\x63\x6d\x55\x47\x43\x6d\x5f\x65\x37\x79\x62\x75\x41\x62\x58\x6f\x4e\x53\x72\x73\x67\x2f\x65\x78\x65\x63";
+    const _V = "0.5";
+    const _TK = "\x5f\x63\x62\x5f\x74\x6b"; const _EM = "\x5f\x63\x62\x5f\x65\x6d"; const _PW = "\x5f\x63\x62\x5f\x70\x77"; 
+    const _ST = "\x5f\x63\x62\x5f\x73\x74"; const _S1 = "\x5f\x63\x62\x5f\x73\x31"; const _S2 = "\x5f\x63\x62\x5f\x73\x32"; 
+    const _S3 = "\x5f\x63\x62\x5f\x73\x33"; const _S4 = "\x5f\x63\x62\x5f\x73\x44"; 
+    const _S5 = "\x5f\x63\x62\x5f\x73\x35"; 
+    const _S6 = "\x5f\x63\x62\x5f\x73\x36"; 
+    const SUGGESTION_POOL = ["Sub Suggestion", "We need to win", "Balance playtime"];
+    const MIN_GAME_TIME_FOR_WARNINGS = 180; const LOW_TIME_RATIO = 0.65; const SIGNIFICANT_TIME_GAP = 240; 
+    const INITIAL_STOPWATCH_SECONDS = 0; const DEFAULT_COUNTDOWN_SECONDS = 2400;
+    const views = ['login-view', 'signup-view', 'sub-block-view', 'app-view', 'manage-view', 'stats-view', 'settings-view'];
+    const feedbackUrl = "https://script.google.com/macros/s/AKfycbzFsd4XNh8Ck5uIkbCATTEhX3r9XnsunrYoo-JRSIIDVznq_dm-SzgOgatz4q1YRITQ/exec";
+
+    // --- DOM ELEMENTS ---
+    const timeDisplay = document.getElementById('time-display');
+    const startPauseBtn = document.getElementById('start-pause-btn');
+    const resetBtn = document.getElementById('reset-btn');
+    const teamSelect = document.getElementById('team-select');
+    const miniTimeDisplay = document.getElementById('mini-time-display');
+    const miniStartPauseBtn = document.getElementById('mini-start-pause-btn');
+    const autoTimerCheckbox = document.getElementById('setting-autotimer');
+    const autoAddCheckbox = document.getElementById('setting-autoadd');
+    const timerAmountInput = document.getElementById('setting-timer-amount');
+    const maxPlayersInput = document.getElementById('setting-max-players');
+    const guahhAiCheckbox = document.getElementById('setting-guahh-ai');
+    const pointsTrackingCheckbox = document.getElementById('setting-points-tracking');
+    const suggestBtn = document.getElementById('suggest-sub-btn');
+    const panel = document.getElementById('ai-floating-panel');
+    const dragHandle = document.getElementById('ai-drag-handle');
+    const customModal = document.getElementById('custom-modal');
+
+    // Feedback DOM
+    const feedbackBtn = document.getElementById('open-feedback-btn');
+    const feedbackSettingsBtn = document.getElementById('open-feedback-settings-btn');
+    const feedbackModal = document.getElementById('feedback-modal');
+    const closeFeedbackBtn = document.getElementById('close-feedback-btn');
+    const submitFeedbackBtn = document.getElementById('submit-feedback-btn');
+
+    // --- STATE VARIABLES ---
+    let isAiCollapsed = false; let startY = 0; let dragOffset = 0; let isDragging = false; let siriWave = null;
+    let touchDragItem = null; let touchClone = null; let lastTouchTarget = null; let desktopDragItem = null;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition = null; let isListening = false; let activeVoiceInput = null; let activeVoiceButton = null; let voiceSiriWave = null; 
+    let authToken = localStorage.getItem(_TK); let currentUser = null; let subscriptionStatus = "NONE";
+    let appData = { teams: [], players: [], clubStatus: "NONE", clubName: "" }; let editingPlayerId = null;
+    let recentSubs = []; let pendingSubChanges = []; let subDebounceTimer = null;
+    let countdownInterval = null; let totalSeconds = INITIAL_STOPWATCH_SECONDS; let isRunning = false; let isCountdownMode = false;
+    let miniTimerInterval = null; let miniTotalSeconds = 180; let isMiniTimerRunning = false;
+    let subPollingInterval = null;
+    let startingFive = []; // State array tracking starting 5 player names
+
+    // --- GETTERS & HELPERS ---
+    function getMaxPlayers() { return parseInt(localStorage.getItem(_S4) || '5'); }
+    function getMiniTimerSeconds() { return parseInt(localStorage.getItem(_S3) || '3') * 60; }
+    function formatTime(seconds) {
+        if (seconds < 0) seconds = 0;
+        const m = Math.floor(seconds / 60); const s = seconds % 60;
+        return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+    function updatePointsTrackingVisibility() {
+        const showPoints = localStorage.getItem(_S6) !== 'false';
+        if (showPoints) document.body.classList.remove('hide-points-tracking');
+        else document.body.classList.add('hide-points-tracking');
+    }
+    function getSelectedSkills() {
+        const activePills = document.querySelectorAll('.skill-pill.active');
+        return Array.from(activePills).map(pill => pill.dataset.skill).join(', ');
+    }
+    function setSelectedSkills(skillString) {
+        const skills = skillString ? skillString.split(',').map(s => s.trim().toLowerCase()) : [];
+        document.querySelectorAll('.skill-pill').forEach(pill => {
+            if (skills.includes((pill.dataset.skill || '').trim().toLowerCase())) pill.classList.add('active');
+            else pill.classList.remove('active');
+        });
+    }
+    function cmToFeetInches(cm) {
+        const inches = Math.round(cm / 2.54);
+        const feet = Math.floor(inches / 12);
+        const remainingInches = inches % 12;
+        return remainingInches > 0 ? `${feet}ft ${remainingInches}` : `${feet}ft`;
+    }
+
+    function checkAndShowWelcomePopup() {
+        if (!currentUser) return;
+        const key = '_cb_welcome_shown_' + btoa(currentUser);
+        if (!localStorage.getItem(key)) {
+            showCustomModal(
+                'Welcome to Coachbuddy',
+                '<p style="color: #B0B0B0; line-height: 1.5; font-size: 14px; text-align: left; margin: 0 0 10px 0;">Track player times and points, get AI sub suggestions and insights, be notified when players aren\'t getting enough time and much more, let\'s get started by creating a team!</p>',
+                [
+                    {
+                        text: 'Create Team',
+                        className: 'primary',
+                        action: () => {
+                            closeModal();
+                            const navManageBtn = document.getElementById('nav-manage-btn');
+                            if (navManageBtn) navManageBtn.click();
+                        }
+                    },
+                    {
+                        text: 'Dismiss',
+                        className: 'secondary',
+                        action: closeModal
+                    }
+                ]
+            );
+            localStorage.setItem(key, 'true');
+        }
+    }
+
+    if (localStorage.getItem(_S1) === 'false') { if(autoTimerCheckbox) autoTimerCheckbox.checked = false; } else { if(autoTimerCheckbox) autoTimerCheckbox.checked = true; }
+    if (autoAddCheckbox) autoAddCheckbox.checked = localStorage.getItem(_S2) === 'true';
+    if (timerAmountInput && localStorage.getItem(_S3)) timerAmountInput.value = localStorage.getItem(_S3);
+    if (maxPlayersInput && localStorage.getItem(_S4)) maxPlayersInput.value = localStorage.getItem(_S4);
+    if (guahhAiCheckbox && localStorage.getItem(_S5) === 'false') { guahhAiCheckbox.checked = false; if(suggestBtn) suggestBtn.style.display = 'none'; }
+    if (pointsTrackingCheckbox) pointsTrackingCheckbox.checked = localStorage.getItem(_S6) !== 'false';
+    updatePointsTrackingVisibility();
+
+    // --- API & MODALS ---
+    async function apiCall(action, payload = {}) {
+        payload.action = action; payload.version = _V;
+        if (authToken) { payload.token = authToken; payload.email = localStorage.getItem(_EM); payload.password = localStorage.getItem(_PW); }
+        const encPayload = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+        // Content-Type is text/plain with no parameters to keep request simple and prevent CORS preflight OPTIONS blocking
+        const res = await fetch(_U, { method: 'POST', mode: 'cors', headers: { 'Content-Type': 'text/plain' }, body: encPayload });
+        const raw = await res.text();
+        let data; try { data = JSON.parse(decodeURIComponent(escape(atob(raw)))); } catch(err) { throw new Error("Server communication error."); }
+        if (data.result === 'error') throw new Error(data.error); return data;
+    }
+
+    function closeModal() { setTimeout(() => { if(customModal) customModal.style.display = 'none'; }, 100); }
+    function showCustomModal(title, messageHtml, buttons) {
+        if(!customModal) return;
+        document.getElementById('modal-title').textContent = title;
+        document.getElementById('modal-message').innerHTML = messageHtml;
+        const btnContainer = document.getElementById('modal-buttons'); btnContainer.innerHTML = '';
+        buttons.forEach(btnInfo => {
+            const button = document.createElement('button');
+            button.textContent = btnInfo.text; button.className = `timer-btn ${btnInfo.className || 'primary'}`;
+            if (btnInfo.id) button.id = btnInfo.id; button.onclick = (e) => btnInfo.action(e);
+            btnContainer.appendChild(button);
+        });
+        customModal.style.display = 'flex';
+    }
+    function showConfirmation(title, message, callback) {
+        let buttons = [];
+        if (callback) {
+            buttons.push({ text: 'Confirm', className: 'primary', action: () => { callback(true); closeModal(); } });
+            buttons.push({ text: 'Cancel', className: 'secondary', action: () => { callback(false); closeModal(); } });
+        } else {
+            buttons.push({ text: 'OK', className: 'primary', action: closeModal });
+        }
+        showConfirmationModal(title, `<p>${message}</p>`, buttons);
+    }
+    function showConfirmationModal(title, messageHtml, buttons) {
+        showCustomModal(title, messageHtml, buttons);
+    }
+
+    // --- SUBSCRIPTION DYNAMIC UI ---
+    function renderSubscriptionUI() {
+        const subContainer = document.getElementById('sub-plans-container');
+        const setContainer = document.getElementById('settings-plans-container');
+        
+        let currentPlanName = "None";
+        if(subscriptionStatus === 'COACHBUDDY') currentPlanName = "Coachbuddy Basic";
+        if(subscriptionStatus === 'COACHBUDDY_PLUS') currentPlanName = "Coachbuddy Plus";
+
+        let settingsHtml = `<div style="margin-bottom: 12px; font-size: 14px; color: #B0B0B0;">Current Plan: <span style="color: #4CAF50; font-weight: bold;">${currentPlanName}</span></div>`;
+
+        const indCard = `
+        <div style="background-color: #1A1A1A; padding: 15px; border-radius: 9px; border: 1px solid #333; margin-bottom: 10px; text-align: left;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                <span style="font-weight: bold; color: #E0E0E0; font-size: 16px;">Coachbuddy Basic</span>
+                <span style="color: #64B5F6; font-weight: bold; font-size: 14px;">$5 AUD/mo</span>
+            </div>
+            <ul style="color: #B0B0B0; font-size: 13px; margin-top: 5px; margin-bottom: 15px; padding-left: 20px; line-height: 1.4;">
+                <li>All Features</li>
+                <li>Guahh AI Basic</li>
+                <li>Up to 3 teams per coach</li>
+            </ul>
+            <button class="timer-btn primary sub-btn-ind" style="width: 100%; background-color: #007bff;">Subscribe Now</button>
+        </div>`;
+
+        const indPlusCard = `
+        <div style="background-color: #1A1A1A; padding: 15px; border-radius: 9px; border: 1px solid #333; margin-bottom: 10px; text-align: left;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                <span style="font-weight: bold; color: #E0E0E0; font-size: 16px;">Coachbuddy Plus</span>
+                <span style="color: #a78bfa; font-weight: bold; font-size: 14px;">$8 AUD/mo</span>
+            </div>
+            <ul style="color: #B0B0B0; font-size: 13px; margin-top: 5px; margin-bottom: 15px; padding-left: 20px; line-height: 1.4;">
+                <li>All Features</li>
+                <li>Guahh AI Plus</li>
+                <li>Gemini 3.1 Flash Lite for Coachboard Insights</li>
+                <li>Up to 8 teams per coach</li>
+            </ul>
+            <button class="timer-btn primary sub-btn-ind-plus" style="width: 100%; background-color: #7c3aed;">Subscribe Now</button>
+        </div>`;
+
+        let subHtml = "";
+        
+        if (subscriptionStatus === "NONE") {
+            subHtml = indCard + indPlusCard;
+            settingsHtml += indCard + indPlusCard;
+        } else if (subscriptionStatus === "COACHBUDDY") {
+            settingsHtml += `
+            <button class="timer-btn secondary cancel-sub-btn" style="width: 100%; font-size: 13px; color: #D32F2F; margin-bottom: 15px;">Cancel Subscription</button>
+            `;
+            settingsHtml += indPlusCard; 
+        } else if (subscriptionStatus === "COACHBUDDY_PLUS") {
+            settingsHtml += `
+            <button class="timer-btn secondary cancel-sub-btn" style="width: 100%; font-size: 13px; color: #D32F2F; margin-bottom: 15px;">Cancel Subscription</button>
+            `;
+        }
+
+        if (subContainer) subContainer.innerHTML = subHtml;
+        if (setContainer) setContainer.innerHTML = settingsHtml;
+
+        // Attach listeners
+        document.querySelectorAll('.sub-btn-ind').forEach(btn => {
+            btn.onclick = () => openStripe('COACHBUDDY', 'test_14A5kE0hmcpY0VvbWi1Nu01');
+        });
+        document.querySelectorAll('.sub-btn-ind-plus').forEach(btn => {
+            btn.onclick = () => openStripe('COACHBUDDY_PLUS', 'test_28EbJ23tycpY5bLf8u1Nu03');
+        });
+        document.querySelectorAll('.cancel-sub-btn').forEach(btn => {
+            btn.onclick = () => showCancelSubscriptionDetails();
+        });
+    }
+
+    function openStripe(plan, linkId) {
+        if(!currentUser) return showConfirmation('Error', 'Please log in to subscribe.');
+        const ref = encodeURIComponent(`${currentUser}:::${plan}`);
+        const stripeUrl = `https://buy.stripe.com/${linkId}?prefilled_email=${encodeURIComponent(currentUser)}&client_reference_id=${ref}`;
+        window.open(stripeUrl, '_blank');
+    }
+
+    // BETA RESTRICTION Overwrite
+    function showCancelSubscriptionDetails() {
+        showCustomModal(
+            "Couldn't complete action",
+            "<p style='color:#B0B0B0; line-height:1.4;'>This feature isn't enabled in the Coachbuddy beta version, please check back in the full release.</p>",
+            [{ text: 'Got it', className: 'primary', action: closeModal }]
+        );
+    }
+
+    // --- DYNAMIC CLUB AFFILIATION ENGINE ---
+    function renderClubStatus() {
+        const status = appData.clubStatus || 'NONE';
+        const clubName = appData.clubName || '';
+        const cSub = document.getElementById('sub-club-content');
+        const cSet = document.getElementById('settings-club-content');
+        
+        let subHtml = '';
+        let setHtml = '';
+
+        if (status === 'NONE') {
+            const searchPart = `
+                <span style="font-size: 12px; color: #B0B0B0; margin-bottom: 10px; display: block;">Search and request to join a Coachboard club to link your team data.</span>
+                <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+                    <input type="text" class="club-search-input" placeholder="Search for your club..." style="flex: 1; padding: 10px; border-radius: 9px; background: #1A1A1A; color: #E0E0E0; border: 1px solid #222; font-size: 14px;">
+                    <button class="timer-btn primary club-search-btn" style="padding: 10px 15px; min-height: 0;">Search</button>
+                </div>
+                <div class="club-search-results" style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px;"></div>
+            `;
+            subHtml = searchPart;
+            setHtml = searchPart;
+        } else if (status === 'PENDING') {
+            subHtml = `
+                <div style="background: #1A1A1A; padding: 12px; border-radius: 9px; border: 1px solid #222; margin-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="font-weight: bold; color: #E0E0E0; font-size: 15px;">${clubName}</span>
+                        <span style="background: #007bff; color: white; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">PENDING</span>
+                    </div>
+                    <span style="font-size: 12px; color: #B0B0B0; display: block; margin-bottom: 12px;">Waiting for club administrator approval.</span>
+                    <button class="timer-btn secondary leave-club-btn" style="width: 100%; font-size: 13px; color: #D32F2F;">Cancel Request</button>
+                </div>
+            `;
+            setHtml = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <span style="font-weight: bold; color: #E0E0E0; font-size: 15px;">${clubName}</span>
+                    <span style="background: #007bff; color: white; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">PENDING</span>
+                </div>
+                <span style="font-size: 12px; color: #B0B0B0; display: block; margin-bottom: 12px;">Waiting for club administrator approval.</span>
+                <button class="timer-btn secondary leave-club-btn" style="width: 100%; font-size: 13px; color: #D32F2F;">Cancel Request</button>
+            `;
+        } else if (status === 'APPROVED') {
+            subHtml = `
+                <div style="background: #1A1A1A; padding: 12px; border-radius: 9px; border: 1px solid #222; margin-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="font-weight: bold; color: #E0E0E0; font-size: 15px;">${clubName}</span>
+                        <span style="background: #4CAF50; color: white; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">APPROVED</span>
+                    </div>
+                    <span style="font-size: 12px; color: #B0B0B0; display: block; margin-bottom: 12px;">Your account is linked to this club.</span>
+                    <button class="timer-btn secondary leave-club-btn" style="width: 100%; font-size: 13px; color: #D32F2F;">Leave Club</button>
+                </div>
+            `;
+            setHtml = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <span style="font-weight: bold; color: #E0E0E0; font-size: 15px;">${clubName}</span>
+                    <span style="background: #4CAF50; color: white; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;">APPROVED</span>
+                </div>
+                <span style="font-size: 12px; color: #B0B0B0; display: block; margin-bottom: 12px;">Your account is linked to this club.</span>
+                <button class="timer-btn secondary leave-club-btn" style="width: 100%; font-size: 13px; color: #D32F2F;">Leave Club</button>
+            `;
+        }
+
+        if (cSub) { cSub.innerHTML = subHtml; attachClubListeners(cSub); }
+        if (cSet) { cSet.innerHTML = setHtml; attachClubListeners(cSet); }
+    }
+    
+    function attachClubListeners(container) {
+        const searchBtn = container.querySelector('.club-search-btn');
+        const searchInput = container.querySelector('.club-search-input');
+        const resultsDiv = container.querySelector('.club-search-results');
+        const leaveBtn = container.querySelector('.leave-club-btn');
+        
+        if (searchBtn && searchInput) {
+            searchBtn.onclick = () => performClubSearch(searchInput, resultsDiv);
+        }
+        if (leaveBtn) {
+            leaveBtn.onclick = () => {
+                const isPending = appData.clubStatus === 'PENDING';
+                const msg = isPending ? 'Cancel your request to join this club?' : 'Are you sure you want to leave this club?';
+                showConfirmation('Confirm', msg, async (c) => {
+                    if (c) {
+                        document.getElementById('action-loading-overlay').style.display = 'flex';
+                        try {
+                            await apiCall('leave_club');
+                            appData.clubStatus = 'NONE';
+                            appData.clubName = '';
+                            renderClubStatus();
+                            showConfirmation('Success', isPending ? 'Request cancelled.' : 'You have left the club.');
+                        } catch (e) { showConfirmation('Error', e.message); } 
+                        finally { document.getElementById('action-loading-overlay').style.display = 'none'; }
+                    }
+                });
+            }
+        }
+    }
+
+    async function performClubSearch(inputEl, resultsContainer) {
+        const query = inputEl ? inputEl.value.trim() : '';
+        if (!query) {
+            if (resultsContainer) resultsContainer.innerHTML = '';
+            return showConfirmation('Error', 'Please enter a club name to search.');
+        }
+        document.getElementById('action-loading-overlay').style.display = 'flex';
+        try {
+            const res = await apiCall('search_clubs', { query });
+            if (resultsContainer) {
+                resultsContainer.innerHTML = '';
+                if (!res.clubs || res.clubs.length === 0) {
+                    resultsContainer.innerHTML = `<div style="color:#B0B0B0; font-size:13px; text-align:center; padding:10px;">No clubs found matching "${query}"</div>`;
+                    return;
+                }
+                res.clubs.forEach(club => {
+                    const div = document.createElement('div');
+                    div.style.cssText = "display: flex; justify-content: space-between; align-items: center; background: #222; padding: 10px; border-radius: 9px; margin-bottom: 6px;";
+                    div.innerHTML = `
+                        <span style="font-weight: 600; color: #E0E0E0; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 10px;">${club.clubName}</span>
+                        <button class="timer-btn secondary" style="padding: 6px 12px; font-size: 12px; min-height: 0; background-color: #4CAF50; color: white; flex-shrink: 0;" onclick="window._reqJoin('${club.clubId}')">Request</button>
+                    `;
+                    resultsContainer.appendChild(div);
+                });
+            }
+        } catch(e) { showConfirmation('Search Failed', e.message); } 
+        finally { document.getElementById('action-loading-overlay').style.display = 'none'; }
+    }
+
+    // BETA RESTRICTION Overwrite
+    window._reqJoin = function(clubId) {
+        showCustomModal(
+            "Couldn't complete action",
+            "<p style='color:#B0B0B0; line-height:1.4;'>This feature isn't enabled in the Coachbuddy beta version, please check back in the full release.</p>",
+            [{ text: 'Got it', className: 'primary', action: closeModal }]
+        );
+    };
+
+    // --- TIMERS ---
+    function resetMiniTimer() {
+        clearInterval(miniTimerInterval); isMiniTimerRunning = false; 
+        if (miniStartPauseBtn) { miniStartPauseBtn.style.display = ''; miniStartPauseBtn.textContent = 'Start'; miniStartPauseBtn.classList.remove('pause'); }
+        miniTotalSeconds = getMiniTimerSeconds(); 
+        if (miniTimeDisplay) { miniTimeDisplay.textContent = formatTime(miniTotalSeconds); miniTimeDisplay.classList.remove('countdown-ended'); }
+    }
+    function startMiniTimer() {
+        if (isMiniTimerRunning || miniTotalSeconds <= 0) return; isMiniTimerRunning = true; 
+        if (miniStartPauseBtn) { miniStartPauseBtn.textContent = 'Pause'; miniStartPauseBtn.classList.add('pause'); }
+        miniTimerInterval = setInterval(() => {
+            if (miniTotalSeconds > 0) { miniTotalSeconds--; if (miniTimeDisplay) miniTimeDisplay.textContent = formatTime(miniTotalSeconds); } 
+            else { clearInterval(miniTimerInterval); isMiniTimerRunning = false; if (miniStartPauseBtn) { miniStartPauseBtn.style.display = 'none'; miniStartPauseBtn.classList.remove('pause'); } if (miniTimeDisplay) miniTimeDisplay.classList.add('countdown-ended'); }
+        }, 1000);
+    }
+    function pauseMiniTimer() {
+        clearInterval(miniTimerInterval); isMiniTimerRunning = false; 
+        if (miniStartPauseBtn) { miniStartPauseBtn.textContent = 'Resume'; miniStartPauseBtn.classList.remove('pause'); }
+    }
+    function captureStarters() {
+        if (startingFive.length > 0) return; // Prevent overwriting captured starters
+        const onField = Array.from(document.querySelectorAll('.player-item[data-is-on-field="1"]'));
+        startingFive = onField.map(item => item.querySelector('.player-name')?.textContent || 'Unnamed').slice(0, 5);
+    }
+    function startTimer() {
+        if (isRunning || (isCountdownMode && totalSeconds <= 0)) return; isRunning = true; 
+        
+        // Capture starters on the first start sequence of a clean game
+        if (totalSeconds === 0 && startingFive.length === 0) {
+            captureStarters();
+        }
+
+        if (autoTimerCheckbox && autoTimerCheckbox.checked && !isMiniTimerRunning) {
+            startMiniTimer();
+        }
+
+        // Request screen wake lock while running
+        requestWakeLock();
+
+        if(startPauseBtn) { startPauseBtn.textContent = 'Pause'; startPauseBtn.classList.add('pause'); startPauseBtn.classList.remove('resume-flash'); }
+        countdownInterval = setInterval(() => {
+            if (isCountdownMode) { if (totalSeconds > 0) totalSeconds--; else { clearInterval(countdownInterval); isRunning = false; if(startPauseBtn) { startPauseBtn.textContent = 'Done!'; startPauseBtn.classList.remove('pause'); } if(timeDisplay) timeDisplay.classList.add('countdown-ended'); } } 
+            else totalSeconds++;
+            if(timeDisplay) { timeDisplay.textContent = formatTime(totalSeconds); timeDisplay.classList.toggle('countdown-ended', isCountdownMode && totalSeconds <= 60 && totalSeconds > 0); }
+            document.querySelectorAll('.player-item[data-is-on-field="1"]').forEach(item => { let time = parseInt(item.dataset.totalTime) + 1; item.dataset.totalTime = time; const pt = item.querySelector('.player-time'); if(pt) pt.textContent = formatTime(time); });
+            updateSubstitutionWarnings();
+        }, 1000);
+    }
+    function pauseTimer() { 
+        clearInterval(countdownInterval); isRunning = false; 
+        releaseWakeLock();
+        if(startPauseBtn) { startPauseBtn.textContent = 'Resume'; startPauseBtn.classList.remove('pause'); startPauseBtn.classList.add('resume-flash'); }
+        
+        if (autoTimerCheckbox && autoTimerCheckbox.checked && isMiniTimerRunning) {
+            pauseMiniTimer();
+        }
+    }
+    function resetTimer() {
+        clearInterval(countdownInterval); isRunning = false; 
+        releaseWakeLock();
+        if(startPauseBtn) { startPauseBtn.textContent = 'Start'; startPauseBtn.classList.remove('pause'); startPauseBtn.classList.remove('resume-flash'); }
+        if(timeDisplay) timeDisplay.classList.remove('countdown-ended'); 
+        totalSeconds = isCountdownMode ? DEFAULT_COUNTDOWN_SECONDS : INITIAL_STOPWATCH_SECONDS;
+        if(timeDisplay) timeDisplay.textContent = formatTime(totalSeconds);
+        startingFive = []; // Reset starters array on restart
+        document.querySelectorAll('.player-item').forEach(item => {
+            item.dataset.totalTime = 0; const pt = item.querySelector('.player-time'); if(pt) pt.textContent = formatTime(0); 
+            item.dataset.isOnField = '0'; const btn = item.querySelector('.toggle-btn'); if (btn) { btn.textContent = 'OFF'; btn.classList.add('status-off'); btn.classList.remove('status-on'); }
+            appendPlayerToCorrectList(item);
+        });
+        updateSubstitutionWarnings();
+    }
+    function adjustTime(s) { 
+        if (totalSeconds + s < 0) s = -totalSeconds; totalSeconds += s; 
+        if(timeDisplay) timeDisplay.textContent = formatTime(totalSeconds); 
+        document.querySelectorAll('.player-item[data-is-on-field="1"]').forEach(item => {
+            let time = parseInt(item.dataset.totalTime) + s; if (time < 0) time = 0; item.dataset.totalTime = time; 
+            const pt = item.querySelector('.player-time'); if(pt) pt.textContent = formatTime(time);
+        }); updateSubstitutionWarnings(); 
+    }
+
+    // --- DRAG & DROP ENGINE (WITH snappier LONG PRESS TOUCH HOLD DELAY) ---
+    function clearDragStyles() {
+        document.querySelectorAll('.player-item').forEach(item => { 
+            item.style.backgroundColor = ''; 
+            item.classList.remove('drag-selected');
+        });
+        const rosterZone = document.getElementById('roster');
+        if (rosterZone) rosterZone.style.backgroundColor = '';
+        lastTouchTarget = null;
+    }
+    function setupTouchDrag(playerItem) {
+        let holdTimeout = null;
+        let startX = 0;
+        let startY = 0;
+        let isTouchDraggingStarted = false;
+        const HOLD_DELAY = 150; 
+        const MOVE_THRESHOLD = 8; 
+
+        playerItem.addEventListener('touchstart', (e) => {
+            if (e.target.closest('button, input, select, textarea')) return;
+            const touch = e.touches[0];
+            startX = touch.clientX;
+            startY = touch.clientY;
+            isTouchDraggingStarted = false;
+
+            playerItem.style.backgroundColor = 'rgba(255, 255, 255, 0.03)';
+
+            if (holdTimeout) clearTimeout(holdTimeout);
+            holdTimeout = setTimeout(() => {
+                isTouchDraggingStarted = true;
+                touchDragItem = playerItem; 
+                
+                playerItem.classList.add('drag-selected');
+                playerItem.style.opacity = '0.7'; 
+                document.body.classList.add('dragging-active');
+                
+                const rect = playerItem.getBoundingClientRect(); 
+                touchClone = playerItem.cloneNode(true);
+                touchClone.classList.add('drag-selected');
+                touchClone.style.position = 'fixed'; 
+                touchClone.style.left = rect.left + 'px'; 
+                touchClone.style.top = rect.top + 'px';
+                touchClone.style.width = rect.width + 'px'; 
+                touchClone.style.height = rect.height + 'px'; 
+                touchClone.style.opacity = '0.9';
+                touchClone.style.pointerEvents = 'none'; 
+                touchClone.style.zIndex = '10000'; 
+                touchClone.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.5)';
+                touchClone.style.background = 'rgba(26, 42, 66, 0.9)'; 
+                document.body.appendChild(touchClone);
+                
+                if (navigator.vibrate) navigator.vibrate(15);
+            }, HOLD_DELAY);
+        }, { passive: true });
+
+        playerItem.addEventListener('touchmove', (e) => {
+            const touch = e.touches[0];
+            const diffX = Math.abs(touch.clientX - startX);
+            const diffY = Math.abs(touch.clientY - startY);
+
+            if (!isTouchDraggingStarted) {
+                if (diffX > MOVE_THRESHOLD || diffY > MOVE_THRESHOLD) {
+                    if (holdTimeout) {
+                        clearTimeout(holdTimeout);
+                        holdTimeout = null;
+                    }
+                    playerItem.style.backgroundColor = ''; 
+                }
+                return; 
+            }
+
+            if (e.cancelable) e.preventDefault();
+            if (!touchDragItem || !touchClone) return;
+            
+            touchClone.style.left = (touch.clientX - touchClone.offsetWidth / 2) + 'px'; 
+            touchClone.style.top = (touch.clientY - touchClone.offsetHeight / 2) + 'px';
+            
+            const element = document.elementFromPoint(touch.clientX, touch.clientY);
+            if (element) {
+                const targetPlayerItem = element.closest('.player-item');
+                if (targetPlayerItem && targetPlayerItem !== touchDragItem) {
+                    if (lastTouchTarget && lastTouchTarget !== targetPlayerItem) {
+                        lastTouchTarget.style.backgroundColor = '';
+                        lastTouchTarget.classList.remove('drag-selected');
+                    }
+                    targetPlayerItem.style.backgroundColor = 'rgba(255, 255, 255, 0.08)'; 
+                    lastTouchTarget = targetPlayerItem;
+                } else {
+                    if (lastTouchTarget && lastTouchTarget.classList.contains('player-item')) {
+                        lastTouchTarget.style.backgroundColor = '';
+                        lastTouchTarget.classList.remove('drag-selected');
+                    }
+                    const targetZone = element.closest('#roster');
+                    if (targetZone) {
+                        if (lastTouchTarget && lastTouchTarget !== targetZone) {
+                            lastTouchTarget.style.backgroundColor = '';
+                        }
+                        targetZone.style.backgroundColor = 'rgba(255, 255, 255, 0.02)'; 
+                        lastTouchTarget = targetZone;
+                    } else if (lastTouchTarget && !lastTouchTarget.classList.contains('player-item')) { 
+                        lastTouchTarget.style.backgroundColor = ''; 
+                        lastTouchTarget = null; 
+                    }
+                }
+            } else if (lastTouchTarget) { 
+                lastTouchTarget.style.backgroundColor = ''; 
+                lastTouchTarget = null; 
+            }
+        }, { passive: false });
+
+        playerItem.addEventListener('touchcancel', () => {
+            if (holdTimeout) {
+                clearTimeout(holdTimeout);
+                holdTimeout = null;
+            }
+            playerItem.classList.remove('drag-selected');
+            playerItem.style.backgroundColor = '';
+            if (isTouchDraggingStarted) {
+                playerItem.style.opacity = ''; 
+                document.body.classList.remove('dragging-active');
+                if (touchClone) { 
+                    document.body.removeChild(touchClone); 
+                    touchClone = null; 
+                }
+                clearDragStyles();
+                touchDragItem = null;
+                isTouchDraggingStarted = false;
+            }
+        });
+
+        playerItem.addEventListener('touchend', (e) => {
+            if (holdTimeout) {
+                clearTimeout(holdTimeout);
+                holdTimeout = null;
+            }
+
+            playerItem.classList.remove('drag-selected');
+            playerItem.style.backgroundColor = '';
+
+            if (!isTouchDraggingStarted) return;
+
+            if (!touchDragItem) return;
+            playerItem.style.opacity = ''; 
+            document.body.classList.remove('dragging-active');
+            if (touchClone) { 
+                document.body.removeChild(touchClone); 
+                touchClone = null; 
+            }
+            clearDragStyles();
+            
+            const touch = e.changedTouches[0]; 
+            const element = document.elementFromPoint(touch.clientX, touch.clientY);
+            if (element) {
+                const targetPlayerItem = element.closest('.player-item');
+                if (targetPlayerItem && targetPlayerItem !== touchDragItem) {
+                    swapPlayers(touchDragItem, targetPlayerItem);
+                }
+            }
+            touchDragItem = null;
+            isTouchDraggingStarted = false;
+        });
+    }
+
+    function setupDesktopDrag(playerItem) {
+        playerItem.draggable = true;
+        playerItem.addEventListener('dragstart', (e) => { 
+            desktopDragItem = playerItem; 
+            playerItem.classList.add('drag-selected');
+            playerItem.style.opacity = '0.5'; 
+            document.body.classList.add('dragging-active'); 
+            e.dataTransfer.effectAllowed = 'move'; 
+        });
+        playerItem.addEventListener('dragend', () => { 
+            playerItem.classList.remove('drag-selected');
+            playerItem.style.opacity = ''; 
+            document.body.classList.remove('dragging-active'); 
+            desktopDragItem = null; 
+            clearDragStyles(); 
+        });
+        playerItem.addEventListener('dragenter', (e) => { e.preventDefault(); playerItem.style.backgroundColor = 'rgba(255, 255, 255, 0.08)'; });
+        playerItem.addEventListener('dragleave', () => { playerItem.style.backgroundColor = ''; });
+        playerItem.addEventListener('dragover', (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; });
+        playerItem.addEventListener('drop', (e) => { e.preventDefault(); e.stopPropagation(); clearDragStyles(); if (desktopDragItem && desktopDragItem !== playerItem) swapPlayers(desktopDragItem, playerItem); });
+    }
+
+    function appendPlayerToCorrectList(playerItem) { 
+        const listEl = document.getElementById('roster-list'); 
+        if (listEl && !listEl.contains(playerItem)) listEl.appendChild(playerItem); 
+    }
+
+    function movePlayerToStatus(playerItem, targetStatus) {
+        const currentStatus = playerItem.dataset.isOnField; if (currentStatus === targetStatus) { appendPlayerToCorrectList(playerItem); return; }
+        if (targetStatus === '1') { const currentOnCount = document.querySelectorAll('.player-item[data-is-on-field="1"]').length; const maxPlayersLimit = getMaxPlayers(); if (currentOnCount >= maxPlayersLimit) { showConfirmation('Substitution Limit Reached', `Maximum ${maxPlayersLimit} players allowed on field.`); return; } }
+        playerItem.dataset.isOnField = targetStatus; const toggleBtn = playerItem.querySelector('.toggle-btn');
+        if (targetStatus === '1') { if (toggleBtn) { toggleBtn.textContent = 'ON'; toggleBtn.classList.remove('status-off'); toggleBtn.classList.add('status-on'); } recordSubChange(playerItem.querySelector('.player-name').textContent, 'on'); } 
+                else { if (toggleBtn) { toggleBtn.textContent = 'OFF'; toggleBtn.classList.add('status-off'); toggleBtn.classList.remove('status-on'); } recordSubChange(playerItem.querySelector('.player-name').textContent, 'off'); }
+        appendPlayerToCorrectList(playerItem); updateSubstitutionWarnings();
+    }
+
+    function swapPlayers(playerA, playerB) {
+        const statusA = playerA.dataset.isOnField; const statusB = playerB.dataset.isOnField;
+        
+        if (statusA === statusB) {
+            // Swap DOM position for manual reordering
+            const parentA = playerA.parentNode; const parentB = playerB.parentNode;
+            if (!parentA || !parentB) return;
+            const nextA = playerA.nextSibling; const nextB = playerB.nextSibling;
+            if (parentA === parentB) {
+                if (nextA === playerB) parentA.insertBefore(playerB, playerA);
+                else if (nextB === playerA) parentA.insertBefore(playerA, playerB);
+                else { parentA.insertBefore(playerA, nextB); parentB.insertBefore(playerB, nextA); }
+            }
+        } else {
+            // Target statuses switch, substitute the players without changing their DOM position
+            playerA.dataset.isOnField = statusB; playerB.dataset.isOnField = statusA;
+            const toggleBtnA = playerA.querySelector('.toggle-btn'); const toggleBtnB = playerB.querySelector('.toggle-btn');
+            
+            if (statusB === '1') { if (toggleBtnA) { toggleBtnA.textContent = 'ON'; toggleBtnA.classList.remove('status-off'); toggleBtnA.classList.add('status-on'); } recordSubChange(playerA.querySelector('.player-name').textContent, 'on'); } 
+            else { if (toggleBtnA) { toggleBtnA.textContent = 'OFF'; toggleBtnA.classList.add('status-off'); toggleBtnA.classList.remove('status-on'); } recordSubChange(playerA.querySelector('.player-name').textContent, 'off'); }
+            
+            if (statusA === '1') { if (toggleBtnB) { toggleBtnB.textContent = 'ON'; toggleBtnB.classList.remove('status-off'); toggleBtnB.classList.add('status-on'); } recordSubChange(playerB.querySelector('.player-name').textContent, 'on'); } 
+            else { if (toggleBtnB) { toggleBtnB.textContent = 'OFF'; toggleBtnB.classList.add('status-off'); toggleBtnB.classList.remove('status-on'); } recordSubChange(playerB.querySelector('.player-name').textContent, 'off'); }
+            
+            updateSubstitutionWarnings();
+        }
+    }
+
+    // --- GAME ROTATION ENGINE ---
+    function updateRecentSubsUI() {
+        const container = document.getElementById('recent-subs-section'); const list = document.getElementById('recent-subs-list'); if(!container || !list) return;
+        const justOn = recentSubs.filter(sub => sub.state === 'on'); if (justOn.length === 0) { container.style.display = 'none'; return; }
+        container.style.display = 'block'; list.innerHTML = '';
+        justOn.forEach(sub => {
+            const badge = document.createElement('span'); badge.style.cssText = `padding: 4px 8px; border-radius: 7px; font-size: 11px; font-weight: 600; color: white; background-color: #4CAF50;`; badge.textContent = sub.name; list.appendChild(badge);
+        });
+    }
+    function commitSubs() { 
+        recentSubs = [...pendingSubChanges]; 
+        pendingSubChanges = []; 
+        subDebounceTimer = null; 
+        updateRecentSubsUI(); 
+        resetMiniTimer(); 
+        if (autoTimerCheckbox && autoTimerCheckbox.checked && isRunning) { 
+            startMiniTimer(); 
+        }
+    }
+    function recordSubChange(name, state) { pendingSubChanges = pendingSubChanges.filter(p => p.name !== name); pendingSubChanges.push({ name, state }); if (subDebounceTimer) clearTimeout(subDebounceTimer); subDebounceTimer = setTimeout(commitSubs, 4000); }
+    function updateSubstitutionWarnings() {
+        const items = document.querySelectorAll('.player-item'); if (items.length === 0) return;
+        let totalTime = 0, onFieldTime = 0, onFieldCount = 0;
+        const players = Array.from(items).map(item => { const time = parseInt(item.dataset.totalTime); totalTime += time; if (item.dataset.isOnField === '1') { onFieldTime += time; onFieldCount++; } return { element: item, time }; });
+        players.sort((a, b) => b.time - a.time);
+        let rank = 0, prevTime = -1;
+        players.forEach(p => {
+            const rankDisplay = p.element.querySelector('[data-role="player-rank-display"]');
+            if (p.time !== prevTime) rank++; prevTime = p.time; p.element.dataset.rank = rank;
+            if (rankDisplay) { rankDisplay.textContent = rank; rankDisplay.className = 'player-rank'; if (rank === 1) rankDisplay.classList.add('rank-color-1'); else if (rank === 2) rankDisplay.classList.add('rank-color-2'); else if (rank === 3) rankDisplay.classList.add('rank-color-3'); else if (rank === 4) rankDisplay.classList.add('rank-color-4'); }
+        });
+        if (players.length < 2 || totalSeconds < MIN_GAME_TIME_FOR_WARNINGS || totalTime === 0) { items.forEach(i => { const icon = i.querySelector('[data-role="low-warning-icon"]'); if(icon) icon.style.display = 'none'; }); return; }
+        const avgTime = onFieldCount > 0 ? onFieldTime / onFieldCount : 0;
+        items.forEach(item => {
+            const icon = item.querySelector('[data-role="low-warning-icon"]'); if(!icon) return;
+            const time = parseInt(item.dataset.totalTime); const isOn = item.dataset.isOnField === '1';
+            if (!isOn && avgTime > 0 && (time < (avgTime * LOW_TIME_RATIO) || (avgTime - time) > SIGNIFICANT_TIME_GAP)) icon.style.display = 'inline'; else icon.style.display = 'none';
+        });
+    }
+    function createPlayerItem(name, number = null, playerId = '') {
+        const playerItem = document.createElement('div'); playerItem.className = 'player-item'; playerItem.dataset.totalTime = 0; playerItem.dataset.isOnField = '0'; playerItem.dataset.rank = '0'; playerItem.dataset.playerId = playerId; playerItem.dataset.points = '0';
+        const playerInfoGroup = document.createElement('div'); playerInfoGroup.className = 'player-info-group'; 
+        const playerRankDisplay = document.createElement('span'); playerRankDisplay.className = 'player-rank'; playerRankDisplay.textContent = '-'; playerRankDisplay.dataset.role = 'player-rank-display'; playerInfoGroup.appendChild(playerRankDisplay);
+        const nameWrapper = document.createElement('div'); nameWrapper.className = 'player-name-wrapper';
+        if (number !== null) { const playerNumber = document.createElement('span'); playerNumber.className = 'player-number'; playerNumber.textContent = `#${number}`; nameWrapper.appendChild(playerNumber); }
+        const playerName = document.createElement('span'); playerName.className = 'player-name'; playerName.textContent = name; nameWrapper.appendChild(playerName); playerInfoGroup.appendChild(nameWrapper);
+        const lowWarningIcon = document.createElement('span'); lowWarningIcon.className = 'warning-icon low'; lowWarningIcon.textContent = '⚠️'; lowWarningIcon.title = 'Low play time - Consider subbing on'; lowWarningIcon.dataset.role = 'low-warning-icon'; playerInfoGroup.appendChild(lowWarningIcon);
+        const playerControlsGroup = document.createElement('div'); playerControlsGroup.className = 'player-controls-group';
+        const pointsGroup = document.createElement('div'); pointsGroup.className = 'points-controls';
+        const ptMinus = document.createElement('button'); ptMinus.className = 'pt-btn minus'; ptMinus.textContent = '-';
+        const ptDisplay = document.createElement('span'); ptDisplay.className = 'pt-display'; ptDisplay.textContent = '0';
+        const ptPlus = document.createElement('button'); ptPlus.className = 'pt-btn plus'; ptPlus.textContent = '+';
+        ptMinus.onclick = () => { let pts = parseInt(playerItem.dataset.points) || 0; if (pts > 0) { pts--; playerItem.dataset.points = pts; ptDisplay.textContent = pts; } };
+        ptPlus.onclick = () => { let pts = parseInt(playerItem.dataset.points) || 0; pts++; playerItem.dataset.points = pts; ptDisplay.textContent = pts; };
+        pointsGroup.appendChild(ptMinus); pointsGroup.appendChild(ptDisplay); pointsGroup.appendChild(ptPlus);
+        const timeOnFieldDisplay = document.createElement('span'); timeOnFieldDisplay.className = 'player-time'; timeOnFieldDisplay.textContent = formatTime(0);
+        const toggleBtn = document.createElement('button'); toggleBtn.className = 'toggle-btn status-off'; toggleBtn.textContent = 'OFF';
+        toggleBtn.onclick = () => {
+            const isOn = playerItem.dataset.isOnField === '1';
+            if (isOn) { 
+                playerItem.dataset.isOnField = '0'; 
+                toggleBtn.textContent = 'OFF'; 
+                toggleBtn.classList.add('status-off'); 
+                toggleBtn.classList.remove('status-on'); 
+                recordSubChange(name, 'off'); 
+            } 
+            else { 
+                const currentOnCount = document.querySelectorAll('.player-item[data-is-on-field="1"]').length; 
+                const maxPlayersLimit = getMaxPlayers(); 
+                if (currentOnCount >= maxPlayersLimit) { 
+                    showConfirmation('Substitution Limit Reached', `Maximum ${maxPlayersLimit} players allowed on field.`); 
+                    return; 
+                } 
+                playerItem.dataset.isOnField = '1'; 
+                toggleBtn.textContent = 'ON'; 
+                toggleBtn.classList.remove('status-off'); 
+                toggleBtn.classList.add('status-on'); 
+                if (lowWarningIcon) lowWarningIcon.style.display = 'none'; 
+                recordSubChange(name, 'on'); 
+            }
+            updateSubstitutionWarnings();
+        };
+        const deleteBtn = document.createElement('button'); deleteBtn.className = 'delete-btn'; deleteBtn.textContent = '×';
+        deleteBtn.onclick = () => { 
+            showConfirmation('Remove Player', `Remove ${name} from this game?`, (confirmed) => { 
+                if (confirmed) { 
+                    const listEl = document.getElementById('roster-list'); 
+                    if (listEl && listEl.contains(playerItem)) listEl.removeChild(playerItem); 
+                    updateSubstitutionWarnings(); 
+                } 
+            }); 
+        };
+        playerControlsGroup.appendChild(timeOnFieldDisplay); playerControlsGroup.appendChild(pointsGroup); playerControlsGroup.appendChild(toggleBtn); playerControlsGroup.appendChild(deleteBtn);
+        playerItem.appendChild(playerInfoGroup); playerItem.appendChild(playerControlsGroup);
+        setupTouchDrag(playerItem); setupDesktopDrag(playerItem);
+        return playerItem;
+    }
+    function addPlayerByName(name, number = null, playerId = '') { const effectiveName = name || (number !== null ? `Player #${number}` : 'Unnamed'); const playerItem = createPlayerItem(effectiveName, number, playerId); appendPlayerToCorrectList(playerItem); updateSubstitutionWarnings(); }
+    function autoAddDefaultPlayers(teamId) {
+        const teamPlayers = appData.players.filter(p => p.teamId === teamId); teamPlayers.sort((a, b) => (parseInt(b.rank) || 0) - (parseInt(a.rank) || 0)); 
+        teamPlayers.forEach(p => { const existing = Array.from(document.querySelectorAll('.player-item')).find(item => item.dataset.playerId === p.playerId); if (!existing) addPlayerByName(p.playerName, p.playerNumber, p.playerId); });
+        updateSubstitutionWarnings();
+    }
+    function sortRoster() {
+        const listEl = document.getElementById('roster-list');
+        if (listEl) { 
+            const items = Array.from(listEl.children); 
+            items.sort((a, b) => {
+                return parseInt(b.dataset.totalTime) - parseInt(a.dataset.totalTime);
+            }); 
+            items.forEach(item => listEl.appendChild(item)); 
+        }
+    }
+
+    // --- APP CORE & VIEWS ---
+    function applyGlobalTeamChange(teamId) {
+        localStorage.setItem(_ST, teamId); if(teamSelect) teamSelect.value = teamId; const mt = document.getElementById('manage-team-select'); const st = document.getElementById('stats-team-select'); if(mt) mt.value = teamId; if(st) st.value = teamId;
+        resetTimer(); resetMiniTimer();
+        startingFive = []; // Clear current starters tracking
+        const rosterList = document.getElementById('roster-list');
+        if(rosterList) rosterList.innerHTML = '';
+        if (autoAddCheckbox && autoAddCheckbox.checked) autoAddDefaultPlayers(teamId);
+        resetPlayerForm(); renderManagePlayers(); const statsContent = document.getElementById('stats-content'); if(statsContent) statsContent.innerHTML = '';
+    }
+    function handleGlobalTeamChange(newTeamId, sourceSelect) {
+        const currentSaved = localStorage.getItem(_ST) || ""; if (newTeamId === currentSaved) return;
+        if (totalSeconds > 0) { showConfirmation('Change Team?', 'Changing teams will reset the current game timer and clear the roster. Proceed?', (confirmed) => { if (confirmed) applyGlobalTeamChange(newTeamId); else sourceSelect.value = currentSaved; }); } 
+        else applyGlobalTeamChange(newTeamId);
+    }
+    function renderTeams() {
+        const mt = document.getElementById('manage-team-select'); const st = document.getElementById('stats-team-select'); const finalSelects = [teamSelect, mt, st].filter(el => el !== null);
+        finalSelects.forEach(s => s.innerHTML = '<option value="" disabled selected>Select a Team...</option>');
+        appData.teams.forEach(t => { const opt = `<option value="${t.teamId}">${t.teamName}</option>`; finalSelects.forEach(s => s.innerHTML += opt); });
+        const savedTeam = localStorage.getItem(_ST); let selectedId = null;
+        if (savedTeam && appData.teams.some(t => t.teamId === savedTeam)) selectedId = savedTeam; else if (appData.teams.length > 0) selectedId = appData.teams[0].teamId;
+        if (selectedId) { localStorage.setItem(_ST, selectedId); finalSelects.forEach(s => s.value = selectedId); const countPlayers = document.querySelectorAll('.player-item').length; if (autoAddCheckbox && autoAddCheckbox.checked && countPlayers === 0) autoAddDefaultPlayers(selectedId); renderManagePlayers(); }
+    }
+    function renderManageTeams() {
+        const list = document.getElementById('manage-team-list'); if(!list) return; list.innerHTML = '';
+        appData.teams.forEach(t => { list.innerHTML += `<div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #121212; margin-bottom: 5px; border-radius: 9px;"><div style="display: flex; flex-direction: column;"><span style="font-weight: 500; font-size: 15px; color: #E0E0E0;">${t.teamName}</span><span style="font-size: 11px; color: #B0B0B0; margin-top: 2px;">Sport: ${t.sport || 'N/A'}</span></div><button class="timer-btn secondary" style="padding: 5px 10px; font-size: 11px; min-height: 0; background-color: #D32F2F; color: white;" onclick="window._dt('${t.teamId}')">Delete</button></div>`; });
+    }
+    function renderManagePlayers() {
+        const list = document.getElementById('manage-player-list'); const mt = document.getElementById('manage-team-select'); if(!list || !mt) return; list.innerHTML = '';
+        const teamId = mt.value; if (!teamId) return;
+        const teamPlayers = appData.players.filter(p => p.teamId === teamId); teamPlayers.sort((a, b) => (parseInt(b.rank) || 0) - (parseInt(a.rank) || 0)); 
+        teamPlayers.forEach(p => {
+            const div = document.createElement('div'); div.style.cssText = "display: flex; justify-content: space-between; padding: 10px; background: #121212; margin-bottom: 5px; border-radius: 9px; align-items: center;";
+            let details = `(Rating: ${p.rank || '-'})`; if(p.height) details += ` | ${p.height}`; if(p.skill) details += ` | ${p.skill}`;
+            div.innerHTML = `<div style="display: flex; flex-direction: column;"><div style="display: flex; align-items: center; gap: 6px;"><span style="font-weight: 700; color: #64B5F6; font-size: 15px;">#${p.playerNumber || '-'}</span><span style="font-weight: 500; font-size: 15px; color: #E0E0E0;">${p.playerName}</span></div><span style="color: #B0B0B0; font-size: 11px; margin-top: 3px;">${details}</span></div><div style="display: flex; gap: 5px;"><button class="timer-btn secondary" style="padding: 5px 10px; font-size: 11px; min-height: 0;" onclick="window._ep('${p.playerId}')">Edit</button><button class="timer-btn secondary" style="padding: 5px 10px; font-size: 11px; min-height: 0; background-color: #D32F2F; color: white;" onclick="window._rp('${p.playerId}')">Remove</button></div>`;
+            list.appendChild(div);
+        });
+    }
+    function resetPlayerForm() {
+        const nName = document.getElementById('new-player-name'); const nNum = document.getElementById('new-player-number'); const nRank = document.getElementById('new-player-rank'); const nHeight = document.getElementById('new-player-height'); const btn = document.getElementById('create-player-btn');
+        if(nName) nName.value = ''; if(nNum) nNum.value = ''; if(nRank) nRank.value = ''; if(nHeight) nHeight.value = ''; setSelectedSkills('');
+        if(btn) { btn.textContent = 'Add Player'; btn.style.backgroundColor = ''; btn.classList.replace('secondary', 'primary'); } editingPlayerId = null;
+    }
+    function showView(viewId) {
+        views.forEach(v => { const el = document.getElementById(v); if(el) el.style.display = 'none'; });
+        const activeView = document.getElementById(viewId); if(activeView) activeView.style.display = 'block';
+        const nav = document.getElementById('app-nav'); if (viewId === 'login-view' || viewId === 'signup-view' || viewId === 'sub-block-view') { if(nav) nav.style.display = 'none'; } else { if(nav) nav.style.display = 'flex'; }
+        ['app-view', 'manage-view', 'stats-view', 'settings-view'].forEach(v => { const btn = document.getElementById('nav-' + v.split('-')[0] + '-btn'); if (btn) { btn.className = v === viewId ? 'timer-btn primary' : 'timer-btn secondary'; if (v === 'app-view') btn.style.flex = '1'; } });
+
+        if (viewId === 'sub-block-view') {
+            if (!subPollingInterval) {
+                subPollingInterval = setInterval(async () => {
+                    if (!authToken) return;
+                    try {
+                        const res = await apiCall('verify_token');
+                        if (res.subscriptionStatus && res.subscriptionStatus !== 'NONE') {
+                            subscriptionStatus = res.subscriptionStatus;
+                            clearInterval(subPollingInterval);
+                            subPollingInterval = null;
+                            
+                            document.getElementById('action-loading-overlay').style.display = 'flex';
+                            const dataRes = await apiCall('load_data');
+                            currentUser = dataRes.email;
+                            appData.teams = dataRes.teams || []; 
+                            appData.players = dataRes.players || [];
+                            appData.clubStatus = dataRes.clubStatus || "NONE"; 
+                            appData.clubName = dataRes.clubName || "";
+                            renderClubStatus();
+                            renderSubscriptionUI();
+                            renderTeams();
+                            document.getElementById('action-loading-overlay').style.display = 'none';
+                            
+                            showView('app-view');
+                            checkAndShowWelcomePopup();
+                        }
+                    } catch(e) {} 
+                }, 5000);
+            }
+        } else {
+            if (subPollingInterval) {
+                clearInterval(subPollingInterval);
+                subPollingInterval = null;
+            }
+        }
+    }
+    function clearLocalAuth() { authToken = null; localStorage.removeItem(_TK); localStorage.removeItem(_EM); localStorage.removeItem(_PW); appData = { teams: [], players: [], clubStatus: 'NONE', clubName: '' }; }
+    function promptLogoutStandard() { showConfirmation('Log Out', 'Are you sure you want to log out?', (c) => { if (c) { apiCall('logout').catch(e => {}); clearLocalAuth(); window.location.reload(); } }); }
+    function promptLogoutAll() { showConfirmation('Log Out All Sessions', 'Are you sure you want to log out of all your devices? You will need to log in again.', (c) => { if (c) { apiCall('logout_all').catch(e => {}); clearLocalAuth(); window.location.reload(); } }); }
+
+    // --- AI ENGINE ---
+    function loadStepConfigSuggestions() {
+        const container = document.getElementById('ai-step-suggestions-stacked'); if (!container) return; container.innerHTML = '';
+        SUGGESTION_POOL.forEach(text => {
+            const btn = document.createElement('button'); btn.className = 'timer-btn secondary'; btn.style.cssText = 'width: 100%; min-height: 38px; text-align: left; font-size: 13px; font-weight: 600; border-radius: 9px; margin-bottom: 2px; border: none; outline: none; display: flex; align-items: center; justify-content: flex-start; padding: 0 14px;'; btn.textContent = text;
+            btn.onclick = (e) => { e.stopPropagation(); const textInput = document.getElementById('ai-chat-input'); if (textInput) { textInput.value = text; const submitBtn = document.getElementById('ai-submit-btn'); if (submitBtn) submitBtn.click(); } }; container.appendChild(btn);
+        });
+    }
+    function runSiriWave() {
+        const container = document.getElementById('siri-container'); if (!container) return; container.innerHTML = ''; const width = container.clientWidth || 320;
+        siriWave = new SiriWave({ container: container, width: width, height: 110, style: 'ios9', speed: 0.15, amplitude: 1.5, autostart: true, curveDefinition: [ { color: "255, 255, 255", supportLine: true }, { color: "240, 240, 240" }, { color: "215, 220, 225" }, { color: "190, 195, 200" } ] });
+    }
+    function stopSiriWave() { if (siriWave) { siriWave.stop(); siriWave = null; } }
+    function runVoiceSiriWave(containerId) {
+        const container = document.getElementById(containerId); if (!container) return; container.innerHTML = ''; const width = container.clientWidth || 320;
+        voiceSiriWave = new SiriWave({ container: container, width: width, height: 90, style: 'ios9', speed: 0, amplitude: 0.01, autostart: true, curveDefinition: [ { color: "255, 255, 255", supportLine: true }, { color: "240, 240, 240" }, { color: "215, 220, 225" }, { color: "190, 195, 200" } ] });
+    }
+    function stopVoiceSiriWave() { if (voiceSiriWave) { voiceSiriWave.stop(); voiceSiriWave = null; } }
+    function handleInputChange(inputEl, buttonEl) {
+        const iconEl = buttonEl.querySelector('.material-icons');
+        buttonEl.style.backgroundColor = '';
+        buttonEl.style.color = '';
+        if (iconEl) iconEl.textContent = 'mic';
+        buttonEl.dataset.mode = 'mic';
+    }
+    async function startVoiceRecognition(inputEl, buttonEl, isFollowUp) {
+        if (!SpeechRecognition) return showConfirmation('Not Supported', 'Voice recognition is not supported in this browser. Please use Google Chrome or Safari.');
+        if (isListening) return stopVoiceRecognition();
+        try { const stream = await navigator.mediaDevices.getUserMedia({ audio: true }); stream.getTracks().forEach(track => track.stop()); } catch (err) { return showConfirmation('Microphone Access Blocked', 'Please allow microphone access in your browser settings to speak to the assistant.'); }
+        isListening = true; activeVoiceInput = inputEl; activeVoiceButton = buttonEl;
+        if (inputEl) { inputEl.placeholder = 'Listening... Speak now.'; inputEl.value = ''; }
+        if (!isFollowUp) {
+            const voiceBtn = document.getElementById('ai-voice-btn'); const submitBtn = document.getElementById('ai-submit-btn'); const cancelBtn = document.getElementById('ai-cancel-btn'); const waveContainer = document.getElementById('ai-voice-wave-config');
+            if (voiceBtn) voiceBtn.style.display = 'none'; if (submitBtn) submitBtn.style.display = 'none'; if (cancelBtn) cancelBtn.style.display = 'none'; if (waveContainer) { waveContainer.style.display = 'block'; runVoiceSiriWave('ai-voice-wave-config'); }
+        } else {
+            const resultsVoiceBtn = document.getElementById('ai-results-voice-btn'); const applyBtn = document.getElementById('ai-apply-btn'); const dismissBtn = document.getElementById('ai-dismiss-btn'); const waveContainer = document.getElementById('ai-voice-wave-results');
+            if (resultsVoiceBtn) { resultsVoiceBtn.style.display = 'none'; if (applyBtn) applyBtn.style.display = 'none'; if (dismissBtn) dismissBtn.style.display = 'none'; if (waveContainer) { waveContainer.style.display = 'block'; runVoiceSiriWave('ai-voice-wave-results'); } }
+        }
+        recognition = new SpeechRecognition(); recognition.continuous = false; recognition.interimResults = true; recognition.lang = 'en-AU';
+        recognition.onstart = () => { if (voiceSiriWave) { voiceSiriWave.setSpeed(0); voiceSiriWave.setAmplitude(0.01); } };
+        recognition.onspeechstart = () => { if (voiceSiriWave) { voiceSiriWave.setSpeed(0.2); voiceSiriWave.setAmplitude(1.5); } };
+        recognition.onspeechend = () => { if (voiceSiriWave) { voiceSiriWave.setSpeed(0); voiceSiriWave.setAmplitude(0.01); } };
+        recognition.onresult = (event) => {
+            let interimTranscript = ''; let finalTranscript = '';
+            for (let i = event.resultIndex; i < event.results.length; ++i) { if (event.results[i].isFinal) finalTranscript += event.results[i][0].transcript; else interimTranscript += event.results[i][0].transcript; }
+            if (inputEl) inputEl.value = finalTranscript || interimTranscript;
+            if (finalTranscript.trim().length > 0) { stopVoiceRecognition(); executeQuerySubmission(finalTranscript.trim()); }
+        };
+        recognition.onerror = (event) => { stopVoiceRecognition(); };
+        recognition.onend = () => { if (isListening) stopVoiceRecognition(); };
+        try { recognition.start(); } catch (e) { stopVoiceRecognition(); }
+    }
+    function stopVoiceRecognition() {
+        isListening = false; if (recognition) { try { recognition.stop(); } catch (e) {} recognition = null; }
+        const voiceBtn = document.getElementById('ai-voice-btn'); const submitBtn = document.getElementById('ai-submit-btn'); const cancelBtn = document.getElementById('ai-cancel-btn'); const waveConfig = document.getElementById('ai-voice-wave-config');
+        if (voiceBtn) { voiceBtn.style.display = ''; voiceBtn.style.backgroundColor = ''; voiceBtn.style.color = ''; const iconEl = voiceBtn.querySelector('.material-icons'); if (iconEl) iconEl.textContent = 'mic'; }
+        if (submitBtn) { submitBtn.style.display = ''; } if (cancelBtn) cancelBtn.style.display = ''; if (waveConfig) waveConfig.style.display = 'none';
+        const resultsVoiceBtn = document.getElementById('ai-results-voice-btn'); const applyBtn = document.getElementById('ai-apply-btn'); const dismissBtn = document.getElementById('ai-dismiss-btn'); const waveContainer = document.getElementById('ai-voice-wave-results');
+        if (resultsVoiceBtn) { resultsVoiceBtn.style.display = ''; resultsVoiceBtn.style.backgroundColor = ''; resultsVoiceBtn.style.color = ''; const iconEl = resultsVoiceBtn.querySelector('.material-icons'); if (iconEl) iconEl.textContent = 'mic'; }
+        if (applyBtn) applyBtn.style.display = ''; if (dismissBtn) dismissBtn.style.display = ''; if (waveContainer) { waveContainer.style.display = 'none'; }
+        if (activeVoiceInput) activeVoiceInput.placeholder = 'Ask anything';
+        stopVoiceSiriWave(); activeVoiceInput = null; activeVoiceButton = null;
+    }
+    async function executeQuerySubmission(queryText) {
+        if (!queryText) return; stopVoiceRecognition();
+        const configStep = document.getElementById('ai-step-config'); const loadingStep = document.getElementById('ai-step-loading'); const resultsStep = document.getElementById('ai-step-results');
+        configStep.style.display = 'none'; resultsStep.style.display = 'none'; loadingStep.style.display = 'block'; runSiriWave(); 
+        await new Promise(resolve => setTimeout(resolve, 1500)); 
+        try {
+            const onField = []; const offField = [];
+            document.querySelectorAll('.player-item').forEach(item => {
+                const baseName = item.querySelector('.player-name')?.textContent || 'Unnamed';
+                const playerObj = { name: baseName, fullName: `${item.querySelector('.player-number')?.textContent || ''} ${baseName}`.trim(), time: parseInt(item.dataset.totalTime), isOnField: item.dataset.isOnField === '1', points: parseInt(item.dataset.points) || 0 };
+                (playerObj.isOnField ? onField : offField).push(playerObj);
+            });
+            const contextPayload = { teamId: teamSelect ? teamSelect.value : null, players: appData.players.filter(p => p.teamId === (teamSelect ? teamSelect.value : "")), onField: onField, offField: offField, gameTimeSecs: totalSeconds, recentSubs: recentSubs, notes: document.getElementById('game-notes') ? document.getElementById('game-notes').value.trim() : "", apiCall: apiCall };
+            const result = await GuahhAI.processQuery(queryText, contextPayload);
+            stopSiriWave();
+            const formattedText = result.text.replace(/\*\*([\s\S]+?)\*\*/g, '<strong>$1</strong>');
+            const resText = document.getElementById('ai-results-text'); resText.innerHTML = formattedText;
+            const resTitle = document.getElementById('ai-results-title'); if (resTitle) resTitle.textContent = queryText;
+            loadingStep.style.display = 'none'; resultsStep.style.display = 'block';
+            resText.classList.remove('ai-text-flow'); void resText.offsetWidth; resText.classList.add('ai-text-flow');
+            const followupInput = document.getElementById('ai-results-followup-input');
+            const aiResultsVoiceBtn = document.getElementById('ai-results-voice-btn');
+            if (followupInput && aiResultsVoiceBtn) { followupInput.value = ''; handleInputChange(followupInput, aiResultsVoiceBtn); }
+            const applyBtn = document.getElementById('ai-apply-btn'); applyBtn.style.display = 'none';
+            if (result.actions && result.actions.length > 0) {
+                result.actions.forEach(action => {
+                    if (action.type === 'SUB_PLAYERS') { applyBtn.style.display = 'block'; applyBtn.onclick = (e) => { e.stopPropagation(); const allPlayers = Array.from(document.querySelectorAll('.player-item')); const togglePlayer = (name, targetState) => { const p = allPlayers.find(item => (item.querySelector('.player-name')?.textContent || '').toLowerCase().includes(name.toLowerCase())); if (p && p.dataset.isOnField === targetState) { const toggle = p.querySelector('.toggle-btn'); if (toggle) toggle.click(); } }; action.out.forEach(name => togglePlayer(name, '1')); action.in.forEach(name => togglePlayer(name, '0')); closeAiPanel(); }; } 
+                    else if (action.type === 'UPDATE_POINTS') { const allPlayers = Array.from(document.querySelectorAll('.player-item')); const p = allPlayers.find(item => (item.querySelector('.player-name')?.textContent || '').toLowerCase().includes(action.targetName.toLowerCase())); if (p) { let pts = parseInt(p.dataset.points) || 0; pts += action.amount; if (pts < 0) pts = 0; p.dataset.points = pts; const ptDisplay = p.querySelector('.pt-display'); if (ptDisplay) ptDisplay.textContent = pts; } } 
+                    else if (action.type === 'TIMER_START') { startTimer(); } 
+                    else if (action.type === 'TIMER_PAUSE') { pauseTimer(); } 
+                    else if (action.type === 'TIMER_RESET') { resetTimer(); } 
+                    else if (action.type === 'ADD_DEFAULT_PLAYERS') { closeAiPanel(); const addDefPlayersBtn = document.getElementById('add-default-players-btn'); if (addDefPlayersBtn) addDefPlayersBtn.click(); } 
+                    else if (action.type === 'FINISH_GAME') { closeAiPanel(); const saveToSheetsBtn = document.getElementById('save-to-sheets-btn'); if (saveToSheetsBtn) saveToSheetsBtn.click(); }
+                });
+            }
+        } catch (error) { stopSiriWave(); showConfirmation('Error', `Failed: ${error.message || error}`); closeAiPanel(); }
+    }
+    function collapseAiPanel() { 
+        isAiCollapsed = true; 
+        panel.classList.add('collapsed'); 
+        panel.style.transform = 'translateX(-50%)'; 
+        document.body.classList.remove('ai-panel-open');
+    }
+    function expandAiPanel() { 
+        isAiCollapsed = false; 
+        panel.classList.remove('collapsed'); 
+        panel.style.transform = 'translateX(-50%)'; 
+        if (panel.style.display === 'flex') {
+            document.body.classList.add('ai-panel-open');
+        }
+    }
+    function closeAiPanel() { 
+        panel.style.display = 'none'; 
+        isAiCollapsed = false; 
+        panel.classList.remove('collapsed'); 
+        stopSiriWave(); 
+        stopVoiceRecognition(); 
+        document.body.classList.remove('ai-panel-open');
+    }
+    function dragStart(e) { startY = (e.clientY !== undefined) ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : 0); isDragging = true; panel.style.transition = 'none'; }
+    function dragMove(e) { if (!isDragging) return; if (e.cancelable) e.preventDefault(); const currentY = (e.clientY !== undefined) ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : 0); dragOffset = currentY - startY; if (!isAiCollapsed) { if (dragOffset > 0) panel.style.transform = `translate3d(-50%, ${dragOffset}px, 0)`; } else { if (dragOffset < 0) panel.style.transform = `translate3d(-50%, ${dragOffset}px, 0)`; } }
+    function dragEnd() { if (!isDragging) return; isDragging = false; panel.style.transition = 'max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1), width 0.4s cubic-bezier(0.25, 1, 0.5, 1), max-width 0.4s cubic-bezier(0.25, 1, 0.5, 1), padding 0.4s cubic-bezier(0.25, 1, 0.5, 1), border-radius 0.4s cubic-bezier(0.25, 1, 0.5, 1), transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2), opacity 0.4s ease, bottom 0.4s cubic-bezier(0.25, 1, 0.5, 1)'; panel.style.transform = 'translateX(-50%)'; if (!isAiCollapsed) { if (dragOffset > 25) collapseAiPanel(); else expandAiPanel(); } else { if (dragOffset < -60) expandAiPanel(); else collapseAiPanel(); } dragOffset = 0; }
+
+    // --- INIT ---
+    async function initApp() {
+        const overlay = document.getElementById('opening-loading-overlay'); const actionOverlay = document.getElementById('action-loading-overlay'); resetMiniTimer(); miniTotalSeconds = getMiniTimerSeconds(); 
+        const rosterZone = document.getElementById('roster');
+        if (rosterZone) {
+            rosterZone.addEventListener('dragover', (e) => { 
+                e.preventDefault(); 
+                e.dataTransfer.dropEffect = 'move'; 
+                rosterZone.style.backgroundColor = 'rgba(255, 255, 255, 0.02)'; 
+            });
+            rosterZone.addEventListener('dragleave', () => { 
+                rosterZone.style.backgroundColor = ''; 
+            });
+            rosterZone.addEventListener('drop', (e) => { 
+                e.preventDefault(); 
+                clearDragStyles(); 
+            });
+        }
+        if (authToken) {
+            try {
+                const res = await apiCall('load_data'); currentUser = res.email; subscriptionStatus = res.subscriptionStatus; appData.teams = res.teams || []; appData.players = res.players || [];
+                appData.clubStatus = res.clubStatus || "NONE"; appData.clubName = res.clubName || "";
+                renderClubStatus();
+                renderSubscriptionUI();
+                
+                const activeTiers = ["COACHBUDDY", "COACHBUDDY_PLUS"];
+                if (!activeTiers.includes(subscriptionStatus)) {
+                    showView('sub-block-view'); 
+                } else { 
+                    renderTeams(); 
+                    showView('app-view'); 
+                    checkAndShowWelcomePopup();
+                }
+
+            } catch (e) { clearLocalAuth(); if(e.message && e.message.includes("version out of date")) showConfirmation('Update Required', e.message); showView('login-view'); }
+        } else { showView('login-view'); }
+        if (overlay) { overlay.style.transition = 'opacity 0.4s ease'; overlay.style.opacity = '0'; setTimeout(() => { overlay.style.display = 'none'; }, 400); }
+        if (actionOverlay) actionOverlay.style.display = 'none';
+    }
+
+    // --- GLOBAL WINDOW HELPERS ---
+    window._dt = function(teamId) {
+        showConfirmation('Delete Team', 'Are you sure you want to completely delete this team? This action cannot be undone.', async (c) => {
+            if (c) {
+                document.getElementById('action-loading-overlay').style.display = 'flex';
+                try {
+                    await apiCall('delete_team', { teamId }); appData.teams = appData.teams.filter(t => t.teamId !== teamId); appData.players = appData.players.filter(p => p.teamId !== teamId);
+                    if (teamSelect && teamSelect.value === teamId) { localStorage.removeItem(_ST); const rosterList = document.getElementById('roster-list'); if(rosterList) rosterList.innerHTML = ''; }
+                    renderManageTeams(); renderTeams(); showConfirmation('Success', 'Team deleted successfully.');
+                } catch (e) { showConfirmation('Cannot Delete', e.message); } finally { document.getElementById('action-loading-overlay').style.display = 'none'; }
+            }
+        });
+    };
+    window._ep = function(playerId) {
+        const p = appData.players.find(p => p.playerId === playerId); if (!p) return;
+        const nName = document.getElementById('new-player-name'); const nNum = document.getElementById('new-player-number'); const nRank = document.getElementById('new-player-rank'); const nHeight = document.getElementById('new-player-height');
+        if(nName) nName.value = p.playerName; if(nNum) nNum.value = p.playerNumber || ''; if(nRank) nRank.value = p.rank || ''; if(nHeight) nHeight.value = p.height || '';
+        setSelectedSkills(p.skill); editingPlayerId = playerId;
+        const btn = document.getElementById('create-player-btn'); if(btn) { btn.textContent = 'Save Changes'; btn.classList.replace('primary', 'secondary'); btn.style.backgroundColor = '#4CAF50'; btn.style.color = 'white'; }
+        if(nName) nName.focus();
+    };
+    window._rp = function(playerId) { showConfirmation('Remove Player', `Are you sure you want to delete this player from the database?`, (confirmed) => { if (confirmed) { appData.players = appData.players.filter(p => p.playerId !== playerId); renderManagePlayers(); if (!playerId.startsWith('temp_')) apiCall('remove_player', { playerId }).catch(e => {}); } }); };
+
+    // --- EVENT LISTENERS BINDING ---
+    if(dragHandle) { dragHandle.addEventListener('mousedown', dragStart); dragHandle.addEventListener('touchstart', dragStart, { passive: false }); }
+    if(panel) { panel.addEventListener('mousedown', (e) => { if (isAiCollapsed) dragStart(e); }); panel.addEventListener('touchstart', (e) => { if (isAiCollapsed) { dragStart(e); } }, { passive: false }); panel.addEventListener('click', (e) => { if (isAiCollapsed) { if (e.target.closest('#ai-close-btn')) { e.stopPropagation(); closeAiPanel(); } else expandAiPanel(); } }); }
+    document.addEventListener('mousemove', dragMove); document.addEventListener('touchmove', (e) => { if (isDragging) dragMove(e); }, { passive: false });
+    document.addEventListener('mouseup', dragEnd); document.addEventListener('touchend', dragEnd);
+
+    const cancelBtn = document.getElementById('ai-cancel-btn'); if(cancelBtn) cancelBtn.onclick = (e) => { e.stopPropagation(); setTimeout(closeAiPanel, 100); };
+    const dismissBtn = document.getElementById('ai-dismiss-btn'); if(dismissBtn) dismissBtn.onclick = (e) => { e.stopPropagation(); setTimeout(closeAiPanel, 100); };
+    const closeBtn = document.getElementById('ai-close-btn'); if(closeBtn) closeBtn.onclick = (e) => { e.stopPropagation(); setTimeout(closeAiPanel, 100); };
+
+    const chatInput = document.getElementById('ai-chat-input');
+    const aiVoiceBtn = document.getElementById('ai-voice-btn');
+    const submitBtn = document.getElementById('ai-submit-btn');
+    if(chatInput) { chatInput.onkeydown = (e) => { if (e.key === 'Enter') { e.stopPropagation(); executeQuerySubmission(chatInput.value.trim()); } }; chatInput.addEventListener('input', () => handleInputChange(chatInput, aiVoiceBtn)); }
+    if(submitBtn) { submitBtn.onclick = () => { executeQuerySubmission(chatInput ? chatInput.value.trim() : ''); }; }
+    if(aiVoiceBtn) { aiVoiceBtn.onclick = (e) => { e.stopPropagation(); startVoiceRecognition(chatInput, aiVoiceBtn, false); }; }
+
+    const aiResultsVoiceBtn = document.getElementById('ai-results-voice-btn');
+    const followupInput = document.getElementById('ai-results-followup-input');
+    const followUpBtn = document.getElementById('ai-results-followup-btn');
+    if(followupInput) { followupInput.onkeydown = (e) => { if (e.key === 'Enter') { e.stopPropagation(); executeQuerySubmission(followupInput.value.trim()); } }; followupInput.addEventListener('input', () => handleInputChange(followupInput, aiResultsVoiceBtn)); }
+    if(aiResultsVoiceBtn) { aiResultsVoiceBtn.onclick = (e) => { e.stopPropagation(); startVoiceRecognition(followupInput, aiResultsVoiceBtn, true); }; }
+    if(followUpBtn) { followUpBtn.onclick = (e) => { e.stopPropagation(); executeQuerySubmission(followupInput.value.trim()); }; }
+
+    if(suggestBtn) { suggestBtn.onclick = () => { if(panel) { panel.style.display = 'flex'; expandAiPanel(); } loadStepConfigSuggestions(); document.getElementById('ai-step-config').style.display = 'block'; document.getElementById('ai-step-loading').style.display = 'none'; document.getElementById('ai-step-results').style.display = 'none'; if (chatInput) { chatInput.value = ''; handleInputChange(chatInput, aiVoiceBtn); } }; }
+
+    if(autoTimerCheckbox) autoTimerCheckbox.addEventListener('change', (e) => localStorage.setItem(_S1, e.target.checked));
+    if(autoAddCheckbox) autoAddCheckbox.addEventListener('change', (e) => localStorage.setItem(_S2, e.target.checked));
+    if(timerAmountInput) { timerAmountInput.addEventListener('change', (e) => { let val = parseInt(e.target.value); if (isNaN(val) || val < 1) { val = 3; e.target.value = 3; } localStorage.setItem(_S3, val); if (!isMiniTimerRunning) resetMiniTimer(); }); }
+    if(maxPlayersInput) { maxPlayersInput.addEventListener('change', (e) => { let val = parseInt(e.target.value); if (isNaN(val) || val < 1) { val = 5; e.target.value = 5; } localStorage.setItem(_S4, val); }); }
+    if(guahhAiCheckbox) { guahhAiCheckbox.addEventListener('change', (e) => { localStorage.setItem(_S5, e.target.checked); if(suggestBtn) suggestBtn.style.display = e.target.checked ? '' : 'none'; if (!e.target.checked) closeAiPanel(); }); }
+    if(pointsTrackingCheckbox) { pointsTrackingCheckbox.addEventListener('change', (e) => { localStorage.setItem(_S6, e.target.checked); updatePointsTrackingVisibility(); }); }
+
+    document.querySelectorAll('.skill-pill').forEach(pill => { pill.addEventListener('click', (e) => { e.preventDefault(); pill.classList.toggle('active'); }); });
+
+    const navAppBtn = document.getElementById('nav-app-btn'); if(navAppBtn) navAppBtn.onclick = () => showView('app-view');
+    const navManageBtn = document.getElementById('nav-manage-btn'); if(navManageBtn) navManageBtn.onclick = () => { renderManageTeams(); resetPlayerForm(); renderManagePlayers(); showView('manage-view'); };
+    const navStatsBtn = document.getElementById('nav-stats-btn'); if(navStatsBtn) navStatsBtn.onclick = () => showView('stats-view');
+    const navSettingsBtn = document.getElementById('nav-settings-btn'); if(navSettingsBtn) navSettingsBtn.onclick = () => { showView('settings-view'); };
+    const goToSignup = document.getElementById('go-to-signup'); if(goToSignup) goToSignup.onclick = (e) => { e.preventDefault(); showView('signup-view'); };
+    const goToLogin = document.getElementById('go-to-login'); if(goToLogin) goToLogin.onclick = (e) => { e.preventDefault(); showView('login-view'); };
+
+    const logoutBtnStd = document.getElementById('logout-btn-standard'); if(logoutBtnStd) logoutBtnStd.onclick = promptLogoutStandard;
+    const logoutBtnMain = document.getElementById('logout-btn-main'); if(logoutBtnMain) logoutBtnMain.onclick = promptLogoutAll;
+    const logoutBtnSub = document.getElementById('logout-btn-sub'); if(logoutBtnSub) logoutBtnSub.onclick = promptLogoutStandard;
+
+    // --- FEEDBACK EVENTS ---
+    if(feedbackBtn) {
+        feedbackBtn.onclick = () => {
+            feedbackModal.style.display = 'flex';
+        };
+    }
+
+    if(feedbackSettingsBtn) {
+        feedbackSettingsBtn.onclick = () => {
+            feedbackModal.style.display = 'flex';
+        };
+    }
+
+    if(closeFeedbackBtn) {
+        closeFeedbackBtn.onclick = () => {
+            feedbackModal.style.display = 'none';
+            document.getElementById('feedback-name').value = '';
+            document.getElementById('feedback-type').value = '';
+            document.getElementById('feedback-text').value = '';
+        };
+    }
+
+    if(submitFeedbackBtn) {
+        submitFeedbackBtn.onclick = async () => {
+            const name = document.getElementById('feedback-name').value.trim() || "Anonymous";
+            const type = document.getElementById('feedback-type').value;
+            const text = document.getElementById('feedback-text').value.trim();
+
+            if(!type || !text) {
+                return showConfirmation('Missing Info', 'Please select a feedback type and provide your feedback.');
+            }
+
+            submitFeedbackBtn.textContent = 'Submitting...';
+            submitFeedbackBtn.disabled = true;
+
+            try {
+                // Populate query parameters to guarantee population of e.parameter in standard Google Apps Script configurations
+                const queryParams = new URLSearchParams();
+                queryParams.append('name', name);
+                queryParams.append('feedbackType', type);
+                queryParams.append('feedbackText', text);
+                
+                const targetUrl = `${feedbackUrl}?${queryParams.toString()}`;
+
+                // Fire the post containing payload in both query params and stringified JSON body
+                await fetch(targetUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify({ name: name, feedbackType: type, feedbackText: text })
+                });
+                
+                feedbackModal.style.display = 'none';
+                document.getElementById('feedback-name').value = '';
+                document.getElementById('feedback-type').value = '';
+                document.getElementById('feedback-text').value = '';
+                showConfirmation('Success', 'Thank you for your feedback!');
+            } catch(e) {
+                showConfirmation('Error', 'Failed to submit feedback. Please try again.');
+            } finally {
+                submitFeedbackBtn.textContent = 'Submit';
+                submitFeedbackBtn.disabled = false;
+            }
+        };
+    }
+
+    const subscribeIndividualBtn = document.getElementById('subscribe-individual-btn');
+    if(subscribeIndividualBtn) {
+        subscribeIndividualBtn.onclick = () => {
+            if(currentUser) {
+                const stripeUrl = `https://buy.stripe.com/test_14A5kE0hmcpY0VvbWi1Nu01?prefilled_email=${encodeURIComponent(currentUser)}&client_reference_id=${encodeURIComponent(currentUser)}`;
+                window.open(stripeUrl, '_blank');
+            } else {
+                showConfirmation('Error', 'Please log in to subscribe.');
+            }
+        };
+    }
+
+    const loginBtn = document.getElementById('login-btn');
+    if(loginBtn) { 
+        loginBtn.onclick = async () => { 
+            const emailEl = document.getElementById('login-email'); 
+            const passEl = document.getElementById('login-password'); 
+            const email = emailEl.value.trim(); 
+            const password = passEl.value.trim(); 
+            if (!email || !password) return showConfirmation('Error', 'Please enter your email and password'); 
+            loginBtn.textContent = 'Logging in...'; 
+            loginBtn.disabled = true; 
+            try { 
+                const res = await apiCall('login', { email, password }); 
+                authToken = res.token; 
+                localStorage.setItem(_TK, authToken); 
+                localStorage.setItem(_EM, email); 
+                localStorage.setItem(_PW, password); 
+                
+                if (emailEl) emailEl.value = '';
+                if (passEl) passEl.value = '';
+
+                document.getElementById('action-loading-overlay').style.display = 'flex'; 
+                await initApp(); 
+            } catch (e) { showConfirmation('Error', e.message); const actionOverlay = document.getElementById('action-loading-overlay'); if (actionOverlay) actionOverlay.style.display = 'none'; } 
+            finally { loginBtn.textContent = 'Log In'; loginBtn.disabled = false; } 
+        }; 
+    }
+
+    const signupBtn = document.getElementById('signup-btn');
+    if(signupBtn) { 
+        signupBtn.onclick = async () => { 
+            const firstName = document.getElementById('signup-firstname').value.trim(); 
+            const email = document.getElementById('signup-email').value.trim(); 
+            const phone = document.getElementById('signup-phone').value.trim(); 
+            const password = document.getElementById('signup-password').value.trim(); 
+            const termsCheck = document.getElementById('signup-terms');
+            
+            if (!firstName || !email || !password) return showConfirmation('Error', 'First Name, Email, and Password are required.'); 
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; 
+            if (!emailRegex.test(email)) return showConfirmation('Error', 'Please enter a valid email address.'); 
+            if (password.length < 6) return showConfirmation('Error', 'Password must be at least 6 characters.'); 
+            if (termsCheck && !termsCheck.checked) {
+                return showConfirmation('Agreement Required', 'You must agree to the Terms of Service and Privacy Policy to create an account.');
+            }
+            
+            signupBtn.textContent = 'Signing up...'; 
+            signupBtn.disabled = true; 
+            try { 
+                const res = await apiCall('signup', { firstName, email, phone, password }); 
+                authToken = res.token; 
+                localStorage.setItem(_TK, authToken); 
+                localStorage.setItem(_EM, email); 
+                localStorage.setItem(_PW, password); 
+                
+                document.getElementById('signup-firstname').value = '';
+                document.getElementById('signup-email').value = '';
+                const pInput = document.getElementById('signup-password');
+                if (pInput) pInput.value = '';
+                if (termsCheck) termsCheck.checked = false;
+
+                document.getElementById('action-loading-overlay').style.display = 'flex'; 
+                await initApp(); 
+            } catch (e) { showConfirmation('Error', e.message); const actionOverlay = document.getElementById('action-loading-overlay'); if (actionOverlay) actionOverlay.style.display = 'none'; } 
+            finally { signupBtn.textContent = 'Sign Up'; signupBtn.disabled = false; } 
+        }; 
+    }
+
+    const refreshSubBtn = document.getElementById('refresh-sub-btn');
+    if(refreshSubBtn) { refreshSubBtn.onclick = async () => { refreshSubBtn.textContent = 'Checking...'; refreshSubBtn.disabled = true; document.getElementById('action-loading-overlay').style.display = 'flex'; await initApp(); refreshSubBtn.textContent = 'Check Status Again'; refreshSubBtn.disabled = false; }; }
+
+    if(teamSelect) teamSelect.addEventListener('change', (e) => handleGlobalTeamChange(e.target.value, teamSelect));
+    const manageTeamSelect = document.getElementById('manage-team-select'); if(manageTeamSelect) manageTeamSelect.addEventListener('change', (e) => handleGlobalTeamChange(e.target.value, manageTeamSelect));
+    const statsTeamSelect = document.getElementById('stats-team-select'); if(statsTeamSelect) statsTeamSelect.addEventListener('change', (e) => handleGlobalTeamChange(e.target.value, statsTeamSelect));
+
+    const addDefPlayersBtn = document.getElementById('add-default-players-btn');
+    if(addDefPlayersBtn) { addDefPlayersBtn.onclick = () => { const teamId = teamSelect.value; if (!teamId) return showConfirmation('Error', 'Please select a team first.'); showConfirmation('Add Default Roster', 'Add the saved players for this team to the game?', (c) => { if (c) autoAddDefaultPlayers(teamId); }); }; }
+
+    const createTeamBtn = document.getElementById('create-team-btn');
+    if(createTeamBtn) { createTeamBtn.onclick = async () => { const nameInput = document.getElementById('new-team-name'); const sportSelect = document.getElementById('new-team-sport'); const name = nameInput.value.trim(); const sport = sportSelect ? sportSelect.value : ''; if (!name) return showConfirmation('Error', 'Please enter a team name.'); if (!sport) return showConfirmation('Error', 'Please select a sport.'); document.getElementById('action-loading-overlay').style.display = 'flex'; try { const res = await apiCall('create_team', { teamName: name, sport: sport }); appData.teams.push({ teamId: res.teamId, teamName: res.teamName, sport: res.sport }); renderManageTeams(); renderTeams(); if(manageTeamSelect) { manageTeamSelect.value = res.teamId; manageTeamSelect.dispatchEvent(new Event('change')); } nameInput.value = ''; if(sportSelect) sportSelect.value = ''; } catch (e) { showConfirmation('Error', 'Failed to create team: ' + e.message); } finally { document.getElementById('action-loading-overlay').style.display = 'none'; } }; }
+
+    const createPlayerBtn = document.getElementById('create-player-btn');
+    if(createPlayerBtn) { createPlayerBtn.onclick = async () => { const teamId = manageTeamSelect ? manageTeamSelect.value : null; const name = document.getElementById('new-player-name').value.trim(); const num = document.getElementById('new-player-number').value.trim(); const rank = document.getElementById('new-player-rank').value.trim(); let height = document.getElementById('new-player-height').value.trim(); if (/^\d+$/.test(height)) { const cmVal = parseInt(height, 10); if (cmVal > 30) { height = cmToFeetInches(cmVal); } } const skill = getSelectedSkills(); if (!teamId || !name) return showConfirmation('Error', 'Team and Name are required.'); if (editingPlayerId) { const p = appData.players.find(p => p.playerId === editingPlayerId); if (p) { p.playerName = name; p.playerNumber = num; p.rank = rank || "5"; p.height = height; p.skill = skill; renderManagePlayers(); const currentEditId = editingPlayerId; resetPlayerForm(); try { await apiCall('edit_player', { playerId: currentEditId, playerName: name, playerNumber: num, rank: rank || "5", height, skill }); } catch (e) { showConfirmation('Error', 'Failed to update player: ' + e.message); } } } else { const tempId = 'temp_' + Date.now(); const newPlayer = { playerId: tempId, teamId, playerName: name, playerNumber: num, rank: rank || "5", height, skill }; appData.players.push(newPlayer); renderManagePlayers(); resetPlayerForm(); try { const res = await apiCall('add_player', { teamId, playerName: name, playerNumber: num, rank: rank || "5", height, skill }); const p = appData.players.find(p => p.playerId === tempId); if (p) p.playerId = res.playerId; } catch (e) { appData.players = appData.players.filter(p => p.playerId !== tempId); renderManagePlayers(); showConfirmation('Error', 'Failed to add player: ' + e.message); } } }; }
+
+    const loadStatsBtn = document.getElementById('load-stats-btn');
+    if(loadStatsBtn) { 
+        loadStatsBtn.onclick = async () => { 
+            const teamId = statsTeamSelect ? statsTeamSelect.value : null; 
+            if (!teamId) return; 
+            loadStatsBtn.textContent = 'Loading...'; 
+            loadStatsBtn.disabled = true; 
+            try { 
+                const res = await apiCall('get_stats', { teamId }); 
+                const content = document.getElementById('stats-content'); 
+                content.innerHTML = ''; 
+                if (!res.stats || res.stats.length === 0) { 
+                    content.innerHTML = '<p style="color:#B0B0B0; text-align:center; margin-top:20px;">No games recorded yet.</p>'; 
+                    return; 
+                } 
+                res.stats.reverse().forEach(game => { 
+                    let startersDisplay = game.starters ? ` | Starters: <span style="color:white; font-weight: 500;">${game.starters}</span>` : "";
+                    let html = `<div style="background: #2D2D2D; padding: 12px; border-radius: 9px; margin-bottom: 10px;"><div style="font-weight: bold; margin-bottom: 5px; color: #64B5F6; font-size: 14px;">${game.date}</div><div style="font-size: 12px; color: #B0B0B0; margin-bottom: 8px;">Duration: <span style="color: #64B5F6; font-weight: bold;">${game.duration}</span> | Notes: <span style="color:white;">${game.notes}</span>${startersDisplay}</div><table style="width: 100%; font-size: 13px; border-collapse: collapse;"><tr style="border-bottom: 1px solid #444; color: #E0E0E0;"><th style="text-align: left; padding: 6px 4px;">Player</th><th style="text-align: center; padding: 6px 4px;">No.</th><th style="text-align: center; padding: 6px 4px;">Pts</th><th style="text-align: right; padding: 6px 4px;">Time</th></tr>`; 
+                    game.players.forEach(p => { 
+                        html += `<tr style="border-bottom: 3px solid #333;"><td style="padding: 6px 4px;">${p.name}</td><td style="text-align: center; padding: 6px 4px;">${p.number}</td><td style="text-align: center; padding: 6px 4px; font-weight:bold; color: #FFFFFF;">${p.points || 0}</td><td style="text-align: right; padding: 6px 4px; color:#64B5F6; font-weight:bold;">${p.time}</td></tr>`; 
+                    }); 
+                    html += `</table></div>`; 
+                    content.innerHTML += html; 
+                }); 
+            } catch (e) { 
+                showConfirmation('Error', 'Failed to load stats: ' + e.message); 
+            } finally { 
+                loadStatsBtn.textContent = 'Load Stats'; 
+                loadStatsBtn.disabled = false; 
+            } 
+        }; 
+    }
+
+    const addPlayerBtn = document.getElementById('add-player-btn');
+    if(addPlayerBtn) { addPlayerBtn.addEventListener('click', () => { const name = document.getElementById('player-name').value.trim(); const number = document.getElementById('player-number-input').value.trim(); if (name || number) { const tempId = 'local_' + Date.now(); addPlayerByName(name, number, tempId); document.getElementById('player-name').value = ''; document.getElementById('player-number-input').value = ''; setTimeout(() => { window.scrollTo(0, 0); }, 200); } }); }
+
+    document.addEventListener('pointerdown', (e) => { const btn = e.target.closest('button'); if (btn && !btn.disabled) { btn.classList.remove('btn-pop'); void btn.offsetWidth; btn.classList.add('btn-pop'); setTimeout(() => btn.classList.remove('btn-pop'), 350); } });
+    
+    // Screen Wake Lock API Setup
+    let wakeLock = null; 
+    async function requestWakeLock() { 
+        if (wakeLock !== null) return;
+        try { 
+            if ('wakeLock' in navigator) {
+                wakeLock = await navigator.wakeLock.request('screen'); 
+            }
+        } catch (err) {} 
+    }
+    function releaseWakeLock() {
+        if (wakeLock !== null) {
+            try {
+                wakeLock.release();
+            } catch (err) {}
+            wakeLock = null;
+        }
+    }
+    document.addEventListener('visibilitychange', async () => { 
+        if (document.visibilityState === 'visible' && isRunning) {
+            await requestWakeLock(); 
+        } else if (document.visibilityState === 'hidden') {
+            releaseWakeLock();
+        }
+    });
+
+    initApp();
+})(); 
+</script>
 </body>
 </html>
