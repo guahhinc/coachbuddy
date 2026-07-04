@@ -2114,6 +2114,111 @@
     if(addPlayerBtn) { addPlayerBtn.addEventListener('click', () => { const name = document.getElementById('player-name').value.trim(); const number = document.getElementById('player-number-input').value.trim(); if (name || number) { const tempId = 'local_' + Date.now(); addPlayerByName(name, number, tempId); document.getElementById('player-name').value = ''; document.getElementById('player-number-input').value = ''; setTimeout(() => { window.scrollTo(0, 0); }, 200); } }); }
 
     document.addEventListener('pointerdown', (e) => { const btn = e.target.closest('button'); if (btn && !btn.disabled) { btn.classList.remove('btn-pop'); void btn.offsetWidth; btn.classList.add('btn-pop'); setTimeout(() => btn.classList.remove('btn-pop'), 350); } });
+
+    // --- MANUAL CONTROL INTERACTIVE BINDINGS ---
+    if (startPauseBtn) {
+        startPauseBtn.onclick = () => {
+            if (isRunning) pauseTimer();
+            else startTimer();
+        };
+    }
+
+    if (resetBtn) {
+        resetBtn.onclick = () => {
+            showConfirmation('Reset Timer', 'Are you sure you want to reset the game timer and clear play stats?', (confirmed) => {
+                if (confirmed) resetTimer();
+            });
+        };
+    }
+
+    const addMinuteBtn = document.getElementById('add-minute-btn');
+    if (addMinuteBtn) {
+        addMinuteBtn.onclick = () => adjustTime(20);
+    }
+
+    const subtractMinuteBtn = document.getElementById('subtract-minute-btn');
+    if (subtractMinuteBtn) {
+        subtractMinuteBtn.onclick = () => adjustTime(-20);
+    }
+
+    if (miniStartPauseBtn) {
+        miniStartPauseBtn.onclick = () => {
+            if (isMiniTimerRunning) pauseMiniTimer();
+            else startMiniTimer();
+        };
+    }
+
+    const miniResetBtn = document.getElementById('mini-reset-btn');
+    if (miniResetBtn) {
+        miniResetBtn.onclick = () => {
+            resetMiniTimer();
+        };
+    }
+
+    const sortDescBtn = document.getElementById('sort-desc-btn');
+    if (sortDescBtn) {
+        sortDescBtn.onclick = () => {
+            sortRoster();
+        };
+    }
+
+    const saveToSheetsBtn = document.getElementById('save-to-sheets-btn');
+    if (saveToSheetsBtn) {
+        saveToSheetsBtn.onclick = async () => {
+            const teamId = teamSelect ? teamSelect.value : null;
+            if (!teamId) {
+                return showConfirmation('Error', 'Please select a team before finishing the game.');
+            }
+            const playersToSave = Array.from(document.querySelectorAll('.player-item')).map(item => {
+                return {
+                    name: item.querySelector('.player-name')?.textContent || 'Unnamed',
+                    number: item.querySelector('.player-number')?.textContent.replace('#', '') || '',
+                    points: parseInt(item.dataset.points) || 0,
+                    time: item.querySelector('.player-time')?.textContent || '00:00'
+                };
+            });
+            if (playersToSave.length === 0) {
+                return showConfirmation('Error', 'Roster is empty. Add players before finishing.');
+            }
+            
+            showConfirmation('Finish Game', 'Are you sure you want to finish the game and save stats?', async (confirmed) => {
+                if (confirmed) {
+                    saveToSheetsBtn.textContent = 'Saving...';
+                    saveToSheetsBtn.disabled = true;
+                    document.getElementById('action-loading-overlay').style.display = 'flex';
+                    try {
+                        let startersString = startingFive.join(', ');
+                        if (!startersString) {
+                            const onField = Array.from(document.querySelectorAll('.player-item[data-is-on-field="1"]'));
+                            startersString = onField.map(item => item.querySelector('.player-name')?.textContent || 'Unnamed').slice(0, 5).join(', ');
+                        }
+                        const duration = formatTime(totalSeconds);
+                        const notes = document.getElementById('game-notes') ? document.getElementById('game-notes').value.trim() : "";
+                        
+                        await apiCall('save_game', {
+                            teamId,
+                            duration,
+                            notes,
+                            starters: startersString,
+                            players: playersToSave
+                        });
+                        
+                        showConfirmation('Success', 'Game stats successfully saved!');
+                        resetTimer();
+                        if (document.getElementById('game-notes')) {
+                            document.getElementById('game-notes').value = '';
+                        }
+                    } catch (e) {
+                        showConfirmation('Error', 'Failed to save game: ' + e.message);
+                    } finally {
+                        saveToSheetsBtn.textContent = 'Finish Game';
+                        saveToSheetsBtn.disabled = false;
+                        document.getElementById('action-loading-overlay').style.display = 'none';
+                    }
+                }
+            });
+        };
+    }
     
     // Screen Wake Lock API Setup
     let wakeLock = null; 
