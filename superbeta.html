@@ -503,12 +503,6 @@
                 </div>
             </div>
 
-            <div id="input-section" style="margin-top: 10px;">
-                <input type="text" id="player-number-input" placeholder="No." inputmode="numeric">
-                <input type="text" id="player-name" placeholder="Enter player's name">
-                <button id="add-player-btn" class="add-icon-btn">+</button>
-            </div>
-
             <div id="roster-container">
                 <div class="roster-header" style="margin-bottom: 4px;">
                     <span class="roster-title">Roster</span>
@@ -529,6 +523,12 @@
                     </div>
                     <div id="roster-list" style="min-height: 100px;"></div>
                 </div>
+            </div>
+
+            <div id="input-section" style="margin-top: 10px;">
+                <input type="text" id="player-number-input" placeholder="No." inputmode="numeric">
+                <input type="text" id="player-name" placeholder="Enter temporary players name">
+                <button id="add-player-btn" class="add-icon-btn">+</button>
             </div>
 
             <div id="recent-subs-section" style="display: none; background-color: #121212; padding: 10px; border-radius: 13px; margin-bottom: 10px;">
@@ -834,34 +834,6 @@
         const feet = Math.floor(inches / 12);
         const remainingInches = inches % 12;
         return remainingInches > 0 ? `${feet}ft ${remainingInches}` : `${feet}ft`;
-    }
-
-    function checkAndShowWelcomePopup() {
-        if (!currentUser) return;
-        const key = '_cb_welcome_shown_' + btoa(currentUser);
-        if (!localStorage.getItem(key)) {
-            showCustomModal(
-                'Welcome to Coachbuddy',
-                '<p style="color: #B0B0B0; line-height: 1.5; font-size: 14px; text-align: left; margin: 0 0 10px 0;">Track player times and points, get AI sub suggestions and insights, be notified when players aren\'t getting enough time and much more, let\'s get started by creating a team!</p>',
-                [
-                    {
-                        text: 'Create Team',
-                        className: 'primary',
-                        action: () => {
-                            closeModal();
-                            const navManageBtn = document.getElementById('nav-manage-btn');
-                            if (navManageBtn) navManageBtn.click();
-                        }
-                    },
-                    {
-                        text: 'Dismiss',
-                        className: 'secondary',
-                        action: closeModal
-                    }
-                ]
-            );
-            localStorage.setItem(key, 'true');
-        }
     }
 
     if (localStorage.getItem(_S1) === 'false') { if(autoTimerCheckbox) autoTimerCheckbox.checked = false; } else { if(autoTimerCheckbox) autoTimerCheckbox.checked = true; }
@@ -1721,7 +1693,6 @@
                             document.getElementById('action-loading-overlay').style.display = 'none';
                             
                             showView('app-view');
-                            checkAndShowWelcomePopup();
                         }
                     } catch(e) {} 
                 }, 5000);
@@ -1796,7 +1767,7 @@
         if (submitBtn) submitBtn.style.display = ''; if (cancelBtn) cancelBtn.style.display = ''; if (waveConfig) waveConfig.style.display = 'none';
         const resultsVoiceBtn = document.getElementById('ai-results-voice-btn'); const applyBtn = document.getElementById('ai-apply-btn'); const dismissBtn = document.getElementById('ai-dismiss-btn'); const waveContainer = document.getElementById('ai-voice-wave-results');
         if (resultsVoiceBtn) { resultsVoiceBtn.style.display = ''; resultsVoiceBtn.style.backgroundColor = ''; resultsVoiceBtn.style.color = ''; const iconEl = resultsVoiceBtn.querySelector('.material-icons'); if (iconEl) iconEl.textContent = 'mic'; }
-        if (applyBtn) applyBtn.style.display = ''; if (dismissBtn) dismissBtn.style.display = ''; if (waveContainer) waveContainer.style.display = 'none';
+        if (applyBtn) applyBtn.style.display = ''; if (dismissBtn) dismissBtn.style.display = ''; if (waveContainer) { waveContainer.style.display = 'none'; }
         if (activeVoiceInput) activeVoiceInput.placeholder = 'Ask anything';
         stopVoiceSiriWave(); activeVoiceInput = null; activeVoiceButton = null;
     }
@@ -1894,7 +1865,6 @@
                 } else { 
                     renderTeams(); 
                     showView('app-view'); 
-                    checkAndShowWelcomePopup();
                 }
 
             } catch (e) { clearLocalAuth(); if(e.message && e.message.includes("version out of date")) showConfirmation('Update Required', e.message); showView('login-view'); }
