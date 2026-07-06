@@ -136,7 +136,7 @@
         line-height: 32px; padding: 0; border-radius: 9px; flex-shrink: 0; border: none; cursor: pointer;
     }
 
-    .roster-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid #222; }
+    .roster-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding-left: 8px; padding-right: 8px; padding-bottom: 4px; border-bottom: 1px solid #222; }
     .roster-title { font-weight: bold; font-size: 13px; color: #B0B0B0; }
     .sort-buttons-group { display: flex; gap: 6px; }
     .sort-btn { background-color: #222; color: #E0E0E0; border: none; padding: 6px 12px; border-radius: 21px; font-size: 10px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; }
@@ -276,6 +276,8 @@
         max-height: 92vh; 
         overflow: hidden;
         will-change: transform, bottom;
+        -webkit-mask-image: -webkit-radial-gradient(white, black);
+        mask-image: radial-gradient(white, black);
     }
 
     #ai-floating-panel::before {
@@ -291,6 +293,7 @@
         z-index: 0;
         pointer-events: none;
         transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        border-radius: inherit;
     }
 
     #ai-floating-panel.collapsed {
@@ -304,6 +307,9 @@
         border: 1px solid rgba(255, 255, 255, 0.1);
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
         cursor: pointer;
+        overflow: hidden !important;
+        -webkit-mask-image: -webkit-radial-gradient(white, black);
+        mask-image: radial-gradient(white, black);
     }
 
     #ai-floating-panel.collapsed::before {
@@ -311,6 +317,7 @@
         bottom: -20px;
         opacity: 0.8;
         filter: blur(15px);
+        border-radius: inherit;
     }
 
     #ai-drag-handle, #ai-expanded-content, #ai-collapsed-content {
@@ -505,22 +512,22 @@
 
             <div id="roster-container">
                 <div class="roster-header" style="margin-bottom: 4px;">
-                    <span class="roster-title">Roster</span>
-                    <div class="sort-buttons-group">
-                        <button id="sort-desc-btn" class="sort-btn">Sort</button>
+                    <span class="roster-title" style="flex-grow: 1;">Roster</span>
+                    <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                        <!-- Aligns precisely with .player-time (min-width: 44px, text-align: right) -->
+                        <span style="font-size: 10px; color: #777; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; min-width: 44px; text-align: right;">Time</span>
+                        
+                        <!-- Aligns precisely with .points-controls (width: 64px, margins: 6px/4px) -->
+                        <span class="pts-label" style="font-size: 10px; color: #777; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; width: 64px; text-align: center; margin-left: 6px; margin-right: 4px;">Pts</span>
+                        
+                        <!-- Aligns precisely with right-hand action buttons (width: 80px) -->
+                        <div class="sort-buttons-group" style="width: 80px; display: flex; justify-content: flex-end;">
+                            <button id="sort-desc-btn" class="sort-btn" style="margin: 0;">Sort</button>
+                        </div>
                     </div>
                 </div>
 
                 <div id="roster">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px; margin-bottom: 5px; border-bottom: 1px solid #222; padding-bottom: 4px;">
-                        <span class="roster-section-title"></span>
-                        <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0; font-size: 10px; color: #777; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">
-                            <span style="width: 44px; text-align: right; margin-right: 6px;">Time</span>
-                            <span class="pts-label" style="width: 62px; text-align: center; margin-left: 0px; margin-right: 10px;">Pts</span>
-                            <span style="width: 46px; text-align: center;">Status</span>
-                            <span style="width: 26px;"></span>
-                        </div>
-                    </div>
                     <div id="roster-list" style="min-height: 100px;"></div>
                 </div>
             </div>
@@ -768,10 +775,28 @@
         Default: ["Speed", "Stamina", "Agility", "Strength", "Communication", "Quick Thinking", "IQ", "Good At Everything"]
     };
 
-    // --- SAFARI REFRESH PASSWORD PROMPT STRIPPER ---
+    // --- SAFARI REFRESH PASSWORD PROMPT STRIPPER TEMPLATES & LOGIC ---
+    const loginPasswordHTML = `<input type="password" id="login-password" placeholder="Password" style="width: 100%; margin-bottom: 15px; padding: 12px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 16px;" autocomplete="current-password">`;
+    const signupPasswordHTML = `<input type="password" id="signup-password" placeholder="Create Password (Min 6 chars)" style="width: 100%; margin-bottom: 15px; padding: 12px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 16px;" autocomplete="new-password">`;
+
     if (localStorage.getItem(_TK)) {
         const p1 = document.getElementById('login-password'); if (p1) p1.remove();
         const p2 = document.getElementById('signup-password'); if (p2) p2.remove();
+    }
+
+    function restorePasswordInputs() {
+        if (!document.getElementById('login-password')) {
+            const emailEl = document.getElementById('login-email');
+            if (emailEl) {
+                emailEl.insertAdjacentHTML('afterend', loginPasswordHTML);
+            }
+        }
+        if (!document.getElementById('signup-password')) {
+            const phoneEl = document.getElementById('signup-phone');
+            if (phoneEl) {
+                phoneEl.insertAdjacentHTML('afterend', signupPasswordHTML);
+            }
+        }
     }
 
     // --- DOM ELEMENTS ---
@@ -1424,6 +1449,7 @@
         appendPlayerToCorrectList(playerItem); updateSubstitutionWarnings();
     }
 
+    // --- SPATIAL SWAP FUNCTION ---
     function swapDOMPositions(el1, el2) {
         const parent1 = el1.parentNode;
         const parent2 = el2.parentNode;
@@ -1664,6 +1690,9 @@
         if(btn) { btn.textContent = 'Add Player'; btn.style.backgroundColor = ''; btn.classList.replace('secondary', 'primary'); } editingPlayerId = null;
     }
     function showView(viewId) {
+        if (viewId === 'login-view' || viewId === 'signup-view') {
+            restorePasswordInputs();
+        }
         views.forEach(v => { const el = document.getElementById(v); if(el) el.style.display = 'none'; });
         const activeView = document.getElementById(viewId); if(activeView) activeView.style.display = 'block';
         const nav = document.getElementById('app-nav'); if (viewId === 'login-view' || viewId === 'signup-view' || viewId === 'sub-block-view') { if(nav) nav.style.display = 'none'; } else { if(nav) nav.style.display = 'flex'; }
@@ -1690,7 +1719,7 @@
                             renderClubStatus();
                             renderSubscriptionUI();
                             renderTeams();
-                            document.getElementById('action-loading-overlay').style.display = 'none';
+                            document.getElementById('action-loading-overlay').style.none = 'none';
                             
                             showView('app-view');
                         }
@@ -1738,7 +1767,7 @@
         if (isListening) return stopVoiceRecognition();
         try { const stream = await navigator.mediaDevices.getUserMedia({ audio: true }); stream.getTracks().forEach(track => track.stop()); } catch (err) { return showConfirmation('Microphone Access Blocked', 'Please allow microphone access in your browser settings to speak to the assistant.'); }
         isListening = true; activeVoiceInput = inputEl; activeVoiceButton = buttonEl;
-        if (inputEl) { inputEl.placeholder = 'Listening... Speak now.'; inputEl.value = ''; }
+        if (inputEl) inputEl.placeholder = 'Listening... Speak now.'; inputEl.value = '';
         if (!isFollowUp) {
             const voiceBtn = document.getElementById('ai-voice-btn'); const submitBtn = document.getElementById('ai-submit-btn'); const cancelBtn = document.getElementById('ai-cancel-btn'); const waveContainer = document.getElementById('ai-voice-wave-config');
             if (voiceBtn) voiceBtn.style.display = 'none'; if (submitBtn) submitBtn.style.display = 'none'; if (cancelBtn) cancelBtn.style.display = 'none'; if (waveContainer) { waveContainer.style.display = 'block'; runVoiceSiriWave('ai-voice-wave-config'); }
@@ -1764,10 +1793,10 @@
         isListening = false; if (recognition) { try { recognition.stop(); } catch (e) {} recognition = null; }
         const voiceBtn = document.getElementById('ai-voice-btn'); const submitBtn = document.getElementById('ai-submit-btn'); const cancelBtn = document.getElementById('ai-cancel-btn'); const waveConfig = document.getElementById('ai-voice-wave-config');
         if (voiceBtn) { voiceBtn.style.display = ''; voiceBtn.style.backgroundColor = ''; voiceBtn.style.color = ''; const iconEl = voiceBtn.querySelector('.material-icons'); if (iconEl) iconEl.textContent = 'mic'; }
-        if (submitBtn) submitBtn.style.display = ''; if (cancelBtn) cancelBtn.style.display = ''; if (waveConfig) waveConfig.style.display = 'none';
+        if (submitBtn) { submitBtn.style.display = ''; } if (cancelBtn) { cancelBtn.style.display = ''; } if (waveConfig) { waveConfig.style.display = 'none'; }
         const resultsVoiceBtn = document.getElementById('ai-results-voice-btn'); const applyBtn = document.getElementById('ai-apply-btn'); const dismissBtn = document.getElementById('ai-dismiss-btn'); const waveContainer = document.getElementById('ai-voice-wave-results');
         if (resultsVoiceBtn) { resultsVoiceBtn.style.display = ''; resultsVoiceBtn.style.backgroundColor = ''; resultsVoiceBtn.style.color = ''; const iconEl = resultsVoiceBtn.querySelector('.material-icons'); if (iconEl) iconEl.textContent = 'mic'; }
-        if (applyBtn) applyBtn.style.display = ''; if (dismissBtn) dismissBtn.style.display = ''; if (waveContainer) { waveContainer.style.display = 'none'; }
+        if (applyBtn) { applyBtn.style.display = ''; } if (dismissBtn) { dismissBtn.style.display = ''; } if (waveContainer) { waveContainer.style.display = 'none'; }
         if (activeVoiceInput) activeVoiceInput.placeholder = 'Ask anything';
         stopVoiceSiriWave(); activeVoiceInput = null; activeVoiceButton = null;
     }
@@ -1949,7 +1978,7 @@
             const emailEl = document.getElementById('login-email'); 
             const passEl = document.getElementById('login-password'); 
             const email = emailEl.value.trim(); 
-            const password = passEl.value.trim(); 
+            const password = passEl ? passEl.value.trim() : ''; 
             if (!email || !password) return showConfirmation('Error', 'Please enter your email and password'); 
             loginBtn.textContent = 'Logging in...'; 
             loginBtn.disabled = true; 
@@ -1976,7 +2005,7 @@
             const firstName = document.getElementById('signup-firstname').value.trim(); 
             const email = document.getElementById('signup-email').value.trim(); 
             const phone = document.getElementById('signup-phone').value.trim(); 
-            const password = document.getElementById('signup-password').value.trim(); 
+            const password = document.getElementById('signup-password') ? document.getElementById('signup-password').value.trim() : ''; 
             const termsCheck = document.getElementById('signup-terms');
             
             if (!firstName || !email || !password) return showConfirmation('Error', 'First Name, Email, and Password are required.'); 
