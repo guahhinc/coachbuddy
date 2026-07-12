@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Coachbuddy</title>
+    <title>Coachbuddy Beta</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -92,7 +92,7 @@
     }
 
     .app-container {
-        width: 100%; max-width: 480px; padding: 8px 6px; padding-bottom: 40px;
+        width: 100%; max-width: 640px; padding: 8px 6px; padding-bottom: 40px;
     }
 
     #timer-section, #input-section, #roster-container, #notes-section, #team-name-section, #mini-timer-section {
@@ -136,14 +136,14 @@
         line-height: 32px; padding: 0; border-radius: 9px; flex-shrink: 0; border: none; cursor: pointer;
     }
 
-    .roster-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid #222; }
+    .roster-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding-left: 8px; padding-right: 8px; padding-bottom: 4px; border-bottom: 1px solid #222; }
     .roster-title { font-weight: bold; font-size: 13px; color: #B0B0B0; }
     .sort-buttons-group { display: flex; gap: 6px; }
     .sort-btn { background-color: #222; color: #E0E0E0; border: none; padding: 6px 12px; border-radius: 21px; font-size: 10px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; }
     .sort-btn:active { background-color: #333; }
 
     #roster { overflow: hidden; }
-    .player-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #222; cursor: grab; transition: border 0.15s ease, opacity 0.15s ease, background-color 0.15s ease; -webkit-user-select: none; user-select: none; }
+    .player-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #222; cursor: grab; transition: border 0.15s ease, opacity 0.15s ease, background-color 0.15s ease; }
     .player-item:active { cursor: grabbing; }
 
     /* Visual feedback class when player item is selected for dragging */
@@ -265,7 +265,7 @@
         left: 50%;
         transform: translateX(-50%) translateY(0);
         width: calc(100% - 24px) !important;
-        max-width: 480px !important; 
+        max-width: 640px !important; 
         background: rgba(10, 10, 10, 0.72) !important;
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 24px; 
@@ -281,6 +281,8 @@
         max-height: 92vh; 
         overflow: hidden;
         will-change: transform, bottom;
+        -webkit-mask-image: -webkit-radial-gradient(white, black);
+        mask-image: radial-gradient(white, black);
     }
 
     #ai-floating-panel::before {
@@ -296,6 +298,7 @@
         z-index: 0;
         pointer-events: none;
         transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        border-radius: inherit;
     }
 
     #ai-floating-panel.collapsed {
@@ -309,6 +312,9 @@
         border: 1px solid rgba(255, 255, 255, 0.1);
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
         cursor: pointer;
+        overflow: hidden !important;
+        -webkit-mask-image: -webkit-radial-gradient(white, black);
+        mask-image: radial-gradient(white, black);
     }
 
     #ai-floating-panel.collapsed::before {
@@ -316,6 +322,7 @@
         bottom: -20px;
         opacity: 0.8;
         filter: blur(15px);
+        border-radius: inherit;
     }
 
     #ai-drag-handle, #ai-expanded-content, #ai-collapsed-content {
@@ -445,7 +452,7 @@
 
         <!-- SIGN UP VIEW -->
         <div id="signup-view" style="display: none;">
-            <h2 style="text-align: center; margin-bottom: 30px; font-size: 2rem;">Coachbuddy Beta</h2>
+            <h2 style="text-align: center; margin-bottom: 30px; font-size: 2rem;">Create Account</h2>
             <div id="signup-form">
                 <input type="text" id="signup-firstname" placeholder="First Name" style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 16px;" autocomplete="given-name">
                 <input type="email" id="signup-email" placeholder="Email Address" style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 16px;" autocomplete="email">
@@ -503,36 +510,36 @@
                 </div>
             </div>
 
-            <div id="input-section" style="margin-top: 10px;">
-                <input type="text" id="player-number-input" placeholder="No." inputmode="numeric">
-                <input type="text" id="player-name" placeholder="Enter player's name">
-                <button id="add-player-btn" class="add-icon-btn">+</button>
-            </div>
-
             <div id="roster-container">
                 <div class="roster-header" style="margin-bottom: 4px;">
-                    <span class="roster-title">Roster</span>
-                    <div class="sort-buttons-group">
-                        <button id="sort-desc-btn" class="sort-btn">Sort</button>
+                    <span class="roster-title" style="flex-grow: 1;">Roster</span>
+                    <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                        <!-- Aligns precisely with .player-time (min-width: 44px, text-align: right) -->
+                        <span style="font-size: 10px; color: #777; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; min-width: 44px; text-align: right;">Time</span>
+                        
+                        <!-- Aligns precisely with .points-controls (width: 64px, margins: 6px/4px) -->
+                        <span class="pts-label" style="font-size: 10px; color: #777; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; width: 64px; text-align: center; margin-left: 6px; margin-right: 4px;">Pts</span>
+                        
+                        <!-- Aligns precisely with right-hand action buttons (width: 80px) -->
+                        <div class="sort-buttons-group" style="width: 80px; display: flex; justify-content: flex-end;">
+                            <button id="sort-desc-btn" class="sort-btn" style="margin: 0;">Sort</button>
+                        </div>
                     </div>
                 </div>
 
                 <div id="roster">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px; margin-bottom: 5px; border-bottom: 1px solid #222; padding-bottom: 4px;">
-                        <span class="roster-section-title"></span>
-                        <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0; font-size: 10px; color: #777; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">
-                            <span style="width: 44px; text-align: right; margin-right: 6px;">Time</span>
-                            <span class="pts-label" style="width: 62px; text-align: center; margin-left: 0px; margin-right: 10px;">Pts</span>
-                            <span style="width: 46px; text-align: center;">Status</span>
-                            <span style="width: 26px;"></span>
-                        </div>
-                    </div>
                     <div id="roster-list" style="min-height: 100px;"></div>
                 </div>
             </div>
 
+            <div id="input-section" style="margin-top: 10px;">
+                <input type="text" id="player-number-input" placeholder="No." inputmode="numeric">
+                <input type="text" id="player-name" placeholder="Enter temporary players name">
+                <button id="add-player-btn" class="add-icon-btn">+</button>
+            </div>
+
             <div id="recent-subs-section" style="display: none; background-color: #121212; padding: 10px; border-radius: 13px; margin-bottom: 10px;">
-                <div style="font-size: 11px; font-weight: bold; color: #B0B0B0; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;">Last Subbed On</div>
+                <div style="font-size: 11px; font-weight: bold; color: #B0B0B0; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;">Last Subbed</div>
                 <div id="recent-subs-list" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
             </div>
 
@@ -556,8 +563,8 @@
             <div style="margin-top: 5px;">
                 <button id="add-default-players-btn" class="timer-btn secondary" style="width: 100%;">Add Default Players</button>
             </div>
-            
-            <!-- NEW FEEDBACK BUTTON -->
+
+            <!-- FEEDBACK BUTTON -->
             <div style="margin-top: 5px;">
                 <button id="open-feedback-btn" class="timer-btn secondary" style="width: 100%;">Submit Feedback</button>
             </div>
@@ -576,7 +583,7 @@
                             <option value="" disabled selected>Sport...</option>
                             <option value="Basketball">Basketball</option>
                             <option value="Soccer">Soccer</option>
-                            <option value="Footy">Footy</option>
+                            <option value="AFL">AFL</option>
                             <option value="Netball">Netball</option>
                         </select>
                     </div>
@@ -603,19 +610,7 @@
                     </div>
                     <div style="color: #B0B0B0; font-size: 12px; font-weight: 600; margin-bottom: 4px;">Skills (Optional):</div>
                     <div id="skill-pills" style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px;">
-                        <button type="button" class="skill-pill" data-skill="Speed">Speed</button>
-                        <button type="button" class="skill-pill" data-skill="Jump Height">Jump Height</button>
-                        <button type="button" class="skill-pill" data-skill="Shot Accuracy">Shot Accuracy</button>
-                        <button type="button" class="skill-pill" data-skill="Quick Thinking">Quick Thinking</button>
-                        <button type="button" class="skill-pill" data-skill="3 Point Star">3 Point Star</button>
-                        <button type="button" class="skill-pill" data-skill="Defence">Defence</button>
-                        <button type="button" class="skill-pill" data-skill="Communication">Communication</button>
-                        <button type="button" class="skill-pill" data-skill="Good At Everything">Good At Everything</button>
-                        <button type="button" class="skill-pill" data-skill="Rebounding">Rebounding</button>
-                        <button type="button" class="skill-pill" data-skill="Good Passing">Good Passing</button>
-                        <button type="button" class="skill-pill" data-skill="Good Handles">Good Handles</button>
-                        <button type="button" class="skill-pill" data-skill="Positioning">Positioning</button>
-                        <button type="button" class="skill-pill" data-skill="IQ">IQ</button>
+                        <!-- Dynamically Generated Content -->
                     </div>
                     <button id="create-player-btn" class="timer-btn primary" style="width: 100%;">Add Player</button>
                 </div>
@@ -638,8 +633,8 @@
         <div id="settings-view" style="display: none;">
             <div style="background-color: #121212; padding: 12px; border-radius: 13px; margin-bottom: 10px;">
                 <h3 style="margin-top: 0; color: #E0E0E0;">Settings</h3>
-                
-                <!-- NEW FEEDBACK BUTTON (SETTINGS) -->
+
+                <!-- FEEDBACK BUTTON (SETTINGS) -->
                 <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #222;">
                     <button id="open-feedback-settings-btn" class="timer-btn secondary" style="width: 100%;">Submit Feedback</button>
                 </div>
@@ -667,7 +662,7 @@
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #222;">
                     <span style="font-size: 14px;">Points Tracking</span>
                     <label class="switch">
-                        <input type="checkbox" id="setting-points-tracking" checked>
+                        <input type="checkbox" id="setting-points-tracking">
                         <span class="slider round"></span>
                     </label>
                 </div>
@@ -807,6 +802,38 @@
     const views = ['login-view', 'signup-view', 'sub-block-view', 'app-view', 'manage-view', 'stats-view', 'settings-view'];
     const feedbackUrl = "https://script.google.com/macros/s/AKfycbzFsd4XNh8Ck5uIkbCATTEhX3r9XnsunrYoo-JRSIIDVznq_dm-SzgOgatz4q1YRITQ/exec";
 
+    const SPORT_SKILLS = {
+        Basketball: ["Speed", "Jump Height", "Shot Accuracy", "Quick Thinking", "3 Point Star", "Defence", "Communication", "Good At Everything", "Rebounding", "Good Passing", "Good Handles", "Positioning", "IQ"],
+        Soccer: ["Speed", "Stamina", "Shooting", "Dribbling", "Passing", "Tackling", "Goalkeeping", "Positioning", "Agility", "Playmaking", "Heading", "Communication", "IQ", "Good At Everything"],
+        AFL: ["Speed", "Kicking", "Marking", "Handballing", "Tackling", "Stamina", "Ruck", "Agility", "Goal Kicking", "Bumping", "Shepherding", "Communication", "IQ", "Good At Everything"],
+        Netball: ["Agility", "Shooting", "Passing", "Intercepts", "Rebounding", "Footwork", "Defending", "Stamina", "Positioning", "Centre Court", "Communication", "IQ", "Good At Everything"],
+        Default: ["Speed", "Stamina", "Agility", "Strength", "Communication", "Quick Thinking", "IQ", "Good At Everything"]
+    };
+
+    // --- SAFARI REFRESH PASSWORD PROMPT STRIPPER TEMPLATES & LOGIC ---
+    const loginPasswordHTML = `<input type="password" id="login-password" placeholder="Password" style="width: 100%; margin-bottom: 15px; padding: 12px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 16px;" autocomplete="current-password">`;
+    const signupPasswordHTML = `<input type="password" id="signup-password" placeholder="Create Password (Min 6 chars)" style="width: 100%; margin-bottom: 15px; padding: 12px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 16px;" autocomplete="new-password">`;
+
+    if (localStorage.getItem(_TK)) {
+        const p1 = document.getElementById('login-password'); if (p1) p1.remove();
+        const p2 = document.getElementById('signup-password'); if (p2) p2.remove();
+    }
+
+    function restorePasswordInputs() {
+        if (!document.getElementById('login-password')) {
+            const emailEl = document.getElementById('login-email');
+            if (emailEl) {
+                emailEl.insertAdjacentHTML('afterend', loginPasswordHTML);
+            }
+        }
+        if (!document.getElementById('signup-password')) {
+            const phoneEl = document.getElementById('signup-phone');
+            if (phoneEl) {
+                phoneEl.insertAdjacentHTML('afterend', signupPasswordHTML);
+            }
+        }
+    }
+
     // --- DOM ELEMENTS ---
     const timeDisplay = document.getElementById('time-display');
     const startPauseBtn = document.getElementById('start-pause-btn');
@@ -854,7 +881,7 @@
         return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
     }
     function updatePointsTrackingVisibility() {
-        const showPoints = localStorage.getItem(_S6) !== 'false';
+        const showPoints = localStorage.getItem(_S6) === 'true';
         if (showPoints) document.body.classList.remove('hide-points-tracking');
         else document.body.classList.add('hide-points-tracking');
     }
@@ -876,40 +903,12 @@
         return remainingInches > 0 ? `${feet}ft ${remainingInches}` : `${feet}ft`;
     }
 
-    function checkAndShowWelcomePopup() {
-        if (!currentUser) return;
-        const key = '_cb_welcome_shown_' + btoa(currentUser);
-        if (!localStorage.getItem(key)) {
-            showCustomModal(
-                'Welcome to Coachbuddy',
-                '<p style="color: #B0B0B0; line-height: 1.5; font-size: 14px; text-align: left; margin: 0 0 10px 0;">Track player times and points, get AI sub suggestions and insights, be notified when players aren\'t getting enough time and much more, let\'s get started by creating a team!</p>',
-                [
-                    {
-                        text: 'Create Team',
-                        className: 'primary',
-                        action: () => {
-                            closeModal();
-                            const navManageBtn = document.getElementById('nav-manage-btn');
-                            if (navManageBtn) navManageBtn.click();
-                        }
-                    },
-                    {
-                        text: 'Dismiss',
-                        className: 'secondary',
-                        action: closeModal
-                    }
-                ]
-            );
-            localStorage.setItem(key, 'true');
-        }
-    }
-
     if (localStorage.getItem(_S1) === 'false') { if(autoTimerCheckbox) autoTimerCheckbox.checked = false; } else { if(autoTimerCheckbox) autoTimerCheckbox.checked = true; }
     if (autoAddCheckbox) autoAddCheckbox.checked = localStorage.getItem(_S2) === 'true';
     if (timerAmountInput && localStorage.getItem(_S3)) timerAmountInput.value = localStorage.getItem(_S3);
     if (maxPlayersInput && localStorage.getItem(_S4)) maxPlayersInput.value = localStorage.getItem(_S4);
     if (guahhAiCheckbox && localStorage.getItem(_S5) === 'false') { guahhAiCheckbox.checked = false; if(suggestBtn) suggestBtn.style.display = 'none'; }
-    if (pointsTrackingCheckbox) pointsTrackingCheckbox.checked = localStorage.getItem(_S6) !== 'false';
+    if (pointsTrackingCheckbox) pointsTrackingCheckbox.checked = localStorage.getItem(_S6) === 'true';
     updatePointsTrackingVisibility();
 
     // --- API & MODALS ---
@@ -917,8 +916,7 @@
         payload.action = action; payload.version = _V;
         if (authToken) { payload.token = authToken; payload.email = localStorage.getItem(_EM); payload.password = localStorage.getItem(_PW); }
         const encPayload = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
-        // Content-Type is text/plain with no parameters to keep request simple and prevent CORS preflight OPTIONS blocking
-        const res = await fetch(_U, { method: 'POST', mode: 'cors', headers: { 'Content-Type': 'text/plain' }, body: encPayload });
+        const res = await fetch(_U, { method: 'POST', mode: 'cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: encPayload });
         const raw = await res.text();
         let data; try { data = JSON.parse(decodeURIComponent(escape(atob(raw)))); } catch(err) { throw new Error("Server communication error."); }
         if (data.result === 'error') throw new Error(data.error); return data;
@@ -986,7 +984,7 @@
             <ul style="color: #B0B0B0; font-size: 13px; margin-top: 5px; margin-bottom: 15px; padding-left: 20px; line-height: 1.4;">
                 <li>All Features</li>
                 <li>Guahh AI Plus</li>
-                <li>Gemini 3.1 Flash Lite for Coachboard Insights</li>
+                <li>Top Support Priority</li>
                 <li>Up to 8 teams per coach</li>
             </ul>
             <button class="timer-btn primary sub-btn-ind-plus" style="width: 100%; background-color: #7c3aed;">Subscribe Now</button>
@@ -1030,12 +1028,11 @@
         window.open(stripeUrl, '_blank');
     }
 
-    // BETA RESTRICTION Overwrite
     function showCancelSubscriptionDetails() {
         showCustomModal(
-            "Couldn't complete action",
-            "<p style='color:#B0B0B0; line-height:1.4;'>This feature isn't enabled in the Coachbuddy beta version, please check back in the full release.</p>",
-            [{ text: 'Got it', className: 'primary', action: closeModal }]
+            'Cancel Subscription', 
+            `<p style="color:#B0B0B0; line-height:1.4;">To cancel your billing payments, please search your email inbox for the invoice receipt sent from Stripe. You can click the <strong>"Manage Subscription"</strong> link in any billing email to securely cancel your plan immediately.</p>`,
+            [{ text: 'Got It', className: 'primary', action: closeModal }]
         );
     }
 
@@ -1163,14 +1160,54 @@
         finally { document.getElementById('action-loading-overlay').style.display = 'none'; }
     }
 
-    // BETA RESTRICTION Overwrite
     window._reqJoin = function(clubId) {
-        showCustomModal(
-            "Couldn't complete action",
-            "<p style='color:#B0B0B0; line-height:1.4;'>This feature isn't enabled in the Coachbuddy beta version, please check back in the full release.</p>",
-            [{ text: 'Got it', className: 'primary', action: closeModal }]
-        );
+        showConfirmation('Join Club', 'Send a request to join this club? The club administrator will need to approve it.', async (c) => {
+            if(c) {
+                document.getElementById('action-loading-overlay').style.display = 'flex';
+                try {
+                    await apiCall('request_join_club', { clubId });
+                    const dataRes = await apiCall('load_data');
+                    appData.clubStatus = dataRes.clubStatus;
+                    appData.clubName = dataRes.clubName;
+                    renderClubStatus();
+                    showConfirmation('Success', 'Request sent! Your data will sync once the club approves you.');
+                } catch(e) { showConfirmation('Request Failed', e.message); } 
+                finally { document.getElementById('action-loading-overlay').style.display = 'none'; }
+            }
+        });
     };
+
+    function updateSkillPills() {
+        const mt = document.getElementById('manage-team-select');
+        const pillsContainer = document.getElementById('skill-pills');
+        if (!pillsContainer) return;
+        
+        let sport = "Default";
+        if (mt && mt.value) {
+            const selectedTeam = appData.teams.find(t => t.teamId === mt.value);
+            if (selectedTeam && selectedTeam.sport) {
+                const rawSport = selectedTeam.sport.trim();
+                if (SPORT_SKILLS[rawSport]) {
+                    sport = rawSport;
+                }
+            }
+        }
+        
+        const skills = SPORT_SKILLS[sport] || SPORT_SKILLS.Default;
+        pillsContainer.innerHTML = '';
+        skills.forEach(skill => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'skill-pill';
+            btn.dataset.skill = skill;
+            btn.textContent = skill;
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                btn.classList.toggle('active');
+            });
+            pillsContainer.appendChild(btn);
+        });
+    }
 
     // --- TIMERS ---
     function resetMiniTimer() {
@@ -1197,7 +1234,8 @@
         startingFive = onField.map(item => item.querySelector('.player-name')?.textContent || 'Unnamed').slice(0, 5);
     }
     function startTimer() {
-        if (isRunning || (isCountdownMode && totalSeconds <= 0)) return; isRunning = true; 
+        if (isRunning || (isCountdownMode && totalSeconds <= 0)) return; 
+        isRunning = true; 
         
         // Capture starters on the first start sequence of a clean game
         if (totalSeconds === 0 && startingFive.length === 0) {
@@ -1207,9 +1245,6 @@
         if (autoTimerCheckbox && autoTimerCheckbox.checked && !isMiniTimerRunning) {
             startMiniTimer();
         }
-
-        // Request screen wake lock while running
-        requestWakeLock();
 
         if(startPauseBtn) { startPauseBtn.textContent = 'Pause'; startPauseBtn.classList.add('pause'); startPauseBtn.classList.remove('resume-flash'); }
         countdownInterval = setInterval(() => {
@@ -1222,7 +1257,6 @@
     }
     function pauseTimer() { 
         clearInterval(countdownInterval); isRunning = false; 
-        releaseWakeLock();
         if(startPauseBtn) { startPauseBtn.textContent = 'Resume'; startPauseBtn.classList.remove('pause'); startPauseBtn.classList.add('resume-flash'); }
         
         if (autoTimerCheckbox && autoTimerCheckbox.checked && isMiniTimerRunning) {
@@ -1231,7 +1265,6 @@
     }
     function resetTimer() {
         clearInterval(countdownInterval); isRunning = false; 
-        releaseWakeLock();
         if(startPauseBtn) { startPauseBtn.textContent = 'Start'; startPauseBtn.classList.remove('pause'); startPauseBtn.classList.remove('resume-flash'); }
         if(timeDisplay) timeDisplay.classList.remove('countdown-ended'); 
         totalSeconds = isCountdownMode ? DEFAULT_COUNTDOWN_SECONDS : INITIAL_STOPWATCH_SECONDS;
@@ -1253,7 +1286,7 @@
         }); updateSubstitutionWarnings(); 
     }
 
-    // --- DRAG & DROP ENGINE (WITH snappier LONG PRESS TOUCH HOLD DELAY) ---
+    // --- DRAG & DROP ENGINE ---
     function clearDragStyles() {
         document.querySelectorAll('.player-item').forEach(item => { 
             item.style.backgroundColor = ''; 
@@ -1393,8 +1426,15 @@
             playerItem.style.backgroundColor = '';
 
             if (!isTouchDraggingStarted) return;
-
             if (!touchDragItem) return;
+
+            const touch = e.changedTouches[0]; 
+            const element = document.elementFromPoint(touch.clientX, touch.clientY);
+            let targetPlayerItem = null;
+            if (element) {
+                targetPlayerItem = element.closest('.player-item');
+            }
+
             playerItem.style.opacity = ''; 
             document.body.classList.remove('dragging-active');
             if (touchClone) { 
@@ -1403,14 +1443,10 @@
             }
             clearDragStyles();
             
-            const touch = e.changedTouches[0]; 
-            const element = document.elementFromPoint(touch.clientX, touch.clientY);
-            if (element) {
-                const targetPlayerItem = element.closest('.player-item');
-                if (targetPlayerItem && targetPlayerItem !== touchDragItem) {
-                    swapPlayers(touchDragItem, targetPlayerItem);
-                }
+            if (targetPlayerItem && targetPlayerItem !== touchDragItem) {
+                swapPlayers(touchDragItem, targetPlayerItem);
             }
+            
             touchDragItem = null;
             isTouchDraggingStarted = false;
         });
@@ -1452,29 +1488,73 @@
         appendPlayerToCorrectList(playerItem); updateSubstitutionWarnings();
     }
 
-    function swapPlayers(playerA, playerB) {
-        const statusA = playerA.dataset.isOnField; const statusB = playerB.dataset.isOnField;
+    // --- SPATIAL SWAP FUNCTION ---
+    function swapDOMPositions(el1, el2) {
+        const parent1 = el1.parentNode;
+        const parent2 = el2.parentNode;
+        if (!parent1 || !parent2) return;
         
-        if (statusA === statusB) {
-            // Swap DOM position for manual reordering
-            const parentA = playerA.parentNode; const parentB = playerB.parentNode;
-            if (!parentA || !parentB) return;
-            const nextA = playerA.nextSibling; const nextB = playerB.nextSibling;
-            if (parentA === parentB) {
-                if (nextA === playerB) parentA.insertBefore(playerB, playerA);
-                else if (nextB === playerA) parentA.insertBefore(playerA, playerB);
-                else { parentA.insertBefore(playerA, nextB); parentB.insertBefore(playerB, nextA); }
+        const next1 = el1.nextSibling;
+        const next2 = el2.nextSibling;
+        
+        if (parent1 === parent2) {
+            if (next1 === el2) {
+                parent1.insertBefore(el2, el1);
+            } else if (next2 === el1) {
+                parent1.insertBefore(el1, el2);
+            } else {
+                parent1.insertBefore(el1, next2);
+                parent2.insertBefore(el2, next1);
             }
         } else {
-            // Target statuses switch, substitute the players without changing their DOM position
-            playerA.dataset.isOnField = statusB; playerB.dataset.isOnField = statusA;
-            const toggleBtnA = playerA.querySelector('.toggle-btn'); const toggleBtnB = playerB.querySelector('.toggle-btn');
+            parent1.insertBefore(el2, next1);
+            parent2.insertBefore(el1, next2);
+        }
+    }
+
+    function swapPlayers(playerA, playerB) {
+        const statusA = playerA.dataset.isOnField; 
+        const statusB = playerB.dataset.isOnField;
+        
+        swapDOMPositions(playerA, playerB);
+        
+        if (statusA !== statusB) {
+            playerA.dataset.isOnField = statusB; 
+            playerB.dataset.isOnField = statusA;
+            const toggleBtnA = playerA.querySelector('.toggle-btn'); 
+            const toggleBtnB = playerB.querySelector('.toggle-btn');
             
-            if (statusB === '1') { if (toggleBtnA) { toggleBtnA.textContent = 'ON'; toggleBtnA.classList.remove('status-off'); toggleBtnA.classList.add('status-on'); } recordSubChange(playerA.querySelector('.player-name').textContent, 'on'); } 
-            else { if (toggleBtnA) { toggleBtnA.textContent = 'OFF'; toggleBtnA.classList.add('status-off'); toggleBtnA.classList.remove('status-on'); } recordSubChange(playerA.querySelector('.player-name').textContent, 'off'); }
+            if (statusB === '1') { 
+                if (toggleBtnA) { 
+                    toggleBtnA.textContent = 'ON'; 
+                    toggleBtnA.classList.remove('status-off'); 
+                    toggleBtnA.classList.add('status-on'); 
+                } 
+                recordSubChange(playerA.querySelector('.player-name').textContent, 'on'); 
+            } else { 
+                if (toggleBtnA) { 
+                    toggleBtnA.textContent = 'OFF'; 
+                    toggleBtnA.classList.add('status-off'); 
+                    toggleBtnA.classList.remove('status-on'); 
+                } 
+                recordSubChange(playerA.querySelector('.player-name').textContent, 'off'); 
+            }
             
-            if (statusA === '1') { if (toggleBtnB) { toggleBtnB.textContent = 'ON'; toggleBtnB.classList.remove('status-off'); toggleBtnB.classList.add('status-on'); } recordSubChange(playerB.querySelector('.player-name').textContent, 'on'); } 
-            else { if (toggleBtnB) { toggleBtnB.textContent = 'OFF'; toggleBtnB.classList.add('status-off'); toggleBtnB.classList.remove('status-on'); } recordSubChange(playerB.querySelector('.player-name').textContent, 'off'); }
+            if (statusA === '1') { 
+                if (toggleBtnB) { 
+                    toggleBtnB.textContent = 'ON'; 
+                    toggleBtnB.classList.remove('status-off'); 
+                    toggleBtnB.classList.add('status-on'); 
+                } 
+                recordSubChange(playerB.querySelector('.player-name').textContent, 'on'); 
+            } else { 
+                if (toggleBtnB) { 
+                    toggleBtnB.textContent = 'OFF'; 
+                    toggleBtnB.classList.add('status-off'); 
+                    toggleBtnB.classList.remove('status-on'); 
+                } 
+                recordSubChange(playerB.querySelector('.player-name').textContent, 'off'); 
+            }
             
             updateSubstitutionWarnings();
         }
@@ -1483,10 +1563,14 @@
     // --- GAME ROTATION ENGINE ---
     function updateRecentSubsUI() {
         const container = document.getElementById('recent-subs-section'); const list = document.getElementById('recent-subs-list'); if(!container || !list) return;
-        const justOn = recentSubs.filter(sub => sub.state === 'on'); if (justOn.length === 0) { container.style.display = 'none'; return; }
+        if (recentSubs.length === 0) { container.style.display = 'none'; return; }
         container.style.display = 'block'; list.innerHTML = '';
-        justOn.forEach(sub => {
-            const badge = document.createElement('span'); badge.style.cssText = `padding: 4px 8px; border-radius: 7px; font-size: 11px; font-weight: 600; color: white; background-color: #4CAF50;`; badge.textContent = sub.name; list.appendChild(badge);
+        recentSubs.forEach(sub => {
+            const isOn = sub.state === 'on';
+            const badge = document.createElement('span'); 
+            badge.style.cssText = `padding: 4px 8px; border-radius: 7px; font-size: 11px; font-weight: 600; color: white; background-color: ${isOn ? '#4CAF50' : '#D32F2F'};`; 
+            badge.textContent = `${isOn ? '+' : '–'} ${sub.name}`; 
+            list.appendChild(badge);
         });
     }
     function commitSubs() { 
@@ -1624,6 +1708,9 @@
     function renderManagePlayers() {
         const list = document.getElementById('manage-player-list'); const mt = document.getElementById('manage-team-select'); if(!list || !mt) return; list.innerHTML = '';
         const teamId = mt.value; if (!teamId) return;
+
+        updateSkillPills();
+
         const teamPlayers = appData.players.filter(p => p.teamId === teamId); teamPlayers.sort((a, b) => (parseInt(b.rank) || 0) - (parseInt(a.rank) || 0)); 
         teamPlayers.forEach(p => {
             const div = document.createElement('div'); div.style.cssText = "display: flex; justify-content: space-between; padding: 10px; background: #121212; margin-bottom: 5px; border-radius: 9px; align-items: center;";
@@ -1634,10 +1721,15 @@
     }
     function resetPlayerForm() {
         const nName = document.getElementById('new-player-name'); const nNum = document.getElementById('new-player-number'); const nRank = document.getElementById('new-player-rank'); const nHeight = document.getElementById('new-player-height'); const btn = document.getElementById('create-player-btn');
-        if(nName) nName.value = ''; if(nNum) nNum.value = ''; if(nRank) nRank.value = ''; if(nHeight) nHeight.value = ''; setSelectedSkills('');
+        if(nName) nName.value = ''; if(nNum) nNum.value = ''; if(nRank) nRank.value = ''; if(nHeight) nHeight.value = ''; 
+        updateSkillPills();
+        setSelectedSkills('');
         if(btn) { btn.textContent = 'Add Player'; btn.style.backgroundColor = ''; btn.classList.replace('secondary', 'primary'); } editingPlayerId = null;
     }
     function showView(viewId) {
+        if (viewId === 'login-view' || viewId === 'signup-view') {
+            restorePasswordInputs();
+        }
         views.forEach(v => { const el = document.getElementById(v); if(el) el.style.display = 'none'; });
         const activeView = document.getElementById(viewId); if(activeView) activeView.style.display = 'block';
         const nav = document.getElementById('app-nav'); if (viewId === 'login-view' || viewId === 'signup-view' || viewId === 'sub-block-view') { if(nav) nav.style.display = 'none'; } else { if(nav) nav.style.display = 'flex'; }
@@ -1667,7 +1759,6 @@
                             document.getElementById('action-loading-overlay').style.display = 'none';
                             
                             showView('app-view');
-                            checkAndShowWelcomePopup();
                         }
                     } catch(e) {} 
                 }, 5000);
@@ -1713,7 +1804,7 @@
         if (isListening) return stopVoiceRecognition();
         try { const stream = await navigator.mediaDevices.getUserMedia({ audio: true }); stream.getTracks().forEach(track => track.stop()); } catch (err) { return showConfirmation('Microphone Access Blocked', 'Please allow microphone access in your browser settings to speak to the assistant.'); }
         isListening = true; activeVoiceInput = inputEl; activeVoiceButton = buttonEl;
-        if (inputEl) { inputEl.placeholder = 'Listening... Speak now.'; inputEl.value = ''; }
+        if (inputEl) inputEl.placeholder = 'Listening... Speak now.'; inputEl.value = '';
         if (!isFollowUp) {
             const voiceBtn = document.getElementById('ai-voice-btn'); const submitBtn = document.getElementById('ai-submit-btn'); const cancelBtn = document.getElementById('ai-cancel-btn'); const waveContainer = document.getElementById('ai-voice-wave-config');
             if (voiceBtn) voiceBtn.style.display = 'none'; if (submitBtn) submitBtn.style.display = 'none'; if (cancelBtn) cancelBtn.style.display = 'none'; if (waveContainer) { waveContainer.style.display = 'block'; runVoiceSiriWave('ai-voice-wave-config'); }
@@ -1739,10 +1830,10 @@
         isListening = false; if (recognition) { try { recognition.stop(); } catch (e) {} recognition = null; }
         const voiceBtn = document.getElementById('ai-voice-btn'); const submitBtn = document.getElementById('ai-submit-btn'); const cancelBtn = document.getElementById('ai-cancel-btn'); const waveConfig = document.getElementById('ai-voice-wave-config');
         if (voiceBtn) { voiceBtn.style.display = ''; voiceBtn.style.backgroundColor = ''; voiceBtn.style.color = ''; const iconEl = voiceBtn.querySelector('.material-icons'); if (iconEl) iconEl.textContent = 'mic'; }
-        if (submitBtn) { submitBtn.style.display = ''; } if (cancelBtn) cancelBtn.style.display = ''; if (waveConfig) waveConfig.style.display = 'none';
+        if (submitBtn) { submitBtn.style.display = ''; } if (cancelBtn) { cancelBtn.style.display = ''; } if (waveConfig) { waveConfig.style.display = 'none'; }
         const resultsVoiceBtn = document.getElementById('ai-results-voice-btn'); const applyBtn = document.getElementById('ai-apply-btn'); const dismissBtn = document.getElementById('ai-dismiss-btn'); const waveContainer = document.getElementById('ai-voice-wave-results');
         if (resultsVoiceBtn) { resultsVoiceBtn.style.display = ''; resultsVoiceBtn.style.backgroundColor = ''; resultsVoiceBtn.style.color = ''; const iconEl = resultsVoiceBtn.querySelector('.material-icons'); if (iconEl) iconEl.textContent = 'mic'; }
-        if (applyBtn) applyBtn.style.display = ''; if (dismissBtn) dismissBtn.style.display = ''; if (waveContainer) { waveContainer.style.display = 'none'; }
+        if (applyBtn) { applyBtn.style.display = ''; } if (dismissBtn) { dismissBtn.style.display = ''; } if (waveContainer) { waveContainer.style.display = 'none'; }
         if (activeVoiceInput) activeVoiceInput.placeholder = 'Ask anything';
         stopVoiceSiriWave(); activeVoiceInput = null; activeVoiceButton = null;
     }
@@ -1840,7 +1931,6 @@
                 } else { 
                     renderTeams(); 
                     showView('app-view'); 
-                    checkAndShowWelcomePopup();
                 }
 
             } catch (e) { clearLocalAuth(); if(e.message && e.message.includes("version out of date")) showConfirmation('Update Required', e.message); showView('login-view'); }
@@ -1866,7 +1956,10 @@
         const p = appData.players.find(p => p.playerId === playerId); if (!p) return;
         const nName = document.getElementById('new-player-name'); const nNum = document.getElementById('new-player-number'); const nRank = document.getElementById('new-player-rank'); const nHeight = document.getElementById('new-player-height');
         if(nName) nName.value = p.playerName; if(nNum) nNum.value = p.playerNumber || ''; if(nRank) nRank.value = p.rank || ''; if(nHeight) nHeight.value = p.height || '';
-        setSelectedSkills(p.skill); editingPlayerId = playerId;
+        
+        updateSkillPills();
+        setSelectedSkills(p.skill);
+        editingPlayerId = playerId;
         const btn = document.getElementById('create-player-btn'); if(btn) { btn.textContent = 'Save Changes'; btn.classList.replace('primary', 'secondary'); btn.style.backgroundColor = '#4CAF50'; btn.style.color = 'white'; }
         if(nName) nName.focus();
     };
@@ -1904,8 +1997,6 @@
     if(maxPlayersInput) { maxPlayersInput.addEventListener('change', (e) => { let val = parseInt(e.target.value); if (isNaN(val) || val < 1) { val = 5; e.target.value = 5; } localStorage.setItem(_S4, val); }); }
     if(guahhAiCheckbox) { guahhAiCheckbox.addEventListener('change', (e) => { localStorage.setItem(_S5, e.target.checked); if(suggestBtn) suggestBtn.style.display = e.target.checked ? '' : 'none'; if (!e.target.checked) closeAiPanel(); }); }
     if(pointsTrackingCheckbox) { pointsTrackingCheckbox.addEventListener('change', (e) => { localStorage.setItem(_S6, e.target.checked); updatePointsTrackingVisibility(); }); }
-
-    document.querySelectorAll('.skill-pill').forEach(pill => { pill.addEventListener('click', (e) => { e.preventDefault(); pill.classList.toggle('active'); }); });
 
     const navAppBtn = document.getElementById('nav-app-btn'); if(navAppBtn) navAppBtn.onclick = () => showView('app-view');
     const navManageBtn = document.getElementById('nav-manage-btn'); if(navManageBtn) navManageBtn.onclick = () => { renderManageTeams(); resetPlayerForm(); renderManagePlayers(); showView('manage-view'); };
@@ -1954,7 +2045,6 @@
             submitFeedbackBtn.disabled = true;
 
             try {
-                // Populate query parameters to guarantee population of e.parameter in standard Google Apps Script configurations
                 const queryParams = new URLSearchParams();
                 queryParams.append('name', name);
                 queryParams.append('feedbackType', type);
@@ -1962,7 +2052,6 @@
                 
                 const targetUrl = `${feedbackUrl}?${queryParams.toString()}`;
 
-                // Fire the post containing payload in both query params and stringified JSON body
                 await fetch(targetUrl, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -1983,25 +2072,13 @@
         };
     }
 
-    const subscribeIndividualBtn = document.getElementById('subscribe-individual-btn');
-    if(subscribeIndividualBtn) {
-        subscribeIndividualBtn.onclick = () => {
-            if(currentUser) {
-                const stripeUrl = `https://buy.stripe.com/test_14A5kE0hmcpY0VvbWi1Nu01?prefilled_email=${encodeURIComponent(currentUser)}&client_reference_id=${encodeURIComponent(currentUser)}`;
-                window.open(stripeUrl, '_blank');
-            } else {
-                showConfirmation('Error', 'Please log in to subscribe.');
-            }
-        };
-    }
-
     const loginBtn = document.getElementById('login-btn');
     if(loginBtn) { 
         loginBtn.onclick = async () => { 
             const emailEl = document.getElementById('login-email'); 
             const passEl = document.getElementById('login-password'); 
             const email = emailEl.value.trim(); 
-            const password = passEl.value.trim(); 
+            const password = passEl ? passEl.value.trim() : ''; 
             if (!email || !password) return showConfirmation('Error', 'Please enter your email and password'); 
             loginBtn.textContent = 'Logging in...'; 
             loginBtn.disabled = true; 
@@ -2028,7 +2105,7 @@
             const firstName = document.getElementById('signup-firstname').value.trim(); 
             const email = document.getElementById('signup-email').value.trim(); 
             const phone = document.getElementById('signup-phone').value.trim(); 
-            const password = document.getElementById('signup-password').value.trim(); 
+            const password = document.getElementById('signup-password') ? document.getElementById('signup-password').value.trim() : ''; 
             const termsCheck = document.getElementById('signup-terms');
             
             if (!firstName || !email || !password) return showConfirmation('Error', 'First Name, Email, and Password are required.'); 
@@ -2113,140 +2190,44 @@
     const addPlayerBtn = document.getElementById('add-player-btn');
     if(addPlayerBtn) { addPlayerBtn.addEventListener('click', () => { const name = document.getElementById('player-name').value.trim(); const number = document.getElementById('player-number-input').value.trim(); if (name || number) { const tempId = 'local_' + Date.now(); addPlayerByName(name, number, tempId); document.getElementById('player-name').value = ''; document.getElementById('player-number-input').value = ''; setTimeout(() => { window.scrollTo(0, 0); }, 200); } }); }
 
-    document.addEventListener('pointerdown', (e) => { const btn = e.target.closest('button'); if (btn && !btn.disabled) { btn.classList.remove('btn-pop'); void btn.offsetWidth; btn.classList.add('btn-pop'); setTimeout(() => btn.classList.remove('btn-pop'), 350); } });
-
-    // --- MANUAL CONTROL INTERACTIVE BINDINGS ---
-    if (startPauseBtn) {
-        startPauseBtn.onclick = () => {
-            if (isRunning) pauseTimer();
-            else startTimer();
-        };
-    }
-
-    if (resetBtn) {
-        resetBtn.onclick = () => {
-            showConfirmation('Reset Timer', 'Are you sure you want to reset the game timer and clear play stats?', (confirmed) => {
-                if (confirmed) resetTimer();
-            });
-        };
-    }
-
-    const addMinuteBtn = document.getElementById('add-minute-btn');
-    if (addMinuteBtn) {
-        addMinuteBtn.onclick = () => adjustTime(20);
-    }
-
-    const subtractMinuteBtn = document.getElementById('subtract-minute-btn');
-    if (subtractMinuteBtn) {
-        subtractMinuteBtn.onclick = () => adjustTime(-20);
-    }
-
-    if (miniStartPauseBtn) {
-        miniStartPauseBtn.onclick = () => {
-            if (isMiniTimerRunning) pauseMiniTimer();
-            else startMiniTimer();
-        };
-    }
-
-    const miniResetBtn = document.getElementById('mini-reset-btn');
-    if (miniResetBtn) {
-        miniResetBtn.onclick = () => {
-            resetMiniTimer();
-        };
-    }
-
-    const sortDescBtn = document.getElementById('sort-desc-btn');
-    if (sortDescBtn) {
-        sortDescBtn.onclick = () => {
-            sortRoster();
-        };
-    }
+    const sortDescBtn = document.getElementById('sort-desc-btn'); if(sortDescBtn) sortDescBtn.onclick = () => sortRoster();
+    if(startPauseBtn) startPauseBtn.onclick = () => isRunning ? pauseTimer() : startTimer();
+    if(resetBtn) resetBtn.onclick = () => showConfirmation('Confirm', 'Reset timer and all player times?', (c) => { if (c) resetTimer(); });
+    const addMinBtn = document.getElementById('add-minute-btn'); if(addMinBtn) addMinBtn.onclick = () => adjustTime(20);
+    const subMinBtn = document.getElementById('subtract-minute-btn'); if(subMinBtn) subMinBtn.onclick = () => adjustTime(-20);
+    if(miniStartPauseBtn) miniStartPauseBtn.onclick = () => isMiniTimerRunning ? pauseMiniTimer() : startMiniTimer();
+    const miniResetBtn = document.getElementById('mini-reset-btn'); if(miniResetBtn) miniResetBtn.onclick = resetMiniTimer;
 
     const saveToSheetsBtn = document.getElementById('save-to-sheets-btn');
-    if (saveToSheetsBtn) {
-        saveToSheetsBtn.onclick = async () => {
-            const teamId = teamSelect ? teamSelect.value : null;
-            if (!teamId) {
-                return showConfirmation('Error', 'Please select a team before finishing the game.');
-            }
-            const playersToSave = Array.from(document.querySelectorAll('.player-item')).map(item => {
-                return {
-                    name: item.querySelector('.player-name')?.textContent || 'Unnamed',
-                    number: item.querySelector('.player-number')?.textContent.replace('#', '') || '',
-                    points: parseInt(item.dataset.points) || 0,
-                    time: item.querySelector('.player-time')?.textContent || '00:00'
-                };
-            });
-            if (playersToSave.length === 0) {
-                return showConfirmation('Error', 'Roster is empty. Add players before finishing.');
-            }
-            
-            showConfirmation('Finish Game', 'Are you sure you want to finish the game and save stats?', async (confirmed) => {
-                if (confirmed) {
-                    saveToSheetsBtn.textContent = 'Saving...';
-                    saveToSheetsBtn.disabled = true;
-                    document.getElementById('action-loading-overlay').style.display = 'flex';
-                    try {
-                        let startersString = startingFive.join(', ');
-                        if (!startersString) {
-                            const onField = Array.from(document.querySelectorAll('.player-item[data-is-on-field="1"]'));
-                            startersString = onField.map(item => item.querySelector('.player-name')?.textContent || 'Unnamed').slice(0, 5).join(', ');
-                        }
-                        const duration = formatTime(totalSeconds);
-                        const notes = document.getElementById('game-notes') ? document.getElementById('game-notes').value.trim() : "";
-                        
-                        await apiCall('save_game', {
-                            teamId,
-                            duration,
-                            notes,
-                            starters: startersString,
-                            players: playersToSave
-                        });
-                        
-                        showConfirmation('Success', 'Game stats successfully saved!');
-                        resetTimer();
-                        if (document.getElementById('game-notes')) {
-                            document.getElementById('game-notes').value = '';
-                        }
-                    } catch (e) {
-                        showConfirmation('Error', 'Failed to save game: ' + e.message);
-                    } finally {
-                        saveToSheetsBtn.textContent = 'Finish Game';
-                        saveToSheetsBtn.disabled = false;
-                        document.getElementById('action-loading-overlay').style.display = 'none';
-                    }
-                }
-            });
-        };
+    if(saveToSheetsBtn) { 
+        saveToSheetsBtn.onclick = () => { 
+            const gameData = { 
+                teamId: teamSelect.value, 
+                mainTime: timeDisplay.textContent, 
+                notes: document.getElementById('game-notes').value, 
+                starters: startingFive, 
+                players: [] 
+            }; 
+            document.querySelectorAll('.player-item').forEach(item => { 
+                gameData.players.push({ 
+                    number: item.querySelector('.player-number')?.textContent.replace('#', '') || 'N/A', 
+                    name: item.querySelector('.player-name')?.textContent || 'Unnamed', 
+                    time: item.querySelector('.player-time')?.textContent || '00:00', 
+                    points: item.dataset.points || '0' 
+                }); 
+            }); 
+            if (!gameData.teamId) return showConfirmation('Required Field Missing', 'Please select a Team before saving.'); 
+            showCustomModal('Finish and Save Game', '<p>End this game and save final times to Server?</p>', [ { text: 'Confirm', className: 'primary', action: (e) => { const btn = e.target; const cancelBtn = btn.nextElementSibling; btn.textContent = 'Saving...'; btn.disabled = true; if(cancelBtn) cancelBtn.disabled = true; apiCall('save', gameData).then(() => { showCustomModal('Success!', '<p>Game data successfully saved to the server.</p>', [{ text: 'OK', className: 'primary', action: closeModal }]); }).catch(err => { showCustomModal('Network Error', `<p>Details: ${err.message}</p>`, [{ text: 'OK', className: 'primary', action: closeModal }]); }); } }, { text: 'Cancel', className: 'secondary', action: closeModal } ]); 
+        }; 
     }
-    
-    // Screen Wake Lock API Setup
-    let wakeLock = null; 
-    async function requestWakeLock() { 
-        if (wakeLock !== null) return;
-        try { 
-            if ('wakeLock' in navigator) {
-                wakeLock = await navigator.wakeLock.request('screen'); 
-            }
-        } catch (err) {} 
-    }
-    function releaseWakeLock() {
-        if (wakeLock !== null) {
-            try {
-                wakeLock.release();
-            } catch (err) {}
-            wakeLock = null;
-        }
-    }
-    document.addEventListener('visibilitychange', async () => { 
-        if (document.visibilityState === 'visible' && isRunning) {
-            await requestWakeLock(); 
-        } else if (document.visibilityState === 'hidden') {
-            releaseWakeLock();
-        }
-    });
+
+    document.addEventListener('pointerdown', (e) => { const btn = e.target.closest('button'); if (btn && !btn.disabled) { btn.classList.remove('btn-pop'); void btn.offsetWidth; btn.classList.add('btn-pop'); setTimeout(() => btn.classList.remove('btn-pop'), 350); } });
+    let wakeLock = null; async function requestWakeLock() { try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {} }
+    document.addEventListener('visibilitychange', async () => { if (wakeLock !== null && document.visibilityState === 'visible') await requestWakeLock(); });
+    requestWakeLock();
 
     initApp();
+    updateSkillPills();
 })(); 
 </script>
 </body>
