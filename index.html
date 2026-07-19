@@ -20,9 +20,6 @@
     <!-- SiriWave Library for Guahh Assistant Thinking Animation -->
     <script src="https://unpkg.com/siriwave/dist/siriwave.umd.min.js"></script>
 
-    <!-- Guahh AI Separated Conversational Brain -->
-    <script src="ai.js"></script>
-
     <!-- iOS WEB APP CAPABILITIES -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -146,7 +143,6 @@
     .player-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #222; cursor: grab; transition: border 0.15s ease, opacity 0.15s ease, background-color 0.15s ease; }
     .player-item:active { cursor: grabbing; }
 
-    /* Visual feedback class when player item is selected for dragging */
     .player-item.drag-selected {
         background-color: rgba(100, 181, 246, 0.2) !important;
         border-bottom-color: #64B5F6 !important;
@@ -193,7 +189,6 @@
     .player-time { font-weight: bold; color: #64B5F6; font-size: 14px; min-width: 44px; text-align: right; flex-shrink: 0; font-variant-numeric: tabular-nums; }
     .player-controls-group { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
     
-    /* Points System CSS */
     .points-controls {
         display: flex; align-items: center; gap: 2px; background-color: #1A1A1A; padding: 3px; border-radius: 9px; flex-shrink: 0; margin-left: 6px; margin-right: 4px; height: 26px;
     }
@@ -456,7 +451,7 @@
             <div id="signup-form">
                 <input type="text" id="signup-firstname" placeholder="First Name" style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 16px;" autocomplete="given-name">
                 <input type="email" id="signup-email" placeholder="Email Address" style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 16px;" autocomplete="email">
-                <input type="tel" id="signup-phone" placeholder="Your Club" style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 16px;" autocomplete="tel">
+                <input type="text" id="signup-club" placeholder="Club (Optional)" style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 16px;" autocomplete="organization">
                 <input type="password" id="signup-password" placeholder="Create Password (Min 6 chars)" style="width: 100%; margin-bottom: 15px; padding: 12px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 16px;" autocomplete="new-password">
                 
                 <!-- Terms of Service & Privacy Policy Consent Checkbox -->
@@ -592,10 +587,17 @@
             </div>
 
             <div style="background-color: #121212; padding: 12px; border-radius: 13px;">
-                <h3 style="margin-top: 0; color: #E0E0E0;">Manage Players</h3>
+                <h3 style="margin-top: 0; color: #E0E0E0;">Manage Players & Team Strategy</h3>
                 <select id="manage-team-select" style="width: 100%; padding: 9px; border-radius: 9px; background: #1A1A1A; color: #E0E0E0; border: 1px solid #222; margin-bottom: 10px; font-size: 15px;">
                     <option value="" disabled selected>Select a Team...</option>
                 </select>
+
+                <!-- Team Specific AI Strategy box (Guahh AI Rules) -->
+                <div id="team-ai-instructions-container" style="display: none; background: #1A1A1A; padding: 10px; border-radius: 9px; margin-bottom: 12px; border: 1px solid #222;">
+                    <label for="team-ai-instructions" style="display:block; margin-bottom: 5px; font-weight: 700; color: #64B5F6; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Guahh AI Rules</label>
+                    <textarea id="team-ai-instructions" placeholder="Write rules for Guahh AI (e.g., 'Keep John & Sam separated', 'We need 1 tall person on at all times')" style="width: 100%; min-height: 60px; padding: 7px; border: 1px solid #222; border-radius: 9px; background-color: #121212; color: #E0E0E0; font-size: 14px; resize: vertical; outline: none; margin-bottom: 8px;"></textarea>
+                    <button id="save-team-ai-instructions-btn" class="timer-btn primary" style="width: 100%; font-size: 12px; min-height: 32px; padding: 6px;">Save Guahh AI Rules</button>
+                </div>
                 
                 <div id="manage-player-list"></div>
                 
@@ -606,7 +608,10 @@
                         <input type="number" id="new-player-rank" placeholder="Rate (1/10)" style="flex: 1; min-width: 110px; padding: 9px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 15px;" min="1" max="10">
                     </div>
                     <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px;">
-                        <input type="text" id="new-player-height" placeholder="Height (e.g. 5ft 8)" style="flex: 1; min-width: 80px; padding: 9px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 15px;">
+                        <select id="new-player-position" style="flex: 1.2; min-width: 110px; padding: 9px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 15px;">
+                            <option value="">Position...</option>
+                        </select>
+                        <input type="text" id="new-player-notes" placeholder="Notes for AI (e.g. fast, good defense)" style="flex: 2; min-width: 100px; padding: 9px; border-radius: 9px; background: #121212; color: #E0E0E0; border: 1px solid #222; font-size: 15px;">
                     </div>
                     <div style="color: #B0B0B0; font-size: 12px; font-weight: 600; margin-bottom: 4px;">Skills (Optional):</div>
                     <div id="skill-pills" style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px;">
@@ -689,8 +694,8 @@
                 </div>
 
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #222;">
-                    <span style="font-size: 14px;">Max players on field</span>
-                    <input type="number" id="setting-max-players" min="1" max="15" value="5" style="width: 60px; padding: 5px; border-radius: 7px; background: #1A1A1A; color: #E0E0E0; border: 1px solid #222; text-align: center; font-size: 14px;">
+                    <span style="font-size: 14px;">Max players on field (Current Team)</span>
+                    <input type="number" id="setting-max-players" min="1" max="30" value="5" style="width: 60px; padding: 5px; border-radius: 7px; background: #1A1A1A; color: #E0E0E0; border: 1px solid #222; text-align: center; font-size: 14px;">
                 </div>
 
                 <button id="logout-btn-standard" class="timer-btn secondary" style="width: 100%; margin-bottom: 10px;">Log Out</button>
@@ -789,8 +794,8 @@
     console.log = console.warn = console.error = console.info = console.debug = function() {};
     
     // --- CONSTANTS & CONFIG ---
-    const _U = "\x68\x74\x74\x70\x73\x3a\x2f\x2f\x73\x63\x72\x69\x70\x74\x2e\x67\x6f\x6f\x67\x6c\x65\x2e\x63\x6f\x6d\x2f\x6d\x61\x63\x72\x6f\x73\x2f\x73\x2f\x41\x4b\x66\x79\x63\x62\x7a\x4c\x33\x6e\x48\x4c\x34\x37\x2d\x51\x59\x50\x50\x61\x4e\x4d\x4c\x74\x44\x43\x65\x54\x30\x2d\x4b\x70\x74\x33\x58\x71\x6b\x42\x46\x64\x75\x35\x61\x55\x32\x42\x39\x39\x6f\x42\x71\x36\x5a\x63\x6d\x55\x47\x43\x6d\x5f\x65\x37\x79\x62\x75\x41\x62\x58\x6f\x4e\x53\x72\x73\x67\x2f\x65\x78\x65\x63";
-    const _V = "0.5";
+    const _U = "\x68\x74\x74\x70\x73\x3a\x2f\x2f\x73\x63\x72\x69\x70\x74\x2e\x67\x6f\x6f\x67\x6c\x65\x2e\x63\x6f\x6d\x2f\x6d\x61\x63\x72\x6f\x73\x2f\x73\x2f\x41\x4b\x66\x79\x63\x62\x77\x5a\x70\x55\x4b\x72\x75\x38\x50\x78\x6d\x54\x6b\x32\x36\x54\x4f\x64\x67\x6c\x56\x4e\x4e\x78\x4c\x57\x46\x4d\x46\x66\x73\x32\x79\x34\x46\x75\x49\x51\x31\x6f\x35\x77\x74\x7a\x41\x70\x45\x35\x67\x4e\x63\x68\x33\x70\x6f\x56\x41\x39\x5f\x36\x4c\x62\x6a\x63\x61\x4d\x32\x51\x2f\x65\x78\x65\x63";
+    const _V = "0.6";
     const _TK = "\x5f\x63\x62\x5f\x74\x6b"; const _EM = "\x5f\x63\x62\x5f\x65\x6d"; const _PW = "\x5f\x63\x62\x5f\x70\x77"; 
     const _ST = "\x5f\x63\x62\x5f\x73\x74"; const _S1 = "\x5f\x63\x62\x5f\x73\x31"; const _S2 = "\x5f\x63\x62\x5f\x73\x32"; 
     const _S3 = "\x5f\x63\x62\x5f\x73\x33"; const _S4 = "\x5f\x63\x62\x5f\x73\x44"; 
@@ -808,6 +813,14 @@
         AFL: ["Speed", "Kicking", "Marking", "Handballing", "Tackling", "Stamina", "Ruck", "Agility", "Goal Kicking", "Bumping", "Shepherding", "Communication", "IQ", "Good At Everything"],
         Netball: ["Agility", "Shooting", "Passing", "Intercepts", "Rebounding", "Footwork", "Defending", "Stamina", "Positioning", "Centre Court", "Communication", "IQ", "Good At Everything"],
         Default: ["Speed", "Stamina", "Agility", "Strength", "Communication", "Quick Thinking", "IQ", "Good At Everything"]
+    };
+    
+    const SPORT_POSITIONS = {
+        Basketball: ["Point Guard", "Shooting Guard", "Small Forward", "Power Forward", "Center"],
+        Soccer: ["Goalkeeper", "Defender", "Midfielder", "Forward", "Striker", "Winger"],
+        AFL: ["Forward", "Midfielder", "Defender", "Ruck"],
+        Netball: ["GS", "GA", "WA", "C", "WD", "GD", "GK"],
+        Default: ["Forward", "Midfielder", "Defender"]
     };
 
     // --- SAFARI REFRESH PASSWORD PROMPT STRIPPER TEMPLATES & LOGIC ---
@@ -827,11 +840,25 @@
             }
         }
         if (!document.getElementById('signup-password')) {
-            const phoneEl = document.getElementById('signup-phone');
-            if (phoneEl) {
-                phoneEl.insertAdjacentHTML('afterend', signupPasswordHTML);
+            const clubEl = document.getElementById('signup-club');
+            if (clubEl) {
+                clubEl.insertAdjacentHTML('afterend', signupPasswordHTML);
             }
         }
+    }
+
+    // --- CUSTOM CLIENT VALIDATORS ---
+    function validatePlayerName(name) {
+        const cleanName = name.trim().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
+        const parts = cleanName.split(/\s+/);
+        if (parts.length > 1) {
+            for (let i = 1; i < parts.length; i++) {
+                if (parts[i].length > 1) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     // --- DOM ELEMENTS ---
@@ -873,7 +900,23 @@
     let startingFive = []; // State array tracking starting 5 player names
 
     // --- GETTERS & HELPERS ---
-    function getMaxPlayers() { return parseInt(localStorage.getItem(_S4) || '5'); }
+    function getMaxPlayers() { 
+        const teamId = teamSelect ? teamSelect.value : null;
+        if (teamId) {
+            const team = appData.teams.find(t => t.teamId === teamId);
+            if (team && team.maxPlayers) {
+                const parsed = parseInt(team.maxPlayers);
+                if (!isNaN(parsed)) return parsed;
+            }
+            if (team) {
+                if (team.sport === 'Basketball') return 5;
+                if (team.sport === 'Soccer') return 11;
+                if (team.sport === 'AFL') return 18;
+                if (team.sport === 'Netball') return 7;
+            }
+        }
+        return 5; 
+    }
     function getMiniTimerSeconds() { return parseInt(localStorage.getItem(_S3) || '3') * 60; }
     function formatTime(seconds) {
         if (seconds < 0) seconds = 0;
@@ -881,7 +924,7 @@
         return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
     }
     function updatePointsTrackingVisibility() {
-        const showPoints = localStorage.getItem(_S6) === 'true';
+        const showPoints = localStorage.getItem(_S6) === 'true'; // OFF by default
         if (showPoints) document.body.classList.remove('hide-points-tracking');
         else document.body.classList.add('hide-points-tracking');
     }
@@ -896,17 +939,10 @@
             else pill.classList.remove('active');
         });
     }
-    function cmToFeetInches(cm) {
-        const inches = Math.round(cm / 2.54);
-        const feet = Math.floor(inches / 12);
-        const remainingInches = inches % 12;
-        return remainingInches > 0 ? `${feet}ft ${remainingInches}` : `${feet}ft`;
-    }
 
     if (localStorage.getItem(_S1) === 'false') { if(autoTimerCheckbox) autoTimerCheckbox.checked = false; } else { if(autoTimerCheckbox) autoTimerCheckbox.checked = true; }
     if (autoAddCheckbox) autoAddCheckbox.checked = localStorage.getItem(_S2) === 'true';
     if (timerAmountInput && localStorage.getItem(_S3)) timerAmountInput.value = localStorage.getItem(_S3);
-    if (maxPlayersInput && localStorage.getItem(_S4)) maxPlayersInput.value = localStorage.getItem(_S4);
     if (guahhAiCheckbox && localStorage.getItem(_S5) === 'false') { guahhAiCheckbox.checked = false; if(suggestBtn) suggestBtn.style.display = 'none'; }
     if (pointsTrackingCheckbox) pointsTrackingCheckbox.checked = localStorage.getItem(_S6) === 'true';
     updatePointsTrackingVisibility();
@@ -1177,10 +1213,10 @@
         });
     };
 
-    function updateSkillPills() {
+    function updateSkillAndPositionUI() {
         const mt = document.getElementById('manage-team-select');
         const pillsContainer = document.getElementById('skill-pills');
-        if (!pillsContainer) return;
+        const posSelect = document.getElementById('new-player-position');
         
         let sport = "Default";
         if (mt && mt.value) {
@@ -1193,20 +1229,53 @@
             }
         }
         
-        const skills = SPORT_SKILLS[sport] || SPORT_SKILLS.Default;
-        pillsContainer.innerHTML = '';
-        skills.forEach(skill => {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'skill-pill';
-            btn.dataset.skill = skill;
-            btn.textContent = skill;
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                btn.classList.toggle('active');
+        // Update Skills
+        if (pillsContainer) {
+            const skills = SPORT_SKILLS[sport] || SPORT_SKILLS.Default;
+            pillsContainer.innerHTML = '';
+            skills.forEach(skill => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'skill-pill';
+                btn.dataset.skill = skill;
+                btn.textContent = skill;
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    btn.classList.toggle('active');
+                });
+                pillsContainer.appendChild(btn);
             });
-            pillsContainer.appendChild(btn);
-        });
+        }
+        
+        // Update Positions Dropdown
+        if (posSelect) {
+            const currentVal = posSelect.value;
+            posSelect.innerHTML = '<option value="">Position...</option>';
+            const positions = SPORT_POSITIONS[sport] || SPORT_POSITIONS.Default;
+            positions.forEach(pos => {
+                const opt = document.createElement('option');
+                opt.value = pos; 
+                opt.textContent = pos;
+                posSelect.appendChild(opt);
+            });
+            if (positions.includes(currentVal)) posSelect.value = currentVal;
+        }
+    }
+
+    // --- INSTANT AI INSTRUCTIONS LIFECYCLE HELPER ---
+    function updateAiInstructionsUI(teamId) {
+        const container = document.getElementById('team-ai-instructions-container');
+        const textarea = document.getElementById('team-ai-instructions');
+        if (!container || !textarea) return;
+        
+        const team = appData.teams.find(t => t.teamId === teamId);
+        if (team) {
+            container.style.display = 'block';
+            textarea.value = team.aiInstructions || "";
+        } else {
+            container.style.display = 'none';
+            textarea.value = "";
+        }
     }
 
     // --- TIMERS ---
@@ -1229,7 +1298,7 @@
         if (miniStartPauseBtn) { miniStartPauseBtn.textContent = 'Resume'; miniStartPauseBtn.classList.remove('pause'); }
     }
     function captureStarters() {
-        if (startingFive.length > 0) return; // Prevent overwriting captured starters
+        if (startingFive.length > 0) return; 
         const onField = Array.from(document.querySelectorAll('.player-item[data-is-on-field="1"]'));
         startingFive = onField.map(item => item.querySelector('.player-name')?.textContent || 'Unnamed').slice(0, 5);
     }
@@ -1237,7 +1306,6 @@
         if (isRunning || (isCountdownMode && totalSeconds <= 0)) return; 
         isRunning = true; 
         
-        // Capture starters on the first start sequence of a clean game
         if (totalSeconds === 0 && startingFive.length === 0) {
             captureStarters();
         }
@@ -1269,7 +1337,7 @@
         if(timeDisplay) timeDisplay.classList.remove('countdown-ended'); 
         totalSeconds = isCountdownMode ? DEFAULT_COUNTDOWN_SECONDS : INITIAL_STOPWATCH_SECONDS;
         if(timeDisplay) timeDisplay.textContent = formatTime(totalSeconds);
-        startingFive = []; // Reset starters array on restart
+        startingFive = []; 
         document.querySelectorAll('.player-item').forEach(item => {
             item.dataset.totalTime = 0; const pt = item.querySelector('.player-time'); if(pt) pt.textContent = formatTime(0); 
             item.dataset.isOnField = '0'; const btn = item.querySelector('.toggle-btn'); if (btn) { btn.textContent = 'OFF'; btn.classList.add('status-off'); btn.classList.remove('status-on'); }
@@ -1479,15 +1547,6 @@
         if (listEl && !listEl.contains(playerItem)) listEl.appendChild(playerItem); 
     }
 
-    function movePlayerToStatus(playerItem, targetStatus) {
-        const currentStatus = playerItem.dataset.isOnField; if (currentStatus === targetStatus) { appendPlayerToCorrectList(playerItem); return; }
-        if (targetStatus === '1') { const currentOnCount = document.querySelectorAll('.player-item[data-is-on-field="1"]').length; const maxPlayersLimit = getMaxPlayers(); if (currentOnCount >= maxPlayersLimit) { showConfirmation('Substitution Limit Reached', `Maximum ${maxPlayersLimit} players allowed on field.`); return; } }
-        playerItem.dataset.isOnField = targetStatus; const toggleBtn = playerItem.querySelector('.toggle-btn');
-        if (targetStatus === '1') { if (toggleBtn) { toggleBtn.textContent = 'ON'; toggleBtn.classList.remove('status-off'); toggleBtn.classList.add('status-on'); } recordSubChange(playerItem.querySelector('.player-name').textContent, 'on'); } 
-                else { if (toggleBtn) { toggleBtn.textContent = 'OFF'; toggleBtn.classList.add('status-off'); toggleBtn.classList.remove('status-on'); } recordSubChange(playerItem.querySelector('.player-name').textContent, 'off'); }
-        appendPlayerToCorrectList(playerItem); updateSubstitutionWarnings();
-    }
-
     // --- SPATIAL SWAP FUNCTION ---
     function swapDOMPositions(el1, el2) {
         const parent1 = el1.parentNode;
@@ -1608,7 +1667,7 @@
         const playerInfoGroup = document.createElement('div'); playerInfoGroup.className = 'player-info-group'; 
         const playerRankDisplay = document.createElement('span'); playerRankDisplay.className = 'player-rank'; playerRankDisplay.textContent = '-'; playerRankDisplay.dataset.role = 'player-rank-display'; playerInfoGroup.appendChild(playerRankDisplay);
         const nameWrapper = document.createElement('div'); nameWrapper.className = 'player-name-wrapper';
-        if (number !== null) { const playerNumber = document.createElement('span'); playerNumber.className = 'player-number'; playerNumber.textContent = `#${number}`; nameWrapper.appendChild(playerNumber); }
+        if (number !== null && number !== "") { const playerNumber = document.createElement('span'); playerNumber.className = 'player-number'; playerNumber.textContent = `#${number}`; nameWrapper.appendChild(playerNumber); }
         const playerName = document.createElement('span'); playerName.className = 'player-name'; playerName.textContent = name; nameWrapper.appendChild(playerName); playerInfoGroup.appendChild(nameWrapper);
         const lowWarningIcon = document.createElement('span'); lowWarningIcon.className = 'warning-icon low'; lowWarningIcon.textContent = '⚠️'; lowWarningIcon.title = 'Low play time - Consider subbing on'; lowWarningIcon.dataset.role = 'low-warning-icon'; playerInfoGroup.appendChild(lowWarningIcon);
         const playerControlsGroup = document.createElement('div'); playerControlsGroup.className = 'player-controls-group';
@@ -1634,7 +1693,7 @@
                 const currentOnCount = document.querySelectorAll('.player-item[data-is-on-field="1"]').length; 
                 const maxPlayersLimit = getMaxPlayers(); 
                 if (currentOnCount >= maxPlayersLimit) { 
-                    showConfirmation('Substitution Limit Reached', `Maximum ${maxPlayersLimit} players allowed on field.`); 
+                    showConfirmation('Substitution Limit Reached', `Maximum ${maxPlayersLimit} players allowed on field for this team.`); 
                     return; 
                 } 
                 playerItem.dataset.isOnField = '1'; 
@@ -1661,7 +1720,7 @@
         setupTouchDrag(playerItem); setupDesktopDrag(playerItem);
         return playerItem;
     }
-    function addPlayerByName(name, number = null, playerId = '') { const effectiveName = name || (number !== null ? `Player #${number}` : 'Unnamed'); const playerItem = createPlayerItem(effectiveName, number, playerId); appendPlayerToCorrectList(playerItem); updateSubstitutionWarnings(); }
+    function addPlayerByName(name, number = null, playerId = '') { const effectiveName = name || (number !== null && number !== "" ? `Player #${number}` : 'Unnamed'); const playerItem = createPlayerItem(effectiveName, number, playerId); appendPlayerToCorrectList(playerItem); updateSubstitutionWarnings(); }
     function autoAddDefaultPlayers(teamId) {
         const teamPlayers = appData.players.filter(p => p.teamId === teamId); teamPlayers.sort((a, b) => (parseInt(b.rank) || 0) - (parseInt(a.rank) || 0)); 
         teamPlayers.forEach(p => { const existing = Array.from(document.querySelectorAll('.player-item')).find(item => item.dataset.playerId === p.playerId); if (!existing) addPlayerByName(p.playerName, p.playerNumber, p.playerId); });
@@ -1681,12 +1740,16 @@
     // --- APP CORE & VIEWS ---
     function applyGlobalTeamChange(teamId) {
         localStorage.setItem(_ST, teamId); if(teamSelect) teamSelect.value = teamId; const mt = document.getElementById('manage-team-select'); const st = document.getElementById('stats-team-select'); if(mt) mt.value = teamId; if(st) st.value = teamId;
+        if (maxPlayersInput) maxPlayersInput.value = getMaxPlayers();
         resetTimer(); resetMiniTimer();
-        startingFive = []; // Clear current starters tracking
+        startingFive = []; 
         const rosterList = document.getElementById('roster-list');
         if(rosterList) rosterList.innerHTML = '';
         if (autoAddCheckbox && autoAddCheckbox.checked) autoAddDefaultPlayers(teamId);
         resetPlayerForm(); renderManagePlayers(); const statsContent = document.getElementById('stats-content'); if(statsContent) statsContent.innerHTML = '';
+        
+        // Auto load strategy rules instantly on team switch
+        updateAiInstructionsUI(teamId);
     }
     function handleGlobalTeamChange(newTeamId, sourceSelect) {
         const currentSaved = localStorage.getItem(_ST) || ""; if (newTeamId === currentSaved) return;
@@ -1699,7 +1762,17 @@
         appData.teams.forEach(t => { const opt = `<option value="${t.teamId}">${t.teamName}</option>`; finalSelects.forEach(s => s.innerHTML += opt); });
         const savedTeam = localStorage.getItem(_ST); let selectedId = null;
         if (savedTeam && appData.teams.some(t => t.teamId === savedTeam)) selectedId = savedTeam; else if (appData.teams.length > 0) selectedId = appData.teams[0].teamId;
-        if (selectedId) { localStorage.setItem(_ST, selectedId); finalSelects.forEach(s => s.value = selectedId); const countPlayers = document.querySelectorAll('.player-item').length; if (autoAddCheckbox && autoAddCheckbox.checked && countPlayers === 0) autoAddDefaultPlayers(selectedId); renderManagePlayers(); }
+        if (selectedId) { 
+            localStorage.setItem(_ST, selectedId); 
+            finalSelects.forEach(s => s.value = selectedId); 
+            const countPlayers = document.querySelectorAll('.player-item').length; 
+            if (autoAddCheckbox && autoAddCheckbox.checked && countPlayers === 0) autoAddDefaultPlayers(selectedId); 
+            renderManagePlayers(); 
+            if(maxPlayersInput) maxPlayersInput.value = getMaxPlayers(); 
+            
+            // Show Guahh AI rules instantly on start up!
+            updateAiInstructionsUI(selectedId); 
+        }
     }
     function renderManageTeams() {
         const list = document.getElementById('manage-team-list'); if(!list) return; list.innerHTML = '';
@@ -1709,20 +1782,20 @@
         const list = document.getElementById('manage-player-list'); const mt = document.getElementById('manage-team-select'); if(!list || !mt) return; list.innerHTML = '';
         const teamId = mt.value; if (!teamId) return;
 
-        updateSkillPills();
+        updateSkillAndPositionUI();
 
         const teamPlayers = appData.players.filter(p => p.teamId === teamId); teamPlayers.sort((a, b) => (parseInt(b.rank) || 0) - (parseInt(a.rank) || 0)); 
         teamPlayers.forEach(p => {
             const div = document.createElement('div'); div.style.cssText = "display: flex; justify-content: space-between; padding: 10px; background: #121212; margin-bottom: 5px; border-radius: 9px; align-items: center;";
-            let details = `(Rating: ${p.rank || '-'})`; if(p.height) details += ` | ${p.height}`; if(p.skill) details += ` | ${p.skill}`;
+            let details = `(Rating: ${p.rank || '-'})`; if(p.position) details += ` | ${p.position}`; if(p.skill) details += ` | ${p.skill}`; if(p.playerNotes) details += ` | Notes: ${p.playerNotes}`;
             div.innerHTML = `<div style="display: flex; flex-direction: column;"><div style="display: flex; align-items: center; gap: 6px;"><span style="font-weight: 700; color: #64B5F6; font-size: 15px;">#${p.playerNumber || '-'}</span><span style="font-weight: 500; font-size: 15px; color: #E0E0E0;">${p.playerName}</span></div><span style="color: #B0B0B0; font-size: 11px; margin-top: 3px;">${details}</span></div><div style="display: flex; gap: 5px;"><button class="timer-btn secondary" style="padding: 5px 10px; font-size: 11px; min-height: 0;" onclick="window._ep('${p.playerId}')">Edit</button><button class="timer-btn secondary" style="padding: 5px 10px; font-size: 11px; min-height: 0; background-color: #D32F2F; color: white;" onclick="window._rp('${p.playerId}')">Remove</button></div>`;
             list.appendChild(div);
         });
     }
     function resetPlayerForm() {
-        const nName = document.getElementById('new-player-name'); const nNum = document.getElementById('new-player-number'); const nRank = document.getElementById('new-player-rank'); const nHeight = document.getElementById('new-player-height'); const btn = document.getElementById('create-player-btn');
-        if(nName) nName.value = ''; if(nNum) nNum.value = ''; if(nRank) nRank.value = ''; if(nHeight) nHeight.value = ''; 
-        updateSkillPills();
+        const nName = document.getElementById('new-player-name'); const nNum = document.getElementById('new-player-number'); const nRank = document.getElementById('new-player-rank'); const nNotes = document.getElementById('new-player-notes'); const nPos = document.getElementById('new-player-position'); const btn = document.getElementById('create-player-btn');
+        if(nName) nName.value = ''; if(nNum) nNum.value = ''; if(nRank) nRank.value = ''; if(nNotes) nNotes.value = ''; if(nPos) nPos.value = '';
+        updateSkillAndPositionUI();
         setSelectedSkills('');
         if(btn) { btn.textContent = 'Add Player'; btn.style.backgroundColor = ''; btn.classList.replace('secondary', 'primary'); } editingPlayerId = null;
     }
@@ -1770,11 +1843,18 @@
             }
         }
     }
-    function clearLocalAuth() { authToken = null; localStorage.removeItem(_TK); localStorage.removeItem(_EM); localStorage.removeItem(_PW); appData = { teams: [], players: [], clubStatus: 'NONE', clubName: '' }; }
+    function clearLocalAuth() { 
+        authToken = null; 
+        localStorage.removeItem(_TK); 
+        localStorage.removeItem(_EM); 
+        localStorage.removeItem(_PW); 
+        localStorage.removeItem('_cb_cached_data');
+        appData = { teams: [], players: [], clubStatus: 'NONE', clubName: '' }; 
+    }
     function promptLogoutStandard() { showConfirmation('Log Out', 'Are you sure you want to log out?', (c) => { if (c) { apiCall('logout').catch(e => {}); clearLocalAuth(); window.location.reload(); } }); }
     function promptLogoutAll() { showConfirmation('Log Out All Sessions', 'Are you sure you want to log out of all your devices? You will need to log in again.', (c) => { if (c) { apiCall('logout_all').catch(e => {}); clearLocalAuth(); window.location.reload(); } }); }
 
-    // --- AI ENGINE ---
+    // --- AI ENGINE (SERVER-SIDE PROXY) ---
     function loadStepConfigSuggestions() {
         const container = document.getElementById('ai-step-suggestions-stacked'); if (!container) return; container.innerHTML = '';
         SUGGESTION_POOL.forEach(text => {
@@ -1844,13 +1924,43 @@
         await new Promise(resolve => setTimeout(resolve, 1500)); 
         try {
             const onField = []; const offField = [];
+            const teamId = teamSelect ? teamSelect.value : null;
+            const selectedTeam = appData.teams.find(t => t.teamId === teamId);
+            
             document.querySelectorAll('.player-item').forEach(item => {
                 const baseName = item.querySelector('.player-name')?.textContent || 'Unnamed';
-                const playerObj = { name: baseName, fullName: `${item.querySelector('.player-number')?.textContent || ''} ${baseName}`.trim(), time: parseInt(item.dataset.totalTime), isOnField: item.dataset.isOnField === '1', points: parseInt(item.dataset.points) || 0 };
+                const pId = item.dataset.playerId;
+                const pData = appData.players.find(p => p.playerId === pId) || {};
+                
+                const playerObj = { 
+                    name: baseName, 
+                    fullName: `${item.querySelector('.player-number')?.textContent || ''} ${baseName}`.trim(), 
+                    time: parseInt(item.dataset.totalTime), 
+                    isOnField: item.dataset.isOnField === '1', 
+                    points: parseInt(item.dataset.points) || 0,
+                    position: pData.position || '',
+                    skills: pData.skill || '',
+                    notes: pData.playerNotes || ''
+                };
                 (playerObj.isOnField ? onField : offField).push(playerObj);
             });
-            const contextPayload = { teamId: teamSelect ? teamSelect.value : null, players: appData.players.filter(p => p.teamId === (teamSelect ? teamSelect.value : "")), onField: onField, offField: offField, gameTimeSecs: totalSeconds, recentSubs: recentSubs, notes: document.getElementById('game-notes') ? document.getElementById('game-notes').value.trim() : "", apiCall: apiCall };
-            const result = await GuahhAI.processQuery(queryText, contextPayload);
+            
+            const contextPayload = { 
+                teamId: teamId, 
+                teamName: selectedTeam ? selectedTeam.teamName : '',
+                sport: selectedTeam ? selectedTeam.sport : '',
+                maxPlayers: getMaxPlayers(),
+                onField: onField, 
+                offField: offField, 
+                gameTimeSecs: totalSeconds, 
+                recentSubs: recentSubs, 
+                notes: document.getElementById('game-notes') ? document.getElementById('game-notes').value.trim() : "",
+                aiInstructions: selectedTeam ? (selectedTeam.aiInstructions || "") : ""
+            };
+            
+            const response = await apiCall('ask_ai', { query: queryText, context: contextPayload });
+            const result = response.aiResponse; 
+            
             stopSiriWave();
             const formattedText = result.text.replace(/\*\*([\s\S]+?)\*\*/g, '<strong>$1</strong>');
             const resText = document.getElementById('ai-results-text'); resText.innerHTML = formattedText;
@@ -1900,9 +2010,13 @@
     function dragMove(e) { if (!isDragging) return; if (e.cancelable) e.preventDefault(); const currentY = (e.clientY !== undefined) ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : 0); dragOffset = currentY - startY; if (!isAiCollapsed) { if (dragOffset > 0) panel.style.transform = `translate3d(-50%, ${dragOffset}px, 0)`; } else { if (dragOffset < 0) panel.style.transform = `translate3d(-50%, ${dragOffset}px, 0)`; } }
     function dragEnd() { if (!isDragging) return; isDragging = false; panel.style.transition = 'max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1), width 0.4s cubic-bezier(0.25, 1, 0.5, 1), max-width 0.4s cubic-bezier(0.25, 1, 0.5, 1), padding 0.4s cubic-bezier(0.25, 1, 0.5, 1), border-radius 0.4s cubic-bezier(0.25, 1, 0.5, 1), transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2), opacity 0.4s ease, bottom 0.4s cubic-bezier(0.25, 1, 0.5, 1)'; panel.style.transform = 'translateX(-50%)'; if (!isAiCollapsed) { if (dragOffset > 25) collapseAiPanel(); else expandAiPanel(); } else { if (dragOffset < -60) expandAiPanel(); else collapseAiPanel(); } dragOffset = 0; }
 
-    // --- INIT ---
+    // --- SECURE INITIAL LOADING lifecyle engine (INIT) ---
     async function initApp() {
-        const overlay = document.getElementById('opening-loading-overlay'); const actionOverlay = document.getElementById('action-loading-overlay'); resetMiniTimer(); miniTotalSeconds = getMiniTimerSeconds(); 
+        const overlay = document.getElementById('opening-loading-overlay'); 
+        const actionOverlay = document.getElementById('action-loading-overlay'); 
+        resetMiniTimer(); 
+        miniTotalSeconds = getMiniTimerSeconds(); 
+        
         const rosterZone = document.getElementById('roster');
         if (rosterZone) {
             rosterZone.addEventListener('dragover', (e) => { 
@@ -1918,10 +2032,18 @@
                 clearDragStyles(); 
             });
         }
+
         if (authToken) {
             try {
-                const res = await apiCall('load_data'); currentUser = res.email; subscriptionStatus = res.subscriptionStatus; appData.teams = res.teams || []; appData.players = res.players || [];
-                appData.clubStatus = res.clubStatus || "NONE"; appData.clubName = res.clubName || "";
+                // Fetch fresh server state synchronously on start
+                const res = await apiCall('load_data'); 
+                currentUser = res.email; 
+                subscriptionStatus = res.subscriptionStatus; 
+                appData.teams = res.teams || []; 
+                appData.players = res.players || [];
+                appData.clubStatus = res.clubStatus || "NONE"; 
+                appData.clubName = res.clubName || "";
+                
                 renderClubStatus();
                 renderSubscriptionUI();
                 
@@ -1933,9 +2055,23 @@
                     showView('app-view'); 
                 }
 
-            } catch (e) { clearLocalAuth(); if(e.message && e.message.includes("version out of date")) showConfirmation('Update Required', e.message); showView('login-view'); }
-        } else { showView('login-view'); }
-        if (overlay) { overlay.style.transition = 'opacity 0.4s ease'; overlay.style.opacity = '0'; setTimeout(() => { overlay.style.display = 'none'; }, 400); }
+            } catch (e) { 
+                clearLocalAuth(); 
+                if (e.message && e.message.includes("version out of date")) {
+                    showConfirmation('Update Required', e.message); 
+                }
+                showView('login-view'); 
+            }
+        } else { 
+            showView('login-view'); 
+        }
+
+        // Gracefully remove opening loading screens only after verification complete
+        if (overlay) { 
+            overlay.style.transition = 'opacity 0.4s ease'; 
+            overlay.style.opacity = '0'; 
+            setTimeout(() => { overlay.style.display = 'none'; }, 400); 
+        }
         if (actionOverlay) actionOverlay.style.display = 'none';
     }
 
@@ -1954,10 +2090,13 @@
     };
     window._ep = function(playerId) {
         const p = appData.players.find(p => p.playerId === playerId); if (!p) return;
-        const nName = document.getElementById('new-player-name'); const nNum = document.getElementById('new-player-number'); const nRank = document.getElementById('new-player-rank'); const nHeight = document.getElementById('new-player-height');
-        if(nName) nName.value = p.playerName; if(nNum) nNum.value = p.playerNumber || ''; if(nRank) nRank.value = p.rank || ''; if(nHeight) nHeight.value = p.height || '';
+        const nName = document.getElementById('new-player-name'); const nNum = document.getElementById('new-player-number'); const nRank = document.getElementById('new-player-rank'); const nNotes = document.getElementById('new-player-notes'); const nPos = document.getElementById('new-player-position');
+        if(nName) nName.value = p.playerName; if(nNum) nNum.value = p.playerNumber || ''; if(nRank) nRank.value = p.rank || ''; 
         
-        updateSkillPills();
+        updateSkillAndPositionUI();
+        if(nNotes) nNotes.value = p.playerNotes || ''; 
+        if(nPos && p.position) nPos.value = p.position;
+        
         setSelectedSkills(p.skill);
         editingPlayerId = playerId;
         const btn = document.getElementById('create-player-btn'); if(btn) { btn.textContent = 'Save Changes'; btn.classList.replace('primary', 'secondary'); btn.style.backgroundColor = '#4CAF50'; btn.style.color = 'white'; }
@@ -1994,7 +2133,22 @@
     if(autoTimerCheckbox) autoTimerCheckbox.addEventListener('change', (e) => localStorage.setItem(_S1, e.target.checked));
     if(autoAddCheckbox) autoAddCheckbox.addEventListener('change', (e) => localStorage.setItem(_S2, e.target.checked));
     if(timerAmountInput) { timerAmountInput.addEventListener('change', (e) => { let val = parseInt(e.target.value); if (isNaN(val) || val < 1) { val = 3; e.target.value = 3; } localStorage.setItem(_S3, val); if (!isMiniTimerRunning) resetMiniTimer(); }); }
-    if(maxPlayersInput) { maxPlayersInput.addEventListener('change', (e) => { let val = parseInt(e.target.value); if (isNaN(val) || val < 1) { val = 5; e.target.value = 5; } localStorage.setItem(_S4, val); }); }
+    
+    if(maxPlayersInput) { 
+        maxPlayersInput.addEventListener('change', async (e) => { 
+            let val = parseInt(e.target.value); 
+            if (isNaN(val) || val < 1) val = 5; 
+            e.target.value = val; 
+            const teamId = teamSelect ? teamSelect.value : null;
+            if (teamId) {
+                const team = appData.teams.find(t => t.teamId === teamId);
+                if (team) team.maxPlayers = val;
+                try { await apiCall('update_team_settings', { teamId, maxPlayers: val }); } 
+                catch(err) { console.error(err); }
+            }
+        }); 
+    }
+
     if(guahhAiCheckbox) { guahhAiCheckbox.addEventListener('change', (e) => { localStorage.setItem(_S5, e.target.checked); if(suggestBtn) suggestBtn.style.display = e.target.checked ? '' : 'none'; if (!e.target.checked) closeAiPanel(); }); }
     if(pointsTrackingCheckbox) { pointsTrackingCheckbox.addEventListener('change', (e) => { localStorage.setItem(_S6, e.target.checked); updatePointsTrackingVisibility(); }); }
 
@@ -2104,7 +2258,7 @@
         signupBtn.onclick = async () => { 
             const firstName = document.getElementById('signup-firstname').value.trim(); 
             const email = document.getElementById('signup-email').value.trim(); 
-            const phone = document.getElementById('signup-phone').value.trim(); 
+            const club = document.getElementById('signup-club').value.trim(); 
             const password = document.getElementById('signup-password') ? document.getElementById('signup-password').value.trim() : ''; 
             const termsCheck = document.getElementById('signup-terms');
             
@@ -2119,7 +2273,7 @@
             signupBtn.textContent = 'Signing up...'; 
             signupBtn.disabled = true; 
             try { 
-                const res = await apiCall('signup', { firstName, email, phone, password }); 
+                const res = await apiCall('signup', { firstName, email, club, password }); 
                 authToken = res.token; 
                 localStorage.setItem(_TK, authToken); 
                 localStorage.setItem(_EM, email); 
@@ -2142,17 +2296,95 @@
     if(refreshSubBtn) { refreshSubBtn.onclick = async () => { refreshSubBtn.textContent = 'Checking...'; refreshSubBtn.disabled = true; document.getElementById('action-loading-overlay').style.display = 'flex'; await initApp(); refreshSubBtn.textContent = 'Check Status Again'; refreshSubBtn.disabled = false; }; }
 
     if(teamSelect) teamSelect.addEventListener('change', (e) => handleGlobalTeamChange(e.target.value, teamSelect));
-    const manageTeamSelect = document.getElementById('manage-team-select'); if(manageTeamSelect) manageTeamSelect.addEventListener('change', (e) => handleGlobalTeamChange(e.target.value, manageTeamSelect));
+    const manageTeamSelect = document.getElementById('manage-team-select'); 
+    const aiInstructionsContainer = document.getElementById('team-ai-instructions-container');
+    const aiInstructionsTextarea = document.getElementById('team-ai-instructions');
+
+    if(manageTeamSelect) {
+        manageTeamSelect.addEventListener('change', (e) => {
+            handleGlobalTeamChange(e.target.value, manageTeamSelect);
+            const teamId = e.target.value;
+            updateAiInstructionsUI(teamId);
+        });
+    }
     const statsTeamSelect = document.getElementById('stats-team-select'); if(statsTeamSelect) statsTeamSelect.addEventListener('change', (e) => handleGlobalTeamChange(e.target.value, statsTeamSelect));
+
+    const saveTeamAiBtn = document.getElementById('save-team-ai-instructions-btn');
+    if (saveTeamAiBtn) {
+        saveTeamAiBtn.onclick = async () => {
+            const teamId = manageTeamSelect ? manageTeamSelect.value : null;
+            const aiInstructions = aiInstructionsTextarea ? aiInstructionsTextarea.value.trim() : "";
+            if (!teamId) return;
+            saveTeamAiBtn.textContent = "Saving...";
+            saveTeamAiBtn.disabled = true;
+            try {
+                await apiCall('update_team_settings', { teamId, aiInstructions });
+                const team = appData.teams.find(t => t.teamId === teamId);
+                if (team) team.aiInstructions = aiInstructions;
+                showConfirmation('Success', 'AI strategy rules updated for this team.');
+            } catch(err) {
+                showConfirmation('Error', err.message);
+            } finally {
+                saveTeamAiBtn.textContent = "Save Guahh AI Rules";
+                saveTeamAiBtn.disabled = false;
+            }
+        };
+    }
 
     const addDefPlayersBtn = document.getElementById('add-default-players-btn');
     if(addDefPlayersBtn) { addDefPlayersBtn.onclick = () => { const teamId = teamSelect.value; if (!teamId) return showConfirmation('Error', 'Please select a team first.'); showConfirmation('Add Default Roster', 'Add the saved players for this team to the game?', (c) => { if (c) autoAddDefaultPlayers(teamId); }); }; }
 
     const createTeamBtn = document.getElementById('create-team-btn');
-    if(createTeamBtn) { createTeamBtn.onclick = async () => { const nameInput = document.getElementById('new-team-name'); const sportSelect = document.getElementById('new-team-sport'); const name = nameInput.value.trim(); const sport = sportSelect ? sportSelect.value : ''; if (!name) return showConfirmation('Error', 'Please enter a team name.'); if (!sport) return showConfirmation('Error', 'Please select a sport.'); document.getElementById('action-loading-overlay').style.display = 'flex'; try { const res = await apiCall('create_team', { teamName: name, sport: sport }); appData.teams.push({ teamId: res.teamId, teamName: res.teamName, sport: res.sport }); renderManageTeams(); renderTeams(); if(manageTeamSelect) { manageTeamSelect.value = res.teamId; manageTeamSelect.dispatchEvent(new Event('change')); } nameInput.value = ''; if(sportSelect) sportSelect.value = ''; } catch (e) { showConfirmation('Error', 'Failed to create team: ' + e.message); } finally { document.getElementById('action-loading-overlay').style.display = 'none'; } }; }
+    if(createTeamBtn) { createTeamBtn.onclick = async () => { const nameInput = document.getElementById('new-team-name'); const sportSelect = document.getElementById('new-team-sport'); const name = nameInput.value.trim(); const sport = sportSelect ? sportSelect.value : ''; if (!name) return showConfirmation('Error', 'Please enter a team name.'); if (!sport) return showConfirmation('Error', 'Please select a sport.'); document.getElementById('action-loading-overlay').style.display = 'flex'; try { const res = await apiCall('create_team', { teamName: name, sport: sport }); appData.teams.push({ teamId: res.teamId, teamName: res.teamName, sport: res.sport, maxPlayers: res.maxPlayers, aiInstructions: res.aiInstructions }); renderManageTeams(); renderTeams(); if(manageTeamSelect) { manageTeamSelect.value = res.teamId; manageTeamSelect.dispatchEvent(new Event('change')); } nameInput.value = ''; if(sportSelect) sportSelect.value = ''; } catch (e) { showConfirmation('Error', 'Failed to create team: ' + e.message); } finally { document.getElementById('action-loading-overlay').style.display = 'none'; } }; }
 
     const createPlayerBtn = document.getElementById('create-player-btn');
-    if(createPlayerBtn) { createPlayerBtn.onclick = async () => { const teamId = manageTeamSelect ? manageTeamSelect.value : null; const name = document.getElementById('new-player-name').value.trim(); const num = document.getElementById('new-player-number').value.trim(); const rank = document.getElementById('new-player-rank').value.trim(); let height = document.getElementById('new-player-height').value.trim(); if (/^\d+$/.test(height)) { const cmVal = parseInt(height, 10); if (cmVal > 30) { height = cmToFeetInches(cmVal); } } const skill = getSelectedSkills(); if (!teamId || !name) return showConfirmation('Error', 'Team and Name are required.'); if (editingPlayerId) { const p = appData.players.find(p => p.playerId === editingPlayerId); if (p) { p.playerName = name; p.playerNumber = num; p.rank = rank || "5"; p.height = height; p.skill = skill; renderManagePlayers(); const currentEditId = editingPlayerId; resetPlayerForm(); try { await apiCall('edit_player', { playerId: currentEditId, playerName: name, playerNumber: num, rank: rank || "5", height, skill }); } catch (e) { showConfirmation('Error', 'Failed to update player: ' + e.message); } } } else { const tempId = 'temp_' + Date.now(); const newPlayer = { playerId: tempId, teamId, playerName: name, playerNumber: num, rank: rank || "5", height, skill }; appData.players.push(newPlayer); renderManagePlayers(); resetPlayerForm(); try { const res = await apiCall('add_player', { teamId, playerName: name, playerNumber: num, rank: rank || "5", height, skill }); const p = appData.players.find(p => p.playerId === tempId); if (p) p.playerId = res.playerId; } catch (e) { appData.players = appData.players.filter(p => p.playerId !== tempId); renderManagePlayers(); showConfirmation('Error', 'Failed to add player: ' + e.message); } } }; }
+    if(createPlayerBtn) { 
+        createPlayerBtn.onclick = async () => { 
+            const teamId = manageTeamSelect ? manageTeamSelect.value : null; 
+            const name = document.getElementById('new-player-name').value.trim(); 
+            const num = document.getElementById('new-player-number').value.trim(); 
+            const rank = document.getElementById('new-player-rank').value.trim(); 
+            const pos = document.getElementById('new-player-position').value.trim(); 
+            const notes = document.getElementById('new-player-notes').value.trim(); 
+            const skill = getSelectedSkills(); 
+            
+            if (!teamId || !name) return showConfirmation('Error', 'Team and Name are required.'); 
+            
+            if (!validatePlayerName(name)) {
+                return showConfirmation(
+                    'Full Names Not Allowed', 
+                    'Please do not use full names, Try a first name, nick name, initials or a first name and 1 letter initial.'
+                );
+            }
+            
+            if (editingPlayerId) { 
+                const p = appData.players.find(p => p.playerId === editingPlayerId); 
+                if (p) { 
+                    p.playerName = name; p.playerNumber = num; p.rank = rank || "5"; p.playerNotes = notes; p.skill = skill; p.position = pos; 
+                    renderManagePlayers(); 
+                    const currentEditId = editingPlayerId; 
+                    resetPlayerForm(); 
+                    try { await apiCall('edit_player', { playerId: currentEditId, playerName: name, playerNumber: num, rank: rank || "5", playerNotes: notes, skill, position: pos }); } 
+                    catch (e) { showConfirmation('Error', 'Failed to update player: ' + e.message); } 
+                } 
+            } else { 
+                const tempId = 'temp_' + Date.now(); 
+                const newPlayer = { playerId: tempId, teamId, playerName: name, playerNumber: num, rank: rank || "5", playerNotes: notes, skill, position: pos }; 
+                appData.players.push(newPlayer); 
+                renderManagePlayers(); 
+                resetPlayerForm(); 
+                try { 
+                    const res = await apiCall('add_player', { teamId, playerName: name, playerNumber: num, rank: rank || "5", playerNotes: notes, skill, position: pos }); 
+                    const p = appData.players.find(p => p.playerId === tempId); 
+                    if (p) p.playerId = res.playerId; 
+                } catch (e) { 
+                    appData.players = appData.players.filter(p => p.playerId !== tempId); 
+                    renderManagePlayers(); 
+                    showConfirmation('Error', 'Failed to add player: ' + e.message); 
+                } 
+            } 
+        }; 
+    }
 
     const loadStatsBtn = document.getElementById('load-stats-btn');
     if(loadStatsBtn) { 
@@ -2188,7 +2420,25 @@
     }
 
     const addPlayerBtn = document.getElementById('add-player-btn');
-    if(addPlayerBtn) { addPlayerBtn.addEventListener('click', () => { const name = document.getElementById('player-name').value.trim(); const number = document.getElementById('player-number-input').value.trim(); if (name || number) { const tempId = 'local_' + Date.now(); addPlayerByName(name, number, tempId); document.getElementById('player-name').value = ''; document.getElementById('player-number-input').value = ''; setTimeout(() => { window.scrollTo(0, 0); }, 200); } }); }
+    if(addPlayerBtn) { 
+        addPlayerBtn.addEventListener('click', () => { 
+            const name = document.getElementById('player-name').value.trim(); 
+            const number = document.getElementById('player-number-input').value.trim(); 
+            if (name || number) { 
+                if (!validatePlayerName(name)) {
+                    return showConfirmation(
+                        'Full Names Not Allowed', 
+                        'Please do not use full names, Try a first name, nick name, initials or a first name and 1 letter initial.'
+                    );
+                }
+                const tempId = 'local_' + Date.now(); 
+                addPlayerByName(name, number, tempId); 
+                document.getElementById('player-name').value = ''; 
+                document.getElementById('player-number-input').value = ''; 
+                setTimeout(() => { window.scrollTo(0, 0); }, 200); 
+            } 
+        }); 
+    }
 
     const sortDescBtn = document.getElementById('sort-desc-btn'); if(sortDescBtn) sortDescBtn.onclick = () => sortRoster();
     if(startPauseBtn) startPauseBtn.onclick = () => isRunning ? pauseTimer() : startTimer();
@@ -2227,7 +2477,7 @@
     requestWakeLock();
 
     initApp();
-    updateSkillPills();
+    updateSkillAndPositionUI();
 })(); 
 </script>
 </body>
